@@ -12,6 +12,15 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
+dependencies = [
+  'auto_everything@git+https://github.com/yingshaoxo/auto_everything.git#egg=dev',
+  'pyinstaller==5.13.0'
+]
+
+[tool.setuptools]
+py-modules = [
+    'yppm'
+]
 
 [project.urls]
 "Homepage" = "https://github.com/yingshaoxo/yppm"

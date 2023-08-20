@@ -11,9 +11,10 @@ python3 -m pip uninstall auto_everything -y
 python3 -m pip install "git+https://github.com/yingshaoxo/auto_everything.git@dev"
 
 # Install yppm
+rm -fr ~/.yppm
 git clone https://github.com/yingshaoxo/yppm.git ~/.yppm
-cp ~/.yppm/yppm.sh /usr/bin/yppm
-chmod 777 /usr/bin/yppm
+sudo cp ~/.yppm/yppm.sh /usr/bin/yppm
+sudo chmod 777 /usr/bin/yppm
 
 # Welcome
 clear
