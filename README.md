@@ -1,6 +1,32 @@
 # yppm
 Yingshaoxo Python Package Manager
 
+## Usage
+### Create a project
+```bash
+yppm create_a_project
+```
+
+### Install a package
+```bash
+yppm install auto_everything
+```
+
+### Install all package
+```bash
+yppm install
+```
+
+### Run a script in package.json
+```bash
+yppm run <script_name>
+```
+
+### Build a project
+```bash
+yppm build
+```
+
 ## Feature
 * npm package.json like syntax.
 * Can compile a python project into a single binary file.
