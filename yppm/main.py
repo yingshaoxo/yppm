@@ -243,7 +243,7 @@ class Tools():
                 package_object["dependencies"].append(package_name)
                 io_.write(self.package_json_file_path, json.dumps(package_object, indent=4))
 
-    def build(self, pyinstaller_arguments: str = ""):
+    def build(self, pyinstaller_arguments: str = "", use_virtual_env: bool = False):
         package_object = self._get_package_json_object()
 
         name = package_object.get("name")
@@ -260,6 +260,8 @@ class Tools():
         self._add_to_gitignore(".dist/")
 
         terminal.run(f"""
+        {'#' if use_virtual_env == False else ''}{self.env_activate_file_path}
+
         export PIP_BREAK_SYSTEM_PACKAGES=1
         {self.python_executable_path} -m pip install pyinstaller
 
