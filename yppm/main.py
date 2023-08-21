@@ -63,6 +63,17 @@ class Tools():
 
         # get package json file
         self.package_json_file_path = disk.join_paths(self.project_root_folder, "package.json")
+    
+    def _add_to_gitignore(self, name: str):
+        gitignore_path = disk.join_paths(self.project_root_folder, ".gitignore")
+        if disk.exists(gitignore_path):
+            text = io_.read(gitignore_path)
+            if name not in text:
+                text = f"{name}\n" + text 
+                io_.write(gitignore_path, text)
+        else:
+            text = name
+            io_.write(gitignore_path, text)
 
     def _create_virtual_env(self):
         if disk.exists(self.virtual_env_folder):
@@ -78,15 +89,7 @@ class Tools():
         terminal.run(f"""chmod 777 {self.env_activate_file_path}""")
         
         # ignore .venv folder
-        gitignore_path = disk.join_paths(self.project_root_folder, ".gitignore")
-        if disk.exists(gitignore_path):
-            text = io_.read(gitignore_path)
-            if ".venv/" not in text:
-                text = ".venv/\n\n" + text 
-                io_.write(gitignore_path, text)
-        else:
-            text = ".venv/" 
-            io_.write(gitignore_path, text)
+        self._add_to_gitignore(".venv/")
     
     def _get_package_json_object(self) -> Any:
         try:
@@ -240,8 +243,28 @@ class Tools():
                 package_object["dependencies"].append(package_name)
                 io_.write(self.package_json_file_path, json.dumps(package_object, indent=4))
 
-    def build(self):
-        pass
+    def build(self, pyinstaller_arguments: str = ""):
+        package_object = self._get_package_json_object()
+
+        name = package_object.get("name")
+        if name == None:
+            print('package.json should have a key called {"name": "your_app_name"}')
+            return
+
+        entry_point_python_script = package_object.get("main")
+        if entry_point_python_script == None:
+            print('package.json should have a key called {"main": "main.py"}')
+            return
+
+        self._add_to_gitignore(".build/")
+        self._add_to_gitignore(".dist/")
+
+        terminal.run(f"""
+        export PIP_BREAK_SYSTEM_PACKAGES=1
+        {self.python_executable_path} -m pip install pyinstaller
+
+        {self.python_executable_path} -m PyInstaller {entry_point_python_script} --noconfirm --onefile {pyinstaller_arguments} --hidden-import auto_everything --name {name}
+                     """)
 
     def clean(self):
         disk.delete_a_folder(self.virtual_env_folder)
