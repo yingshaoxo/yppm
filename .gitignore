@@ -1,5 +1,6 @@
 # ignore resources tempraryly
-resources/
+# resources/
+yppm/resources/backend_and_frontend_project/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -40,11 +40,11 @@ class Tools():
         self.resource_basic_folder_path = disk.join_paths(resource_basic_folder_path, 'resources').replace("/./", "/")
 
         # get python executable path
-        self.python_executable_path = "python"
+        self.host_python_executable_path = "python"
         if " 3." in terminal.run_command("python --version"):
-            self.python_executable_path = "python"
+            self.host_python_executable_path = "python"
         elif " 3." in terminal.run_command("python3 --version"):
-            self.python_executable_path = "python3"
+            self.host_python_executable_path = "python3"
 
         # get git user email and username
         self.git_user_email = terminal.run_command("git config user.email").strip().split('\n')[0]
@@ -79,10 +79,10 @@ class Tools():
         if disk.exists(self.virtual_env_folder):
             return
         
-        print(f"Creating virtual envirnoment by using '{self.python_executable_path}'...")
+        print(f"Creating virtual envirnoment by using '{self.host_python_executable_path}'...")
 
         terminal.run(f"""
-        {self.python_executable_path} -m venv {self.virtual_env_folder}
+        {self.host_python_executable_path} -m venv {self.virtual_env_folder}
                      """)
 
         # change permission of activate file
@@ -90,6 +90,16 @@ class Tools():
         
         # ignore .venv folder
         self._add_to_gitignore(".venv/")
+    
+    def _get_virtual_env_python_excutable_path(self):
+        self._create_virtual_env()
+
+        return disk.join_paths(self.virtual_env_folder, "bin", "python3")
+
+    def _get_virtual_env_pip_path(self):
+        self._create_virtual_env()
+
+        return disk.join_paths(self.virtual_env_folder, "bin", "pip3")
     
     def _get_package_json_object(self) -> Any:
         try:
@@ -101,9 +111,60 @@ class Tools():
             return None
     
     def create_a_new_project(self):
-        pass
+        global default_template_name, default_project_name
 
-    def init(self):
+        # select teplates
+        default_template_name = "basic_python_project"
+
+        def set_to_basic_python_project():
+            global default_template_name
+            default_template_name="basic_python_project"
+
+        def set_to_backend_and_frontend_project():
+            global default_template_name
+            default_template_name="backend_and_frontend_project"
+
+        terminal_user_interface.selection_box(
+            "Which project template you want to use? ", [
+                ("basic python project", set_to_basic_python_project),
+                ("backend and frontend project", set_to_backend_and_frontend_project)
+            ]
+        )
+
+        # handle project name
+        default_project_name = ""
+
+        def assign_name(text: str):
+            global default_project_name
+            text = text.strip()
+            if text == "":
+                print("You can't give me an empty name!")
+                exit()
+            default_project_name = text
+
+        terminal_user_interface.input_box(
+            f"\n\nPlease give me the new project name: ", 
+            default_value=default_project_name,
+            handle_function=assign_name
+        )
+
+        # copy template folder
+        project_path = disk.join_paths(disk.get_current_working_directory(), default_project_name)
+        disk.delete_a_folder(project_path)
+        if default_template_name == "basic_python_project":
+            source_folder_path = disk.join_paths(self.resource_basic_folder_path, "basic_python_project")
+            disk.copy_a_folder(source_folder_path=source_folder_path, target_folder_path=project_path)
+
+            os.chdir(project_path)
+            self.__init__()
+
+            self.init(name=default_project_name)
+
+            print(f"\n\nNow you could go to the new project by using: \ncd {default_project_name}")
+        elif default_project_name == "backend_and_frontend_project":
+            pass
+
+    def init(self, name: str = ""):
         # create package.json file in current folder if there does not have one
         if disk.exists(self.package_json_file_path):
             print("There already has a 'package.json' file.")
@@ -124,20 +185,23 @@ class Tools():
             print("\n")
 
             # handle project name
-            default_project_name = disk.get_directory_name(self.project_root_folder)
-            print(default_project_name)
-            def assign_name(text: str):
-                package_object["name"] = text
-            terminal_user_interface.input_box(
-                f"Please give me a project name (default '{default_project_name}'): ", 
-                default_value=default_project_name,
-                handle_function=assign_name
-            )
+            name = name.strip()
+            if name == "":
+                default_project_name = disk.get_directory_name(self.project_root_folder)
+                def assign_name(text: str):
+                    package_object["name"] = text.strip()
+                terminal_user_interface.input_box(
+                    f"Please give me a project name (default '{default_project_name}'): ", 
+                    default_value=default_project_name,
+                    handle_function=assign_name
+                )
+            else:
+                package_object["name"] = name
 
             # handle project version
             default_project_version = "0.0.0"
             def assign_version(text: str):
-                package_object["version"] = text
+                package_object["version"] = text.strip()
             terminal_user_interface.input_box(
                 f"Please give me a project version (default '{default_project_version}'): ", 
                 default_value=default_project_version,
@@ -149,7 +213,7 @@ class Tools():
             if "@" not in default_author:
                 default_author = "" 
             def assign_author(text: str):
-                package_object["author"] = text
+                package_object["author"] = text.strip()
             terminal_user_interface.input_box(
                 f"Please give me your name (default '{default_author}'): ", 
                 default_value=default_author,
@@ -158,6 +222,8 @@ class Tools():
 
             io_.write(self.package_json_file_path, json.dumps(package_object, indent=4))
             self._create_virtual_env()
+
+            self.install()
 
     def run(self, script_name: str = ""):
         if not disk.exists(self.package_json_file_path):
@@ -182,7 +248,7 @@ class Tools():
             terminal.run(f"""
             {self.env_activate_file_path}
 
-            {self.python_executable_path} {entry_point_python_script}
+            {self._get_virtual_env_python_excutable_path()} {entry_point_python_script}
                          """)
         else:
             if script_name in scripts.keys():
@@ -195,9 +261,7 @@ class Tools():
                 print(f"Sorry, script '{script_name}' not exists in the package.json")
 
     def _install_package(self, package_name: str, upgrade: bool = False):
-        pip_path = disk.join_paths(self.virtual_env_folder, "bin", "pip3")
-        if not disk.exists(pip_path):
-            pip_path = disk.join_paths(self.virtual_env_folder, "bin", "pip")
+        pip_path = self._get_virtual_env_pip_path()
 
         yes_exists = terminal.run_command("yes --version")
         if ("copyright" in yes_exists.strip().lower()):
@@ -219,9 +283,7 @@ class Tools():
                         """)
 
     def _uninstall_package(self, package_name: str):
-        pip_path = disk.join_paths(self.virtual_env_folder, "bin", "pip3")
-        if not disk.exists(pip_path):
-            pip_path = disk.join_paths(self.virtual_env_folder, "bin", "pip")
+        pip_path = self._get_virtual_env_pip_path()
 
         yes_exists = terminal.run_command("yes --version")
         if ("copyright" in yes_exists.strip().lower()):
@@ -292,7 +354,7 @@ class Tools():
                 del package_object["dependencies"][package_name]
                 io_.write(self.package_json_file_path, json.dumps(package_object, indent=4))
 
-    def build(self, pyinstaller_arguments: str = "", use_virtual_env: bool = False):
+    def build(self, pyinstaller_arguments: str = ""):
         package_object = self._get_package_json_object()
 
         name = package_object.get("name")
@@ -307,18 +369,25 @@ class Tools():
 
         self._add_to_gitignore(".build/")
         self._add_to_gitignore(".dist/")
+        self._add_to_gitignore("*.spec")
 
+        #{'#' if use_virtual_env == False else ''}{self.env_activate_file_path}
         terminal.run(f"""
-        {'#' if use_virtual_env == False else ''}{self.env_activate_file_path}
+        {self.env_activate_file_path}
 
         export PIP_BREAK_SYSTEM_PACKAGES=1
-        {self.python_executable_path} -m pip install pyinstaller
+        {self._get_virtual_env_python_excutable_path()} -m pip install pyinstaller
 
-        {self.python_executable_path} -m PyInstaller {entry_point_python_script} --noconfirm --onefile {pyinstaller_arguments} --hidden-import auto_everything --name {name}
+        {self._get_virtual_env_python_excutable_path()} -m PyInstaller {entry_point_python_script} --noconfirm --onefile {pyinstaller_arguments} --hidden-import auto_everything --name {name}
                      """)
 
     def clean(self):
         disk.delete_a_folder(self.virtual_env_folder)
+        disk.delete_a_folder("./build")
+        disk.delete_a_folder("./dist")
+        terminal.run(f"""
+        rm -fr *.spec
+                     """)
 
     def env(self):
         print(f""" Please run:\n\n{self.env_activate_file_path} """.strip())
