@@ -3,7 +3,7 @@ Yingshaoxo Python Package Manager
 
 ## Install
 ```bash
-curl intsll.sh | sudo bash
+curl https://github.com/yingshaoxo/yppm/raw/main/Install.sh | sudo bash
 ```
 
 ## Usage
