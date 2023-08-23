@@ -199,17 +199,40 @@ class Tools():
         if not disk.exists(pip_path):
             pip_path = disk.join_paths(self.virtual_env_folder, "bin", "pip")
 
+        yes_exists = terminal.run_command("yes --version")
+        if ("copyright" in yes_exists.strip().lower()):
+            yes_exists = True
+        else:
+            yes_exists = False
+
         if upgrade == False:
             terminal.run(f"""
             {self.env_activate_file_path}
 
-            {pip_path} install {package_name}
+            yes | {pip_path} install {package_name}
                         """)
         else:
             terminal.run(f"""
             {self.env_activate_file_path}
 
-            {pip_path} install {package_name} --upgrade
+            yes | {pip_path} install {package_name} --upgrade
+                        """)
+
+    def _uninstall_package(self, package_name: str):
+        pip_path = disk.join_paths(self.virtual_env_folder, "bin", "pip3")
+        if not disk.exists(pip_path):
+            pip_path = disk.join_paths(self.virtual_env_folder, "bin", "pip")
+
+        yes_exists = terminal.run_command("yes --version")
+        if ("copyright" in yes_exists.strip().lower()):
+            yes_exists = True
+        else:
+            yes_exists = False
+
+        terminal.run(f"""
+        {self.env_activate_file_path}
+
+        yes | {pip_path} uninstall {package_name}
                         """)
 
     def install(self, package_name: str = ""):
@@ -241,6 +264,32 @@ class Tools():
             
             if package_name not in dependencies:
                 package_object["dependencies"].append(package_name)
+                io_.write(self.package_json_file_path, json.dumps(package_object, indent=4))
+
+    def uninstall(self, package_name: str = ""):
+        if not disk.exists(self.package_json_file_path):
+            print("You have to run `yppm init` first.")
+            return
+        self._create_virtual_env()
+
+        package_object = self._get_package_json_object()
+
+        dependencies = package_object.get("dependencies")
+        if dependencies == None:
+            print('package.json should have a key called {"dependencies": []}')
+            return
+
+        package_name = package_name.strip()
+        if package_name == "":
+            pass
+        else:
+            if package_name not in dependencies:
+                pass
+            else:
+                self._uninstall_package(package_name=package_name)
+            
+            if package_name in dependencies:
+                del package_object["dependencies"][package_name]
                 io_.write(self.package_json_file_path, json.dumps(package_object, indent=4))
 
     def build(self, pyinstaller_arguments: str = "", use_virtual_env: bool = False):

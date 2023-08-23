@@ -65,7 +65,7 @@ class Tools():
         while True:
             changed = develop.whether_a_folder_has_changed(watch_folder)
             if changed == True:
-                sleep(30)
+                sleep(60)
                 develop.whether_a_folder_has_changed(watch_folder)
 
                 try:
