@@ -1,6 +1,11 @@
 # yppm
 Yingshaoxo Python Package Manager
 
+## Install
+```bash
+curl intsll.sh | sudo bash
+```
+
 ## Usage
 ### Create a project
 ```bash
