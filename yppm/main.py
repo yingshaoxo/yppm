@@ -59,7 +59,7 @@ class Tools():
 
         # get virtual env folder
         self.virtual_env_folder = disk.join_paths(self.project_root_folder, ".venv")
-        self.env_activate_file_path = disk.join_paths(self.virtual_env_folder, "bin/activate")
+        # self.env_activate_file_path = disk.join_paths(self.virtual_env_folder, "bin/activate")
 
         # get package json file
         self.package_json_file_path = disk.join_paths(self.project_root_folder, "package.json")
@@ -86,7 +86,7 @@ class Tools():
                      """)
 
         # change permission of activate file
-        terminal.run(f"""chmod 777 {self.env_activate_file_path}""")
+        # terminal.run(f"""chmod 777 {self.env_activate_file_path}""")
         
         # ignore .venv folder
         self._add_to_gitignore(".venv/")
@@ -245,16 +245,14 @@ class Tools():
 
         script_name = script_name.strip()
         if script_name == "":
+            # {self.env_activate_file_path}
             terminal.run(f"""
-            {self.env_activate_file_path}
-
             {self._get_virtual_env_python_excutable_path()} {entry_point_python_script}
                          """)
         else:
             if script_name in scripts.keys():
+                # {self.env_activate_file_path}
                 terminal.run(f"""
-                {self.env_activate_file_path}
-
                 {scripts[script_name]}
                             """)
             else:
@@ -270,15 +268,13 @@ class Tools():
             yes_exists = False
 
         if upgrade == False:
+            # {self.env_activate_file_path}
             terminal.run(f"""
-            {self.env_activate_file_path}
-
             yes | {pip_path} install {package_name}
                         """)
         else:
+            # {self.env_activate_file_path}
             terminal.run(f"""
-            {self.env_activate_file_path}
-
             yes | {pip_path} install {package_name} --upgrade
                         """)
 
@@ -291,9 +287,8 @@ class Tools():
         else:
             yes_exists = False
 
+        # {self.env_activate_file_path}
         terminal.run(f"""
-        {self.env_activate_file_path}
-
         yes | {pip_path} uninstall {package_name}
                         """)
 
@@ -371,10 +366,7 @@ class Tools():
         self._add_to_gitignore(".dist/")
         self._add_to_gitignore("*.spec")
 
-        #{'#' if use_virtual_env == False else ''}{self.env_activate_file_path}
         terminal.run(f"""
-        {self.env_activate_file_path}
-
         export PIP_BREAK_SYSTEM_PACKAGES=1
         {self._get_virtual_env_python_excutable_path()} -m pip install pyinstaller
 
@@ -389,8 +381,8 @@ class Tools():
         rm -fr *.spec
                      """)
 
-    def env(self):
-        print(f""" Please run:\n\n{self.env_activate_file_path} """.strip())
+    # def env(self):
+    #     print(f""" Please run:\n\n{self.env_activate_file_path} """.strip())
 
     def about(self):
         terminal.run("clear")
