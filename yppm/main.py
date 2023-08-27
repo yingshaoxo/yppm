@@ -225,6 +225,10 @@ class Tools():
 
             self.install()
 
+            main_py_file_path = disk.join_paths(self.project_root_folder, "main.py")
+            if not disk.exists(main_py_file_path):
+                io_.write(main_py_file_path, 'print("Hello World!")')
+
     def run(self, script_name: str = ""):
         if not disk.exists(self.package_json_file_path):
             print("You have to run `yppm init` first.")
