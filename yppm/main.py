@@ -350,7 +350,7 @@ class Tools():
                 self._uninstall_package(package_name=package_name)
             
             if package_name in dependencies:
-                del package_object["dependencies"][package_name]
+                package_object["dependencies"] = [one for one in package_object["dependencies"] if one != package_name]
                 io_.write(self.package_json_file_path, json.dumps(package_object, indent=4))
 
     def build(self, pyinstaller_arguments: str = ""):
