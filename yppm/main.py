@@ -285,15 +285,9 @@ class Tools():
     def _uninstall_package(self, package_name: str):
         pip_path = self._get_virtual_env_pip_path()
 
-        yes_exists = terminal.run_command("yes --version")
-        if ("copyright" in yes_exists.strip().lower()):
-            yes_exists = True
-        else:
-            yes_exists = False
-
         # {self.env_activate_file_path}
         terminal.run(f"""
-        yes | {pip_path} uninstall {package_name}
+        {pip_path} uninstall {package_name} -y
                         """)
 
     def install(self, package_name: str = ""):
