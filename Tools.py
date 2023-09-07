@@ -1,3 +1,4 @@
+#!/usr/bin/env /usr/bin/python
 #!/usr/bin/env /usr/bin/python3
 import os
 import re
@@ -53,10 +54,16 @@ class Tools():
     
     def install(self):
         self.build()
-        disk.copy_a_file("./dist/yppm", "/usr/bin/yppm")
+        print("\nPlease input your root password: ")
         terminal.run(f"""
-        chmod a+rx /usr/bin/yppm 
-                     """)
+        sudo -S echo 'working on...'
+
+        sudo rm -fr /usr/bin/yppm
+        sudo cp ./dist/yppm /usr/bin/yppm
+        sudo chmod a+rx /usr/bin/yppm 
+
+        echo 'Done'
+                     """, wait=True)
     
     def dev(self):
         print("\n\n\nIn watching, when you change code, I'll do the compile and installation for you.")

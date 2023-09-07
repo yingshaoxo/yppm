@@ -253,6 +253,19 @@ class Tools():
             terminal.run(f"""
             {self._get_virtual_env_python_excutable_path()} {entry_point_python_script}
                          """)
+        elif script_name == "?":
+            if len(scripts.keys()) == 0:
+                print("There has no scripts to run.")
+            else:
+                selections = []
+                for script_name in scripts.keys():
+                    selections.append(
+                        (f'{script_name}', lambda: terminal.run(f"{scripts[script_name]}"))
+                    )
+                terminal_user_interface.selection_box(
+                    "Which script you want to run?", 
+                    selections
+                )
         else:
             if script_name in scripts.keys():
                 # {self.env_activate_file_path}
