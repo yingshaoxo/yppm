@@ -3,7 +3,7 @@ Yingshaoxo Python Package Manager
 
 ## Install
 ```bash
-wget https://github.com/yingshaoxo/yppm/raw/main/Install.sh -O - | sudo bash
+sudo wget https://github.com/yingshaoxo/yppm/raw/main/Install.sh -O - | sudo bash
 ```
 
 ## Usage
