@@ -1,5 +1,6 @@
 # ignore resources tempraryly
 # resources/
+nuitka-crash-report.xml
 yppm/resources/backend_and_frontend_project/
 
 # Byte-compiled / optimized / DLL files
