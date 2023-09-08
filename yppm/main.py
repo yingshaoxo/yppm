@@ -127,7 +127,7 @@ class Tools():
         terminal_user_interface.selection_box(
             "Which project template you want to use? ", [
                 ("basic python project", set_to_basic_python_project),
-                ("backend and frontend project", set_to_backend_and_frontend_project)
+                # ("backend and frontend project", set_to_backend_and_frontend_project)
             ]
         )
 

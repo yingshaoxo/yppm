@@ -45,22 +45,36 @@ class Tools():
         terminal.run(f"""
         #python3 -m venv {virtual_env_folder}
         #source {activate_file}
+        rm -fr dist/
 
         python3 -m pip install pyinstaller==5.13.0
         #python3 -m pip install "git+https://github.com/yingshaoxo/auto_everything.git@dev"
 
-        python3 -m PyInstaller yppm/main.py --noconfirm --onefile --add-data "./yppm/resources:resources" --hidden-import auto_everything --name yppm 
+        #python3 -m PyInstaller yppm/main.py --noconfirm --onefile --add-data "./yppm/resources:resources" --hidden-import auto_everything --name yppm 
+        python3 -m PyInstaller yppm/main.py --noconfirm --add-data "./yppm/resources:resources" --hidden-import auto_everything --name yppm 
+
+        rm -fr dist/yppm/resources/backend_and_frontend_project
+
+        tar -czvf dist/yppm.tar.gz -C dist/yppm .
                      """)
-    
+
     def install(self):
         self.build()
         print("\nPlease input your root password: ")
         terminal.run(f"""
-        sudo -S echo 'working on...'
+        sudo -S echo 'Working on...'
 
         sudo rm -fr /usr/bin/yppm
-        sudo cp ./dist/yppm /usr/bin/yppm
-        sudo chmod a+rx /usr/bin/yppm 
+        sudo rm -fr /usr/bin/yppm_folder
+
+        sudo rm -fr /root/yppm.tar.gz
+        sudo mv dist/yppm.tar.gz /root/yppm.tar.gz
+        sudo mkdir -p /usr/bin/yppm_folder
+        sudo tar -xzvf /root/yppm.tar.gz -C /usr/bin/yppm_folder
+
+        sudo chmod a+rx /usr/bin/yppm_folder/yppm
+        sudo ln -s /usr/bin/yppm_folder/yppm /usr/bin/yppm
+        sudo chmod a+rx /usr/bin/yppm
 
         echo 'Done'
                      """, wait=True)
