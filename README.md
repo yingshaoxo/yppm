@@ -24,6 +24,12 @@ yppm install
 
 ### Run a script in package.json
 ```bash
+yppm run ?
+```
+
+or 
+
+```bash
 yppm run <script_name>
 ```
 
