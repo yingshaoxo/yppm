@@ -6,7 +6,7 @@ echo 'Working on...'
 rm -fr /usr/bin/yppm
 rm -fr /usr/bin/yppm_folder
 
-wget https://github.com/yingshaoxo/yppm/releases/download/v0.2/yppm.zip -O /root/yppm.tar.gz
+wget https://github.com/yingshaoxo/yppm/releases/download/v0.2/yppm.tar.gz -O /root/yppm.tar.gz
 mkdir -p /usr/bin/yppm_folder
 tar -xzvf /root/yppm.tar.gz -C /usr/bin/yppm_folder
 
