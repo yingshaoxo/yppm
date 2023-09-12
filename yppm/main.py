@@ -100,6 +100,15 @@ class Tools():
         self._create_virtual_env()
 
         return disk.join_paths(self.virtual_env_folder, "bin", "pip3")
+
+    def _hack_into_virtual_env_bash_command(self):
+        self._create_virtual_env()
+
+        the_bin_path = disk.join_paths(self.virtual_env_folder, "bin")
+
+        return f"""
+        export PATH="{the_bin_path}:$PATH"
+        """.strip()
     
     def _get_package_json_object(self) -> Any:
         try:
@@ -251,6 +260,8 @@ class Tools():
         if script_name == "":
             # {self.env_activate_file_path}
             terminal.run(f"""
+            {self._hack_into_virtual_env_bash_command()}
+
             {self._get_virtual_env_python_excutable_path()} {entry_point_python_script}
                          """)
         elif script_name == "?":
@@ -270,6 +281,8 @@ class Tools():
             if script_name in scripts.keys():
                 # {self.env_activate_file_path}
                 terminal.run(f"""
+                {self._hack_into_virtual_env_bash_command()}
+
                 {scripts[script_name]}
                             """)
             else:
@@ -287,11 +300,13 @@ class Tools():
         if upgrade == False:
             # {self.env_activate_file_path}
             terminal.run(f"""
+            {self._hack_into_virtual_env_bash_command()}
             yes | {pip_path} install {package_name}
                         """)
         else:
             # {self.env_activate_file_path}
             terminal.run(f"""
+            {self._hack_into_virtual_env_bash_command()}
             yes | {pip_path} install {package_name} --upgrade
                         """)
 
@@ -300,6 +315,7 @@ class Tools():
 
         # {self.env_activate_file_path}
         terminal.run(f"""
+        {self._hack_into_virtual_env_bash_command()}
         {pip_path} uninstall {package_name} -y
                         """)
 
@@ -378,6 +394,8 @@ class Tools():
         self._add_to_gitignore("*.spec")
 
         terminal.run(f"""
+        {self._hack_into_virtual_env_bash_command()}
+
         export PIP_BREAK_SYSTEM_PACKAGES=1
         {self._get_virtual_env_python_excutable_path()} -m pip install pyinstaller
 

@@ -1,6 +1,6 @@
 [project]
 name = "yppm"
-version = "0.0.2"
+version = "0.0.3"
 authors = [
   { name="yingshaoxo", email="yingshaoxo@gmail.com" },
 ]
@@ -13,8 +13,8 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dependencies = [
-  #'auto_everything==3.24',
-  'auto_everything@git+https://github.com/yingshaoxo/auto_everything.git#egg=dev',
+  'auto_everything==3.24',
+  #'auto_everything@git+https://github.com/yingshaoxo/auto_everything.git#egg=dev',
   'pyinstaller==5.13.0'
 ]
 
