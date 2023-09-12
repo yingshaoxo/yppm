@@ -116,6 +116,7 @@ class Tools():
             lines = []
             for line in text.split("\n"):
                 if line.strip().startswith("#") or line.strip().startswith("//"):
+                    #ignore comments
                     pass
                 else:
                     lines.append(line)
@@ -131,18 +132,9 @@ class Tools():
 
         # select teplates
         default_template_name = "basic_python_project"
-
-        def set_to_basic_python_project():
-            global default_template_name
-            default_template_name="basic_python_project"
-
-        def set_to_backend_and_frontend_project():
-            global default_template_name
-            default_template_name="backend_and_frontend_project"
-
-        terminal_user_interface.selection_box(
+        default_template_name = terminal_user_interface.selection_box(
             "Which project template you want to use? ", [
-                ("basic python project", set_to_basic_python_project),
+                ("basic python project", None),
                 # ("backend and frontend project", set_to_backend_and_frontend_project)
             ]
         )
@@ -278,12 +270,14 @@ class Tools():
                 selections = []
                 for script_name in scripts.keys():
                     selections.append(
-                        (f'{script_name}', lambda: terminal.run(f"{scripts[script_name]}"))
+                        (f'{script_name}', lambda: script_name.strip())
                     )
-                terminal_user_interface.selection_box(
+                selection = terminal_user_interface.selection_box(
                     "Which script you want to run?", 
                     selections
                 )
+                if selection in scripts.keys():
+                    terminal.run(f"{scripts[selection]}")
         else:
             if script_name in scripts.keys():
                 # {self.env_activate_file_path}
