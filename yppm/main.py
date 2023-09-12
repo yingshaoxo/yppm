@@ -113,6 +113,13 @@ class Tools():
     def _get_package_json_object(self) -> Any:
         try:
             text = io_.read(self.package_json_file_path)
+            lines = []
+            for line in text.split("\n"):
+                if line.strip().startswith("#") or line.strip().startswith("//"):
+                    pass
+                else:
+                    lines.append(line)
+            text = "\n".join(lines)
             json_object = json.loads(text)
             return json_object
         except Exception as e:
