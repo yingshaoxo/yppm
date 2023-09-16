@@ -4,9 +4,7 @@ from typing import Any
 import os
 import sys
 import platform
-import re
 import json
-from subprocess import call
 
 from auto_everything.io import IO   
 from auto_everything.disk import Disk
@@ -50,7 +48,11 @@ class Tools():
         self.git_user_email = terminal.run_command("git config user.email").strip().split('\n')[0]
         self.git_user_name = terminal.run_command("git config user.name").strip().split('\n')[0].lower()
         if self.git_user_name == "":
-            self.git_user_name = string_tool.remove_all_special_characters_from_a_string(os.getlogin(), white_list_characters='_').strip().lower()
+            try:
+                self.git_user_name = string_tool.remove_all_special_characters_from_a_string(os.getlogin(), white_list_characters='_').strip().lower()
+            except Exception as e:
+                print(e)
+                self.git_user_name = ""
             if self.git_user_name == "":
                 self.git_user_name = platform.system().lower().strip()
 
@@ -426,4 +428,4 @@ YPPM: Yingshaoxo Python Package Manager.
 try:
     py.fire2(Tools)
 except Exception as e:
-    pass
+    print(e)

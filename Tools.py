@@ -47,7 +47,7 @@ class Tools():
         #source {activate_file}
         rm -fr dist/
 
-        python3 -m pip install pyinstaller==5.13.0
+        python3 -m pip install pyinstaller==5.13.0  --break-system-packages
         #python3 -m pip install "git+https://github.com/yingshaoxo/auto_everything.git@dev"
 
         #python3 -m PyInstaller yppm/main.py --noconfirm --onefile --add-data "./yppm/resources:resources" --hidden-import auto_everything --name yppm 
