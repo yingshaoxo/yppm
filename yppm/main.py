@@ -428,4 +428,4 @@ YPPM: Yingshaoxo Python Package Manager.
 try:
     py.fire2(Tools)
 except Exception as e:
-    print(e)
+    pass
