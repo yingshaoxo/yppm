@@ -1,6 +1,6 @@
 [project]
 name = "yppm"
-version = "0.0.3"
+version = "0.0.4"
 authors = [
   { name="yingshaoxo", email="yingshaoxo@gmail.com" },
 ]
@@ -13,8 +13,7 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dependencies = [
-  'auto_everything==3.24',
-  #'auto_everything@git+https://github.com/yingshaoxo/auto_everything.git#egg=dev',
+  'auto_everything==3.25',
   'pyinstaller==5.13.0'
 ]
 
@@ -22,6 +21,12 @@ dependencies = [
 py-modules = [
     'yppm'
 ]
+
+[tool.setuptools.packages.find]
+where = ["."]
+
+[tool.setuptools.package-data]
+mypkg = ["*.sh", "*.md"]
 
 [project.urls]
 "Homepage" = "https://github.com/yingshaoxo/yppm"

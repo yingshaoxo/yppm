@@ -187,7 +187,7 @@ class Tools():
                 "main": "main.py",
                 "scripts": {},
                 "dependencies": [
-                    "git+https://github.com/yingshaoxo/auto_everything.git@dev"
+                    "auto_everything"
                 ]
             }
             """
