@@ -3,8 +3,8 @@ Yingshaoxo Python Package Manager
 
 ## Install
 ```bash
-python -m pip install yppm --break-system-packages
-alias yppm="python -m yppm"
+python3 -m pip install yppm --break-system-packages
+alias yppm="python3 -m yppm"
 
 yppm about
 ```
