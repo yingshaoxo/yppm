@@ -136,7 +136,7 @@ class Tools():
         default_template_name = "basic_python_project"
         default_template_name = terminal_user_interface.selection_box(
             "Which project template you want to use? ", [
-                ("basic python project", None),
+                ("basic_python_project", None),
                 # ("backend and frontend project", set_to_backend_and_frontend_project)
             ]
         )
