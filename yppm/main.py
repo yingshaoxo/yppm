@@ -65,6 +65,9 @@ class Tools():
 
         # get package json file
         self.package_json_file_path = disk.join_paths(self.project_root_folder, "package.json")
+
+        # get local dependencies folder
+        self.python_local_modules_folder = disk.join_paths(self.project_root_folder, ".python_modules")
     
     def _add_to_gitignore(self, name: str):
         gitignore_path = disk.join_paths(self.project_root_folder, ".gitignore")
@@ -92,7 +95,11 @@ class Tools():
         
         # ignore .venv folder
         self._add_to_gitignore(".venv/")
-    
+
+        # create .python_modules directory
+        if not disk.exists(self.python_local_modules_folder):
+            disk.create_a_folder(self.python_local_modules_folder)
+
     def _get_virtual_env_python_excutable_path(self):
         self._create_virtual_env()
 
@@ -128,6 +135,13 @@ class Tools():
         except Exception as e:
             print(e)
             return None
+
+    def _get_local_packages_list(self) -> list[str]:
+        try:
+            return [disk.join_paths("./.python_modules/", path_) for path_ in os.listdir(self.python_local_modules_folder)]
+        except Exception as e:
+            print(e)
+            return []
     
     def create_a_new_project(self):
         global default_template_name, default_project_name
@@ -314,13 +328,17 @@ class Tools():
                         """)
 
     def _uninstall_package(self, package_name: str):
-        pip_path = self._get_virtual_env_pip_path()
+        if (package_name.startswith("./.python_modules")):
+            target_folder = disk.join_paths(self.project_root_folder, package_name) 
+            disk.delete_a_folder(target_folder)
+        else:
+            pip_path = self._get_virtual_env_pip_path()
 
-        # {self.env_activate_file_path}
-        terminal.run(f"""
-        {self._hack_into_virtual_env_bash_command()}
-        {pip_path} uninstall {package_name} -y
-                        """)
+            # {self.env_activate_file_path}
+            terminal.run(f"""
+            {self._hack_into_virtual_env_bash_command()}
+            {pip_path} uninstall {package_name} -y
+                            """)
 
     def install(self, package_name: str = ""):
         if not disk.exists(self.package_json_file_path):
@@ -340,6 +358,11 @@ class Tools():
             # install all package
             for package_name in dependencies:
                 self._install_package(package_name=package_name)
+        # elif package_name.startswith("http://") or package_name.startswith("https://") or disk.exists(package_name):
+        #     # if without pip, we could use `yppm install https://*.tar.gz` and `yppm install *.tar.gz`
+        #     # What yppm will do is download, uncompress, put it into .python_modules/
+        #     # Add "./.python_modules/*" into package.json file
+        #     pass
         else:
             # install one package
             if package_name not in dependencies:
@@ -369,15 +392,38 @@ class Tools():
         package_name = package_name.strip()
         if package_name == "":
             pass
+        elif package_name == "?":
+            pip_path = self._get_virtual_env_pip_path()
+            package_list_from_pip = terminal.run_command(f"""
+                {self._hack_into_virtual_env_bash_command()}
+                {pip_path} list
+                            """).strip()
+            package_list_from_pip = package_list_from_pip.split("\n\n")[0]
+            package_list_from_pip = package_list_from_pip.strip().split("\n")[2:]
+            package_list_from_pip = [package_name for package_name in package_list_from_pip if package_name.strip()[-1].isdigit()]
+            package_list_from_pip = [package_name.split(" ")[0].replace("-", "_") for package_name in package_list_from_pip]
+
+            # add json defined packages on the top of the list
+            for package_in_json_file in dependencies:
+                if package_in_json_file not in package_list_from_pip:
+                    package_list_from_pip.insert(0, package_in_json_file)
+
+            # add local packages on the end of the list
+            for package_in_local in self._get_local_packages_list():
+                if package_in_local not in package_list_from_pip:
+                    package_list_from_pip.append(package_in_local)
+
+            package_name = terminal_user_interface.selection_box("Please select the package you want to uninstall: ", [
+                (package_name, None) for package_name in package_list_from_pip
+            ])
+
+            self._uninstall_package(package_name=package_name)
         else:
-            if package_name not in dependencies:
-                pass
-            else:
-                self._uninstall_package(package_name=package_name)
+            self._uninstall_package(package_name=package_name)
             
-            if package_name in dependencies:
-                package_object["dependencies"] = [one for one in package_object["dependencies"] if one != package_name]
-                io_.write(self.package_json_file_path, json.dumps(package_object, indent=4))
+        if package_name in dependencies:
+            package_object["dependencies"] = [one for one in package_object["dependencies"] if one != package_name]
+            io_.write(self.package_json_file_path, json.dumps(package_object, indent=4))
 
     def build(self, pyinstaller_arguments: str = ""):
         package_object = self._get_package_json_object()
@@ -395,6 +441,7 @@ class Tools():
         self._add_to_gitignore(".build/")
         self._add_to_gitignore(".dist/")
         self._add_to_gitignore("*.spec")
+        self._add_to_gitignore(".yppm_dist/")
 
         terminal.run(f"""
         {self._hack_into_virtual_env_bash_command()}
