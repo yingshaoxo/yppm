@@ -142,7 +142,34 @@ class Tools():
         except Exception as e:
             print(e)
             return []
-    
+
+    def create_a_global_entry_for_this_project(self):
+        if not os.environ.get("SUDO_UID") and os.geteuid() != 0:
+            print("Sudo permission is needed for this operation.")
+            print(f"If you do not have root permission but still want to run this project, do this:\ncd {self.project_root_folder} && yppm run")
+            return
+
+        binary_version_of_yppm = "/usr/bin/yppm"
+        if not disk.exists(binary_version_of_yppm):
+            binary_version_of_yppm = f"{self.host_python_executable_path} -m yppm"
+        
+        entry_point_bash_code = f"""
+#!/bin/sh
+cd {self.project_root_folder} && {binary_version_of_yppm} run
+        """
+
+        json_object = self._get_package_json_object()
+        if "name" not in json_object:
+            print("There should have a name in package.json")
+            return
+
+        name = json_object.get("name").strip().replace(" ", "_").replace("-", "_")
+        io_.write(f"/usr/bin/{name}", entry_point_bash_code)
+        terminal.run(f"chmod 777 /usr/bin/{name}")
+
+        print(f"Now you could run this project by using `{name}`")
+        print(f"If you want to delete this entry, just try `sudo rm /usr/bin/{name}`")
+        
     def create_a_new_project(self):
         global default_template_name, default_project_name
 
@@ -172,6 +199,8 @@ class Tools():
             handle_function=assign_name
         )
 
+        default_project_name = default_project_name.strip().replace(" ", "_").replace("-", "_")
+
         # copy template folder
         project_path = disk.join_paths(disk.get_current_working_directory(), default_project_name)
         disk.delete_a_folder(project_path)
@@ -185,7 +214,7 @@ class Tools():
             self.init(name=default_project_name)
 
             print(f"\n\nNow you could go to the new project by using: \ncd {default_project_name}")
-        elif default_project_name == "backend_and_frontend_project":
+        elif default_template_name == "backend_and_frontend_project":
             pass
 
     def init(self, name: str = ""):
@@ -212,15 +241,13 @@ class Tools():
             name = name.strip()
             if name == "":
                 default_project_name = disk.get_directory_name(self.project_root_folder)
-                def assign_name(text: str):
-                    package_object["name"] = text.strip()
-                terminal_user_interface.input_box(
+                name = terminal_user_interface.input_box(
                     f"Please give me a project name (default '{default_project_name}'): ", 
                     default_value=default_project_name,
-                    handle_function=assign_name
+                    handle_function=None
                 )
-            else:
-                package_object["name"] = name
+
+            package_object["name"] = name.strip().replace(" ", "_").replace("-", "_")
 
             # handle project version
             default_project_version = "0.0.0"
