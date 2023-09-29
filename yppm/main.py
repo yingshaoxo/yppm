@@ -145,7 +145,7 @@ class Tools():
 
     def create_a_global_entry_for_this_project(self):
         if not os.environ.get("SUDO_UID") and os.geteuid() != 0:
-            print("Sudo permission is needed for this operation.")
+            print("Sudo permission is needed for this operation.\n")
             print(f"If you do not have root permission but still want to run this project, do this:\ncd {self.project_root_folder} && yppm run")
             return
 
@@ -167,7 +167,7 @@ cd {self.project_root_folder} && {binary_version_of_yppm} run
         io_.write(f"/usr/bin/{name}", entry_point_bash_code)
         terminal.run(f"chmod 777 /usr/bin/{name}")
 
-        print(f"Now you could run this project by using `{name}`")
+        print(f"Now you could run this project by using `{name}`\n")
         print(f"If you want to delete this entry, just try `sudo rm /usr/bin/{name}`")
         
     def create_a_new_project(self):
@@ -502,4 +502,5 @@ YPPM: Yingshaoxo Python Package Manager.
 try:
     py.fire2(Tools)
 except Exception as e:
+    print(e)
     pass
