@@ -36,6 +36,11 @@ yppm install auto_everything
 yppm install
 ```
 
+### Uninstall a package
+```bash
+yppm uninstall ?
+```
+
 ### Run a script in package.json
 ```bash
 yppm run ?
