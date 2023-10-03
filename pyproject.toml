@@ -13,7 +13,7 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dependencies = [
-  'auto_everything==3.25',
+  'auto_everything==3.28',
   'pyinstaller==5.13.0'
 ]
 
