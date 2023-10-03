@@ -178,7 +178,7 @@ cd {self.project_root_folder} && {binary_version_of_yppm} run
         default_template_name = terminal_user_interface.selection_box(
             "Which project template you want to use? ", [
                 ("basic_python_project", None),
-                # ("backend and frontend project", set_to_backend_and_frontend_project)
+                # ("backend_and_frontend_project", None)
             ]
         )
 

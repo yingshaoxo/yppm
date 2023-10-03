@@ -1,0 +1,10 @@
+{
+    "name": "backend_and_frontend_project",
+    "version": "0.0.0",
+    "author": "yingshaoxo@gmail.com",
+    "main": "main.py",
+    "scripts": {},
+    "dependencies": [
+        "auto_everything"
+    ]
+}
