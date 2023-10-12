@@ -50,8 +50,8 @@ message A_Post {
     string title = 3;
     string description = 4;
     repeated string comment_id_list = 5; 
-    int64 likes = 6; 
-    int64 dislikes = 7; 
+    repeated string likes = 6; 
+    repeated string dislikes = 7; 
     int64 create_time_in_10_numbers_timestamp_format = 8;
     int64 update_time_in_10_numbers_timestamp_format = 9;
 }
@@ -65,8 +65,8 @@ message A_Comment {
     string description = 5;
     bool hidden = 6;
     repeated string comment_id_list = 7; 
-    int64 likes = 8; 
-    int64 dislikes = 9; 
+    repeated string likes = 8; 
+    repeated string dislikes = 9; 
     int64 create_time_in_10_numbers_timestamp_format = 999;
     int64 update_time_in_10_numbers_timestamp_format = 999;
 }

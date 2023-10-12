@@ -10,7 +10,10 @@ from auto_everything.io import IO
 from auto_everything.disk import Disk
 from auto_everything.python import Python
 from auto_everything.terminal import Terminal, Terminal_User_Interface
-from auto_everything.string import String
+try:
+    from auto_everything.string_ import String
+except Exception as e:
+    from auto_everything.string import String
 
 
 py = Python()
