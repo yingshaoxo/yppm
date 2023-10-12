@@ -308,7 +308,7 @@ cd {self.project_root_folder} && {binary_version_of_yppm} run
             {self._hack_into_virtual_env_bash_command()}
 
             {self._get_virtual_env_python_excutable_path()} {entry_point_python_script}
-                         """)
+                         """, use_os_system=True)
         elif script_name == "?":
             if len(scripts.keys()) == 0:
                 print("There has no scripts to run.")
@@ -323,7 +323,7 @@ cd {self.project_root_folder} && {binary_version_of_yppm} run
                     selections
                 )
                 if selection in scripts.keys():
-                    terminal.run(f"{scripts[selection]}")
+                    terminal.run(f"{scripts[selection]}", use_os_system=True)
         else:
             if script_name in scripts.keys():
                 # {self.env_activate_file_path}
@@ -331,7 +331,7 @@ cd {self.project_root_folder} && {binary_version_of_yppm} run
                 {self._hack_into_virtual_env_bash_command()}
 
                 {scripts[script_name]}
-                            """)
+                            """, use_os_system=True)
             else:
                 print(f"Sorry, script '{script_name}' not exists in the package.json")
 
