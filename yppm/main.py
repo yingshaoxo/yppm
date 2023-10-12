@@ -98,6 +98,10 @@ class Tools():
         
         # ignore .venv folder
         self._add_to_gitignore(".venv/")
+        self._add_to_gitignore("__pycache__/")
+        self._add_to_gitignore(".vscode/")
+        self._add_to_gitignore(".github/")
+        self._add_to_gitignore("*.swp")
 
         # create .python_modules directory
         if not disk.exists(self.python_local_modules_folder):
