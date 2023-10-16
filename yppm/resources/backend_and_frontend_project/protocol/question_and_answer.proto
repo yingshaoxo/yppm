@@ -16,8 +16,7 @@ service question_and_answer_service {
     rpc user_comment_post (Comment_Post_Request) returns (Comment_Post_Response);//anyone can do it
     rpc user_modify_comment (Modify_Comment_Request) returns (Modify_Comment_Response);//only writer can do it
     rpc user_delete_comment (Delete_Comment_Request) returns (Delete_Comment_Response);//only writer can do it
-    rpc user_hide_comment (Hide_Comment_Request) returns (Hide_Comment_Response);//only writer and post owner can do it
-    rpc user_like_or_dislike_a_post_or_comment (Like_Or_Dislike_Request) returns (Like_Or_Dislike_Response);//anyone except 'the writer and post owner' can do it
+    rpc user_like_or_dislike_a_post_or_comment (Like_Or_Dislike_Request) returns (Like_Or_Dislike_Response);//anyone can do it, but they can only do once
 
     rpc user_download_backup_data(Download_Backup_Data_Request) returns (Download_Backup_Data_Response);
     rpc user_upload_backup_data(Upload_Backup_Data_Request) returns (Upload_Backup_Data_Response);
@@ -35,13 +34,32 @@ enum User_Type {
 message A_User {
     int64 create_time_in_10_numbers_timestamp_format = 1;
     string id = 2;
-    string email = 3;
+    string email = 3; // make sure to tell user they could use a new type of email system, the yingshaoxo_email_protocol
     string password = 4;
     string user_type = 5;
     string json_web_token = 6;
     int64 likes = 7; 
     int64 dislikes = 8; 
 }
+
+/*
+yingshaoxo_email_protocol
+
+
+You simply define one single POST API, let anyone wants to send message to you, send a post request to your subdomain, for example, email.your_domain.com:
+
+Something like:
+
+Request: {title, content, author_email_url}
+
+Response: {success, error}
+
+
+And another thing you have to do is make a 20MB size of "spam,AD,normal" text AI classifier
+
+
+#idea #yingshaoxo
+*/
 
 message A_Post {
     string owner_id = 1;
@@ -176,15 +194,6 @@ message Delete_Comment_Request {
 }
 
 message Delete_Comment_Response {
-    string error = 1;
-    bool success = 2;
-}
-
-message Hide_Comment_Request {
-    A_Comment a_comment = 1;
-}
-
-message Hide_Comment_Response {
     string error = 1;
     bool success = 2;
 }
