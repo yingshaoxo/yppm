@@ -6,7 +6,7 @@ import sys
 import platform
 import json
 
-from auto_everything.io import IO   
+from auto_everything.io import IO
 from auto_everything.disk import Disk
 from auto_everything.python import Python
 from auto_everything.terminal import Terminal, Terminal_User_Interface
@@ -71,13 +71,13 @@ class Tools():
 
         # get local dependencies folder
         self.python_local_modules_folder = disk.join_paths(self.project_root_folder, ".python_modules")
-    
+
     def _add_to_gitignore(self, name: str):
         gitignore_path = disk.join_paths(self.project_root_folder, ".gitignore")
         if disk.exists(gitignore_path):
             text = io_.read(gitignore_path)
             if name not in text:
-                text = f"{name}\n" + text 
+                text = f"{name}\n" + text
                 io_.write(gitignore_path, text)
         else:
             text = name
@@ -86,7 +86,7 @@ class Tools():
     def _create_virtual_env(self):
         if disk.exists(self.virtual_env_folder):
             return
-        
+
         print(f"Creating virtual envirnoment by using '{self.host_python_executable_path}'...")
 
         terminal.run(f"""
@@ -95,7 +95,7 @@ class Tools():
 
         # change permission of activate file
         # terminal.run(f"""chmod 777 {self.env_activate_file_path}""")
-        
+
         # ignore .venv folder
         self._add_to_gitignore(".venv/")
         self._add_to_gitignore("__pycache__/")
@@ -125,7 +125,7 @@ class Tools():
         return f"""
         export PATH="{the_bin_path}:$PATH"
         """.strip()
-    
+
     def _get_package_json_object(self) -> Any:
         try:
             text = io_.read(self.package_json_file_path)
@@ -159,7 +159,7 @@ class Tools():
         binary_version_of_yppm = "/usr/bin/yppm"
         if not disk.exists(binary_version_of_yppm):
             binary_version_of_yppm = f"{self.host_python_executable_path} -m yppm"
-        
+
         entry_point_bash_code = f"""
 #!/bin/sh
 cd {self.project_root_folder} && {binary_version_of_yppm} run
@@ -176,7 +176,7 @@ cd {self.project_root_folder} && {binary_version_of_yppm} run
 
         print(f"Now you could run this project by using `{name}`\n")
         print(f"If you want to delete this entry, just try `sudo rm /usr/bin/{name}`")
-        
+
     def create_a_new_project(self):
         global default_template_name, default_project_name
 
@@ -201,7 +201,7 @@ cd {self.project_root_folder} && {binary_version_of_yppm} run
             default_project_name = text
 
         terminal_user_interface.input_box(
-            f"\n\nPlease give me the new project name: ", 
+            f"\n\nPlease give me the new project name: ",
             default_value=default_project_name,
             handle_function=assign_name
         )
@@ -249,7 +249,7 @@ cd {self.project_root_folder} && {binary_version_of_yppm} run
             if name == "":
                 default_project_name = disk.get_directory_name(self.project_root_folder)
                 name = terminal_user_interface.input_box(
-                    f"Please give me a project name (default '{default_project_name}'): ", 
+                    f"Please give me a project name (default '{default_project_name}'): ",
                     default_value=default_project_name,
                     handle_function=None
                 )
@@ -261,7 +261,7 @@ cd {self.project_root_folder} && {binary_version_of_yppm} run
             def assign_version(text: str):
                 package_object["version"] = text.strip()
             terminal_user_interface.input_box(
-                f"Please give me a project version (default '{default_project_version}'): ", 
+                f"Please give me a project version (default '{default_project_version}'): ",
                 default_value=default_project_version,
                 handle_function=assign_version
             )
@@ -269,11 +269,11 @@ cd {self.project_root_folder} && {binary_version_of_yppm} run
             # handle author name
             default_author = self.git_user_email
             if "@" not in default_author:
-                default_author = "" 
+                default_author = ""
             def assign_author(text: str):
                 package_object["author"] = text.strip()
             terminal_user_interface.input_box(
-                f"Please give me your name (default '{default_author}'): ", 
+                f"Please give me your name (default '{default_author}'): ",
                 default_value=default_author,
                 handle_function=assign_author
             )
@@ -323,7 +323,7 @@ cd {self.project_root_folder} && {binary_version_of_yppm} run
                         (f'{script_name}', lambda: script_name.strip())
                     )
                 selection = terminal_user_interface.selection_box(
-                    "Which script you want to run?", 
+                    "Which script you want to run?",
                     selections
                 )
                 if selection in scripts.keys():
@@ -363,7 +363,7 @@ cd {self.project_root_folder} && {binary_version_of_yppm} run
 
     def _uninstall_package(self, package_name: str):
         if (package_name.startswith("./.python_modules")):
-            target_folder = disk.join_paths(self.project_root_folder, package_name) 
+            target_folder = disk.join_paths(self.project_root_folder, package_name)
             disk.delete_a_folder(target_folder)
         else:
             pip_path = self._get_virtual_env_pip_path()
@@ -405,7 +405,7 @@ cd {self.project_root_folder} && {binary_version_of_yppm} run
             else:
                 # install again
                 self._install_package(package_name=package_name, upgrade=True)
-            
+
             if package_name not in dependencies:
                 package_object["dependencies"].append(package_name)
                 io_.write(self.package_json_file_path, json.dumps(package_object, indent=4))
@@ -454,7 +454,7 @@ cd {self.project_root_folder} && {binary_version_of_yppm} run
             self._uninstall_package(package_name=package_name)
         else:
             self._uninstall_package(package_name=package_name)
-            
+
         if package_name in dependencies:
             package_object["dependencies"] = [one for one in package_object["dependencies"] if one != package_name]
             io_.write(self.package_json_file_path, json.dumps(package_object, indent=4))
@@ -486,6 +486,31 @@ cd {self.project_root_folder} && {binary_version_of_yppm} run
         {self._get_virtual_env_python_excutable_path()} -m PyInstaller {entry_point_python_script} --noconfirm --onefile {pyinstaller_arguments} --hidden-import auto_everything --name {name}
                      """)
 
+    def build_with_nuitka(self, nuitka_arguments: str = ""):
+        package_object = self._get_package_json_object()
+
+        name = package_object.get("name")
+        if name == None:
+            print('package.json should have a key called {"name": "your_app_name"}')
+            return
+
+        entry_point_python_script = package_object.get("main")
+        if entry_point_python_script == None:
+            print('package.json should have a key called {"main": "main.py"}')
+            return
+
+        self._add_to_gitignore("*.build/")
+        self._add_to_gitignore(".dist/")
+
+        terminal.run(f"""
+        {self._hack_into_virtual_env_bash_command()}
+
+        export PIP_BREAK_SYSTEM_PACKAGES=1
+        {self._get_virtual_env_python_excutable_path()} -m pip install nuitka
+
+        {self._get_virtual_env_python_excutable_path()} -m nuitka {nuitka_arguments} --follow-imports {entry_point_python_script} -o dist/{name}
+         """)
+
     def clean(self):
         disk.delete_a_folder(self.virtual_env_folder)
         disk.delete_a_folder("./build")
@@ -500,8 +525,8 @@ cd {self.project_root_folder} && {binary_version_of_yppm} run
     def about(self):
         terminal.run("clear")
         print("""
-YPPM: Yingshaoxo Python Package Manager. 
-              
+YPPM: Yingshaoxo Python Package Manager.
+
 (yingshaoxo is my name)
         """.strip())
 
