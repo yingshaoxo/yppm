@@ -14,7 +14,8 @@ classifiers = [
 ]
 dependencies = [
   'auto_everything==3.29',
-  'pyinstaller==5.13.0'
+  #'pyinstaller==5.13.0',
+  #'Nuitka==1.8.4'
 ]
 
 [tool.setuptools]

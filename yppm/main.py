@@ -460,6 +460,8 @@ cd {self.project_root_folder} && {binary_version_of_yppm} run
             io_.write(self.package_json_file_path, json.dumps(package_object, indent=4))
 
     def build(self, pyinstaller_arguments: str = ""):
+        self._create_virtual_env()
+
         package_object = self._get_package_json_object()
 
         name = package_object.get("name")
@@ -487,6 +489,8 @@ cd {self.project_root_folder} && {binary_version_of_yppm} run
                      """)
 
     def build_with_nuitka(self, nuitka_arguments: str = ""):
+        self._create_virtual_env()
+
         package_object = self._get_package_json_object()
 
         name = package_object.get("name")
