@@ -556,8 +556,9 @@ cd {self.project_root_folder} && {binary_version_of_yppm} run
 
         export PIP_BREAK_SYSTEM_PACKAGES=1
         {pip_path} install nuitka
+        {pip_path} install patchelf
 
-        {python_path} -m nuitka --standalone --follow-imports {entry_point_python_script} -o {name}
+        {python_path} -m nuitka --static-libpython=yes --standalone --follow-imports {entry_point_python_script} -o {name}
          """)
 
     def clean(self):
