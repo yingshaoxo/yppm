@@ -68,4 +68,4 @@ yppm build
 
 ## Based on
 * venv: https://packaging.python.org/en/latest/key_projects/#standard-library-projects
-* auto_everything
+* auto_everything: https://gitlab.com/yingshaoxo/auto_everything

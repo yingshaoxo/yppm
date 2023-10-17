@@ -76,7 +76,20 @@ class Tools():
         gitignore_path = disk.join_paths(self.project_root_folder, ".gitignore")
         if disk.exists(gitignore_path):
             text = io_.read(gitignore_path)
-            if name not in text:
+            lines = text.split("\n")
+            if not any([line.strip() == name for line in lines]):
+                text = f"{name}\n" + text
+                io_.write(gitignore_path, text)
+        else:
+            text = name
+            io_.write(gitignore_path, text)
+
+    def _add_to_dockerignore(self, name: str):
+        gitignore_path = disk.join_paths(self.project_root_folder, ".dockerignore")
+        if disk.exists(gitignore_path):
+            text = io_.read(gitignore_path)
+            lines = text.split("\n")
+            if not any([line.strip() == name for line in lines]):
                 text = f"{name}\n" + text
                 io_.write(gitignore_path, text)
         else:
@@ -103,6 +116,10 @@ class Tools():
         self._add_to_gitignore(".github/")
         self._add_to_gitignore("*.swp")
 
+        self._add_to_dockerignore(".venv/")
+        self._add_to_dockerignore("__pycache__/")
+        self._add_to_dockerignore("*.swp")
+
         # create .python_modules directory
         if not disk.exists(self.python_local_modules_folder):
             disk.create_a_folder(self.python_local_modules_folder)
@@ -117,7 +134,7 @@ class Tools():
 
         return disk.join_paths(self.virtual_env_folder, "bin", "pip3")
 
-    def _get_virtual_env_program(self, name):
+    def _get_virtual_env_program(self, name: str, exact_match: bool = False):
         root_search_folder_list = [
             disk.join_paths(self.virtual_env_folder, "bin"),
             disk.join_paths(self.virtual_env_folder, "Scripts"),
@@ -128,8 +145,12 @@ class Tools():
             files = disk.get_files(search_folder, recursive=True)
             for file in files:
                 file_name_without_content_after_dot, suffix = disk.get_stem_and_suffix_of_a_file(file)
-                if name.lower() in file_name_without_content_after_dot.lower():
-                    return disk.get_absolute_path(file)
+                if exact_match == False:
+                    if name.lower() in file_name_without_content_after_dot.lower():
+                        return disk.get_absolute_path(file)
+                else:
+                    if name == file_name_without_content_after_dot:
+                        return disk.get_absolute_path(file)
 
     def _hack_into_virtual_env_bash_command(self):
         self._create_virtual_env()
@@ -475,6 +496,7 @@ cd {self.project_root_folder} && {binary_version_of_yppm} run
 
     def build(self, pyinstaller_arguments: str = ""):
         self._create_virtual_env()
+        python_path = self._get_virtual_env_python_excutable_path()
         pip_path = self._get_virtual_env_pip_path()
 
         package_object = self._get_package_json_object()
@@ -500,11 +522,12 @@ cd {self.project_root_folder} && {binary_version_of_yppm} run
         export PIP_BREAK_SYSTEM_PACKAGES=1
         {pip_path} install pyinstaller
 
-        {self._get_virtual_env_program("pyinstaller")} {entry_point_python_script} --noconfirm --onefile {pyinstaller_arguments} --hidden-import auto_everything --name {name}
-                     """)
+        {python_path} -m pyinstaller {entry_point_python_script} --noconfirm --onefile {pyinstaller_arguments} --hidden-import auto_everything --name {name}
+         """)
 
     def build_with_nuitka(self, nuitka_arguments: str = ""):
         self._create_virtual_env()
+        python_path = self._get_virtual_env_python_excutable_path()
         pip_path = self._get_virtual_env_pip_path()
 
         package_object = self._get_package_json_object()
@@ -528,7 +551,7 @@ cd {self.project_root_folder} && {binary_version_of_yppm} run
         export PIP_BREAK_SYSTEM_PACKAGES=1
         {pip_path} install nuitka
 
-        {self._get_virtual_env_program("nuitka")} {nuitka_arguments} --follow-imports {entry_point_python_script} -o dist/{name}
+        {python_path} -m nuitka {nuitka_arguments} --follow-imports {entry_point_python_script} -o dist/{name}
          """)
 
     def clean(self):
