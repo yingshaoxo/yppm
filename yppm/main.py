@@ -494,7 +494,8 @@ cd {self.project_root_folder} && {binary_version_of_yppm} run
             package_object["dependencies"] = [one for one in package_object["dependencies"] if one != package_name]
             io_.write(self.package_json_file_path, json.dumps(package_object, indent=4))
 
-    def build(self, pyinstaller_arguments: str = ""):
+    #def build(self, pyinstaller_arguments: str = ""):
+    def build(self):
         self._create_virtual_env()
         python_path = self._get_virtual_env_python_excutable_path()
         pip_path = self._get_virtual_env_pip_path()
@@ -524,10 +525,11 @@ cd {self.project_root_folder} && {binary_version_of_yppm} run
         export PIP_BREAK_SYSTEM_PACKAGES=1
         {pip_path} install pyinstaller
 
-        {python_path} -m pyinstaller {entry_point_python_script} --noconfirm --onefile {pyinstaller_arguments} --hidden-import auto_everything --name {name}
+        {python_path} -m pyinstaller {entry_point_python_script} --noconfirm --onefile --hidden-import auto_everything --name {name}
          """)
 
-    def build_with_nuitka(self, nuitka_arguments: str = ""):
+    #def build_with_nuitka(self, nuitka_arguments: str = ""):
+    def build_with_nuitka(self):
         self._create_virtual_env()
         python_path = self._get_virtual_env_python_excutable_path()
         pip_path = self._get_virtual_env_pip_path()
@@ -544,8 +546,8 @@ cd {self.project_root_folder} && {binary_version_of_yppm} run
             print('package.json should have a key called {"main": "main.py"}')
             return
 
+        self._add_to_gitignore("*.dist/")
         self._add_to_gitignore("*.build/")
-        self._add_to_gitignore(".dist/")
 
         disk.create_a_folder("dist")
 
@@ -555,7 +557,7 @@ cd {self.project_root_folder} && {binary_version_of_yppm} run
         export PIP_BREAK_SYSTEM_PACKAGES=1
         {pip_path} install nuitka
 
-        {python_path} -m nuitka {nuitka_arguments} --follow-imports {entry_point_python_script} -o dist/{name}
+        {python_path} -m nuitka --standalone --follow-imports {entry_point_python_script} -o {name}
          """)
 
     def clean(self):
