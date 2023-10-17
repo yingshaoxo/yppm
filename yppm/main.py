@@ -117,6 +117,20 @@ class Tools():
 
         return disk.join_paths(self.virtual_env_folder, "bin", "pip3")
 
+    def _get_virtual_env_program(self, name):
+        root_search_folder_list = [
+            disk.join_paths(self.virtual_env_folder, "bin"),
+            disk.join_paths(self.virtual_env_folder, "Scripts"),
+        ]
+        for search_folder in root_search_folder_list:
+            if not disk.exists(search_folder):
+                continue
+            files = disk.get_files(search_folder, recursive=True)
+            for file in files:
+                file_name_without_content_after_dot, suffix = disk.get_stem_and_suffix_of_a_file(file)
+                if name.lower() in file_name_without_content_after_dot.lower():
+                    return disk.get_absolute_path(file)
+
     def _hack_into_virtual_env_bash_command(self):
         self._create_virtual_env()
 
@@ -461,6 +475,7 @@ cd {self.project_root_folder} && {binary_version_of_yppm} run
 
     def build(self, pyinstaller_arguments: str = ""):
         self._create_virtual_env()
+        pip_path = self._get_virtual_env_pip_path()
 
         package_object = self._get_package_json_object()
 
@@ -483,13 +498,14 @@ cd {self.project_root_folder} && {binary_version_of_yppm} run
         {self._hack_into_virtual_env_bash_command()}
 
         export PIP_BREAK_SYSTEM_PACKAGES=1
-        {self._get_virtual_env_python_excutable_path()} -m pip install pyinstaller
+        {pip_path} install pyinstaller
 
-        {self._get_virtual_env_python_excutable_path()} -m PyInstaller {entry_point_python_script} --noconfirm --onefile {pyinstaller_arguments} --hidden-import auto_everything --name {name}
+        {self._get_virtual_env_program("pyinstaller")} {entry_point_python_script} --noconfirm --onefile {pyinstaller_arguments} --hidden-import auto_everything --name {name}
                      """)
 
     def build_with_nuitka(self, nuitka_arguments: str = ""):
         self._create_virtual_env()
+        pip_path = self._get_virtual_env_pip_path()
 
         package_object = self._get_package_json_object()
 
@@ -510,9 +526,9 @@ cd {self.project_root_folder} && {binary_version_of_yppm} run
         {self._hack_into_virtual_env_bash_command()}
 
         export PIP_BREAK_SYSTEM_PACKAGES=1
-        {self._get_virtual_env_python_excutable_path()} -m pip install nuitka
+        {pip_path} install nuitka
 
-        {self._get_virtual_env_python_excutable_path()} -m nuitka {nuitka_arguments} --follow-imports {entry_point_python_script} -o dist/{name}
+        {self._get_virtual_env_program("nuitka")} {nuitka_arguments} --follow-imports {entry_point_python_script} -o dist/{name}
          """)
 
     def clean(self):
