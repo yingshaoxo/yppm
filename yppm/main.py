@@ -516,6 +516,8 @@ cd {self.project_root_folder} && {binary_version_of_yppm} run
         self._add_to_gitignore("*.spec")
         self._add_to_gitignore(".yppm_dist/")
 
+        disk.create_a_folder("dist")
+
         terminal.run(f"""
         {self._hack_into_virtual_env_bash_command()}
 
@@ -544,6 +546,8 @@ cd {self.project_root_folder} && {binary_version_of_yppm} run
 
         self._add_to_gitignore("*.build/")
         self._add_to_gitignore(".dist/")
+
+        disk.create_a_folder("dist")
 
         terminal.run(f"""
         {self._hack_into_virtual_env_bash_command()}
