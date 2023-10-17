@@ -494,8 +494,7 @@ cd {self.project_root_folder} && {binary_version_of_yppm} run
             package_object["dependencies"] = [one for one in package_object["dependencies"] if one != package_name]
             io_.write(self.package_json_file_path, json.dumps(package_object, indent=4))
 
-    #def build(self, pyinstaller_arguments: str = ""):
-    def build(self):
+    def build(self, arguments: str = ""):
         self._create_virtual_env()
         python_path = self._get_virtual_env_python_excutable_path()
         pip_path = self._get_virtual_env_pip_path()
@@ -525,11 +524,10 @@ cd {self.project_root_folder} && {binary_version_of_yppm} run
         export PIP_BREAK_SYSTEM_PACKAGES=1
         {pip_path} install pyinstaller
 
-        {python_path} -m pyinstaller {entry_point_python_script} --noconfirm --onefile --hidden-import auto_everything --name {name}
+        {python_path} -m pyinstaller {entry_point_python_script} {arguments} --noconfirm --onefile --hidden-import auto_everything --name {name}
          """)
 
-    #def build_with_nuitka(self, nuitka_arguments: str = ""):
-    def build_with_nuitka(self):
+    def build_with_nuitka(self, arguments: str = ""):
         self._create_virtual_env()
         python_path = self._get_virtual_env_python_excutable_path()
         pip_path = self._get_virtual_env_pip_path()
@@ -558,7 +556,7 @@ cd {self.project_root_folder} && {binary_version_of_yppm} run
         {pip_path} install nuitka
         {pip_path} install patchelf
 
-        {python_path} -m nuitka --static-libpython=yes --standalone --follow-imports {entry_point_python_script} -o {name}
+        {python_path} -m nuitka {arguments} --static-libpython=yes --standalone --follow-imports {entry_point_python_script} -o {name}
          """)
 
     def clean(self):
