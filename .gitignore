@@ -1,5 +1,5 @@
-.vscode/
-*.swap
+*.vscode/
+*.swp
 # ignore resources tempraryly
 nuitka-crash-report.xml
 #yppm/resources/backend_and_frontend_project/
