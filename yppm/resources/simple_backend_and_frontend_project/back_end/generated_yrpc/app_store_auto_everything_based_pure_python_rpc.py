@@ -43,6 +43,18 @@ class Service_app_store:
 
         return default_response
 
+    def export_data(self, headers: dict[str, str], item: Export_Data_Request) -> Export_Data_Response:
+        default_response = Export_Data_Response()
+
+        try:
+            pass
+        except Exception as e:
+            print(f"Error: {e}")
+            #default_response.error = str(e)
+            #default_response.success = False
+
+        return default_response
+
 
 def run(service_instance: Service_app_store, port: str, html_folder_path: str="", serve_html_under_which_url: str="/"):
     def handle_get_url(sub_url: str, headers: dict[str, str]) -> str:
@@ -67,6 +79,10 @@ def run(service_instance: Service_app_store, port: str, html_folder_path: str=""
         elif (request_url == "get_app_detail"):
             correct_item = Get_App_Detail_Request().from_dict(item)
             return json.dumps((service_instance.get_app_detail(headers, correct_item)).to_dict())
+
+        elif (request_url == "export_data"):
+            correct_item = Export_Data_Request().from_dict(item)
+            return json.dumps((service_instance.export_data(headers, correct_item)).to_dict())
 
         return f"No API url matchs '{request_url}'"
 

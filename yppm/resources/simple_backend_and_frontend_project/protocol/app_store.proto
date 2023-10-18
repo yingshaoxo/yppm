@@ -1,13 +1,23 @@
 syntax = "proto3";
 
+// Make sure you use python to add robots.txt to /robots.txt to let search engine fetch all apps data
+
+/*
+How to make sure the one who send post to our server has intelegence? Let him/her do a verification by answer a question
+A simple way is to let it recognize a picture of numbers.
+
+But the simplest way is to use a question_and_answer data set, if the user can answer it, then we process its request
+For example, what is the color of sky? blue/white/grey...
+*/
 service app_store_service {
     rpc add_app (Add_App_Request) returns (Add_App_Response);
-    rpc search_app (Search_App_Request) returns (Search_App_Response); // search everything in raw json text, if substring in string, return it
+    rpc search_app (Search_App_Request) returns (Search_App_Response); // search everything in raw json text, if substring in string, return it // the sort is based on click number, for each day, the click number will be 90% of its click number
     rpc get_app_detail (Get_App_Detail_Request) returns (Get_App_Detail_Response);
+    rpc export_data (Export_Data_Request) returns (Export_Data_Response);
 }
 
 message An_App {
-    int64 create_time_in_10_numbers_timestamp_format = 1;
+    int64 create_time_in_10_numbers_timestamp_format = 1; // the server will simply delete any apps that was created 1 year ago
     string name = 2;
     string description = 3;
     string url = 4;
@@ -18,7 +28,9 @@ message An_App {
 }
 
 message Add_App_Request {
-    An_App an_app = 1;
+    string question = 1; // something like: 1 + 1
+    string answer = 2; // 2
+    An_App an_app = 3;
 }
 
 message Add_App_Response {
@@ -46,6 +58,14 @@ message Get_App_Detail_Response {
     An_App an_app = 2;
 }
 
+message Export_Data_Request {
+}
+
+message Export_Data_Response {
+    string error = 1;
+    string file_name = 2;
+    string file_bytes_in_base64_format = 3;
+}
 
 /*
 yingshaoxo_email_protocol

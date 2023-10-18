@@ -49,6 +49,18 @@ class Service_app_store:
 
         return default_response
 
+    async def export_data(self, headers: dict[str, str], item: Export_Data_Request) -> Export_Data_Response:
+        default_response = Export_Data_Response()
+
+        try:
+            pass
+        except Exception as e:
+            print(f"Error: {e}")
+            #default_response.error = str(e)
+            #default_response.success = False
+
+        return default_response
+
 
 def init(service_instance: Any):
     @router.post("/add_app/", tags=["app_store"])
@@ -68,6 +80,12 @@ def init(service_instance: Any):
         item = Get_App_Detail_Request().from_dict(item.to_dict())
         headers = dict(request.headers.items())
         return (await service_instance.get_app_detail(headers, item)).to_dict()
+
+    @router.post("/export_data/", tags=["app_store"])
+    async def export_data(request: Request, item: Export_Data_Request) -> Export_Data_Response:
+        item = Export_Data_Request().from_dict(item.to_dict())
+        headers = dict(request.headers.items())
+        return (await service_instance.export_data(headers, item)).to_dict()
 
 
 def run(service_instance: Any, port: str, html_folder_path: str="", serve_html_under_which_url: str="/"):

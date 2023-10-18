@@ -49,10 +49,16 @@ class App_Store_Service(app_store_pure_python_rpc.Service_app_store):
         default_response = app_store_objects.Add_App_Response()
 
         try:
-            pass
+            search_list = database_excutor_for_remote_service.An_App.search(item_filter=app_store_objects.An_App(name=item.an_app.name))
+            if len(search_list) == 0:
+                item.an_app.create_time_in_10_numbers_timestamp_format = time_.get_current_timestamp_in_10_digits_format()
+                database_excutor_for_remote_service.An_App.add(item=item.an_app)
+                default_response.app_name = item.an_app.name
+            else:
+                default_response.error = f"The '{item.an_app.name}' is already in our website.\n\nTry to use a different name."
         except Exception as e:
             print(f"Error: {e}")
-            #default_response.error = str(e)
+            default_response.error = str(e)
             #default_response.success = False
 
         return default_response
@@ -61,10 +67,21 @@ class App_Store_Service(app_store_pure_python_rpc.Service_app_store):
         default_response = app_store_objects.Search_App_Response()
 
         try:
-            pass
+            if item.search_input.strip() == "":
+                search_list = database_excutor_for_remote_service.An_App.search(item_filter=app_store_objects.An_App(), page_number=item.page_number, page_size=item.page_size)
+                default_response.app_list = search_list
+            else:
+                def a_handler(raw_json_text: str) -> dict[str, Any] | None:
+                    search_text = item.search_input
+                    json_object = json.loads(raw_json_text)
+                    if search_text.lower() in str(json_object).lower():
+                        return json_object
+                    return None
+                search_list = database_excutor_for_remote_service.An_App.raw_search(one_row_json_string_handler=a_handler, page_number=item.page_number, page_size=item.page_size)
+                default_response.app_list = search_list
         except Exception as e:
             print(f"Error: {e}")
-            #default_response.error = str(e)
+            default_response.error = str(e)
             #default_response.success = False
 
         return default_response
@@ -73,16 +90,19 @@ class App_Store_Service(app_store_pure_python_rpc.Service_app_store):
         default_response = app_store_objects.Get_App_Detail_Response()
 
         try:
-            pass
+            search_list = database_excutor_for_remote_service.An_App.search(item_filter=app_store_objects.An_App(name=item.name))
+            if len(search_list) != 0:
+                default_response.an_app = search_list[0]
         except Exception as e:
             print(f"Error: {e}")
-            #default_response.error = str(e)
+            default_response.error = str(e)
             #default_response.success = False
 
         return default_response
 
 
 def run_service(port: str):
+    database_excutor_for_remote_service.An_App.database_of_yingshaoxo.refactor_database()
     service_instance = App_Store_Service()
     app_store_pure_python_rpc.run(service_instance, port=port)
 

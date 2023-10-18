@@ -78,3 +78,12 @@ class Client_app_store:
             return None
         else:
             return Get_App_Detail_Response().from_dict(result)
+
+    def export_data(self, item: Export_Data_Request, ignore_error: bool | None=None) -> Export_Data_Response | None:
+        result = self._get_reponse_or_error_by_url_path_and_input("export_data", item.to_dict())
+        if self._special_error_key in result.keys():
+            if ((ignore_error == None) or ((ignore_error != None) and (not ignore_error))):
+                self._error_handle_function(result[self._special_error_key])
+            return None
+        else:
+            return Export_Data_Response().from_dict(result)

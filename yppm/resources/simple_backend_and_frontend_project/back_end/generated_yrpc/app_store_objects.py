@@ -130,14 +130,20 @@ class An_App(YRPC_OBJECT_BASE_CLASS):
 
 @dataclass()
 class Add_App_Request(YRPC_OBJECT_BASE_CLASS):
+    question: str | None = None
+    answer: str | None = None
     an_app: An_App | None = None
 
     _property_name_to_its_type_dict = {
+        "question": str,
+        "answer": str,
         "an_app": An_App,
     }
 
     @dataclass()
     class _key_string_dict:
+        question: str = "question"
+        answer: str = "answer"
         an_app: str = "an_app"
 
     def from_dict(self, dict: dict[str, Any]):
@@ -242,4 +248,44 @@ class Get_App_Detail_Response(YRPC_OBJECT_BASE_CLASS):
 
     def from_dict(self, dict: dict[str, Any]):
         new_variable: Get_App_Detail_Response = super().from_dict(dict)
+        return new_variable
+
+
+@dataclass()
+class Export_Data_Request(YRPC_OBJECT_BASE_CLASS):
+
+
+    _property_name_to_its_type_dict = {
+
+    }
+
+    @dataclass()
+    class _key_string_dict:
+        pass
+
+    def from_dict(self, dict: dict[str, Any]):
+        new_variable: Export_Data_Request = super().from_dict(dict)
+        return new_variable
+
+
+@dataclass()
+class Export_Data_Response(YRPC_OBJECT_BASE_CLASS):
+    error: str | None = None
+    file_name: str | None = None
+    file_bytes_in_base64_format: str | None = None
+
+    _property_name_to_its_type_dict = {
+        "error": str,
+        "file_name": str,
+        "file_bytes_in_base64_format": str,
+    }
+
+    @dataclass()
+    class _key_string_dict:
+        error: str = "error"
+        file_name: str = "file_name"
+        file_bytes_in_base64_format: str = "file_bytes_in_base64_format"
+
+    def from_dict(self, dict: dict[str, Any]):
+        new_variable: Export_Data_Response = super().from_dict(dict)
         return new_variable

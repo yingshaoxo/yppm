@@ -15,32 +15,33 @@ disk = Disk()
 
 class Tools():
     def __init__(self) -> None:
-        self.project_root_folder = disk.get_directory_path(os.path.realpath(os.path.abspath(__file__))) 
+        self.project_root_folder = disk.get_directory_path(os.path.realpath(os.path.abspath(__file__)))
 
     def generate_protocol_files(self):
         input_folder=disk.join_paths(self.project_root_folder, "./protocol")
         input_files = ["app_store.proto"]
-        output_folder=disk.join_paths(self.project_root_folder, "./back_end/generated_yrpc")
+        output_folder_for_python=disk.join_paths(self.project_root_folder, "./back_end/generated_yrpc")
+        output_folder_for_javascript=disk.join_paths(self.project_root_folder, "./front_end/src/generated_yrpc")
 
-        # yrpc.generate_code(
-        #     which_language="typescript",
-        #     input_folder="./protocols",
-        #     input_files=["it_has_alternatives.proto"],
-        #     output_folder="./front_end/src/generated_yrpc"
-        # )
+        yrpc.generate_code(
+            which_language="typescript",
+            input_folder=input_folder,
+            input_files=input_files,
+            output_folder=output_folder_for_javascript
+        )
 
         yrpc.generate_code(
             which_language="python",
             input_folder=input_folder,
             input_files=input_files,
-            output_folder=output_folder
+            output_folder=output_folder_for_python
         )
 
         Database_Of_Yingshaoxo.generate_code_from_yrpc_protocol(
             which_language="python",
             input_folder=input_folder,
             input_files=input_files,
-            output_folder=output_folder
+            output_folder=output_folder_for_python
         )
 
     # def build_front_end(self):

@@ -46,6 +46,18 @@ class Service_app_store:
 
         return default_response
 
+    def export_data(self, headers: dict[str, str], item: Export_Data_Request) -> Export_Data_Response:
+        default_response = Export_Data_Response()
+
+        try:
+            pass
+        except Exception as e:
+            print(f"Error: {e}")
+            #default_response.error = str(e)
+            #default_response.success = False
+
+        return default_response
+
 
 def _get_headers_dict_from_string(headers: str) -> dict:
     dic = {}
@@ -105,9 +117,20 @@ def run(service_instance: Service_app_store, port: str, html_folder_path: str=""
             correct_item = Get_App_Detail_Request().from_dict(item)
             return json.dumps((service_instance.get_app_detail(headers, correct_item)).to_dict())
 
+        elif (request_url == "export_data"):
+            correct_item = Export_Data_Request().from_dict(item)
+            return json.dumps((service_instance.export_data(headers, correct_item)).to_dict())
+
         return f"No API url matchs '{request_url}'"
-    
+
     class WebRequestHandler(BaseHTTPRequestHandler):
+        def do_OPTIONS(self):
+            self.send_response(200, "ok")
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.send_header('Access-Control-Allow-Methods', '*')
+            self.send_header("Access-Control-Allow-Headers", "*")
+            self.end_headers()
+
         def do_GET(self):
             sub_url = self.path
             headers = _get_headers_dict_from_string(self.headers.as_string())
