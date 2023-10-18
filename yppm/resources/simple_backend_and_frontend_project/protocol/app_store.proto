@@ -1,0 +1,67 @@
+syntax = "proto3";
+
+service app_store_service {
+    rpc add_app (Add_App_Request) returns (Add_App_Response);
+    rpc search_app (Search_App_Request) returns (Search_App_Response); // search everything in raw json text, if substring in string, return it
+    rpc get_app_detail (Get_App_Detail_Request) returns (Get_App_Detail_Response);
+}
+
+message An_App {
+    int64 create_time_in_10_numbers_timestamp_format = 1;
+    string name = 2;
+    string description = 3;
+    string url = 4;
+    string app_icon_in_base64 = 5;
+    string author_contact_method = 6; // make sure to tell user they could use a new type of email system, the yingshaoxo_email_protocol
+    // we normally let those app that get high click into the top of search
+    int64 click_number = 7;
+}
+
+message Add_App_Request {
+    An_App an_app = 1;
+}
+
+message Add_App_Response {
+    string error = 1;
+    string app_name = 2;
+}
+
+message Search_App_Request {
+    string search_input = 1;
+    int64 page_size = 2;
+    int64 page_number = 3;
+}
+
+message Search_App_Response {
+    string error = 1;
+    repeated An_App app_list = 2;
+}
+
+message Get_App_Detail_Request {
+    string name = 1;
+}
+
+message Get_App_Detail_Response {
+    string error = 1;
+    An_App an_app = 2;
+}
+
+
+/*
+yingshaoxo_email_protocol
+
+
+You simply define one single POST API, let anyone wants to send message to you, send a post request to your subdomain, for example, email.your_domain.com:
+
+Something like:
+
+Request: {title, content, author_email_url}
+
+Response: {success, error}
+
+
+And another thing you have to do is make a 20MB size of "spam,AD,normal" text AI classifier
+
+
+#idea #yingshaoxo
+*/
