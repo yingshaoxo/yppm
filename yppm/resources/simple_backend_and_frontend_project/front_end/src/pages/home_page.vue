@@ -62,6 +62,21 @@ const functions = reactive({
       dict.app_list = response?.app_list
     }
   }, 
+  download_base64_file: (base64Data: string, fileName: string) => {
+     const linkSource = `data:application/octet-stream;base64,${base64Data}`;
+     const downloadLink = document.createElement("a");
+     downloadLink.href = linkSource;
+     downloadLink.download = fileName;
+     downloadLink.click();
+  },
+  download_sites_data: async () => {
+    let export_data_request = new global_dict.app_store_objects.Export_Data_Request()
+
+    let response = await global_dict.client.export_data(export_data_request)
+    if (response?.file_bytes_in_base64_format != null) {
+        functions.download_base64_file(response?.file_bytes_in_base64_format, response?.file_name)
+    }
+  }, 
   on_row_click: async (record: app_store_objects_types.An_App) => {
     await global_functions.go_to_page(global_dict.page_name_dict.app_page, {
       name: record.name
@@ -78,6 +93,15 @@ onMounted(async () => {
   <a-collapse v-model:activeKey="dict.temp_dict.collapse_key">
     <a-collapse-panel key="1" header="Menu">
       <div class="menu_items">
+        <a-button type="primary"
+          ghost
+          @click="async ()=>{
+            await functions.download_sites_data()
+          }"
+        >
+          Download Sites Data
+        </a-button>
+
         <a-button type="primary"
           ghost
           @click="async ()=>{

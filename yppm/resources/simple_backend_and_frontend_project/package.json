@@ -3,7 +3,10 @@
     "version": "0.0.0",
     "author": "yingshaoxo@gmail.com",
     "main": "back_end/main.py",
-    "scripts": {},
+    "scripts": {
+        "run_backend": "cd back_end && python3 main.py",
+        "run_frontend": "cd front_end && npm i && npm run dev"
+    },
     "dependencies": [
         "auto_everything"
     ]

@@ -100,8 +100,28 @@ class App_Store_Service(app_store_pure_python_rpc.Service_app_store):
 
         return default_response
 
+    def export_data(self, headers: dict[str, str], item: app_store_objects.Export_Data_Request) -> app_store_objects.Export_Data_Response:
+        default_response = app_store_objects.Export_Data_Response()
+
+        try:
+            temp_zip_file = disk.get_a_temp_file_path("backup.zip")
+            disk.compress(input_folder_path=the_database_path, output_zip_path=temp_zip_file)
+            bytes_io_data = disk.get_bytesio_from_a_file(temp_zip_file)
+            default_response.file_bytes_in_base64_format = disk.bytesio_to_base64(bytes_io_data)
+            default_response.file_name = "app_store_backup.zip"
+        except Exception as e:
+            print(f"Error: {e}")
+            default_response.error = str(e)
+            #default_response.success = False
+
+        return default_response
+
 
 def generate_robots_txt_and_sitemap_xml(domain: str, output_folder: str):
+    if not disk.exists(output_folder):
+        print(f"Can't generate robots.txt and sitemap.xml to {output_folder}")
+        return
+
     import urllib.parse
     robots = f"""
 User-agent: *
