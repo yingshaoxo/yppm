@@ -4,4 +4,5 @@ terminal = Terminal()
 
 terminal.run(f"""
     echo 'Hello World.'
-             """)
+    sleep 1
+""")

@@ -6,6 +6,21 @@ import sys
 import platform
 import json
 
+try:
+    if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
+        # in pyinstaller
+        def resource_path(relative_path: str) -> str:
+            if hasattr(sys, '_MEIPASS'):
+                return os.path.join(sys._MEIPASS, relative_path) #type: ignore
+            return os.path.join(os.path.abspath("."), relative_path)
+        _the_current_path = resource_path(".")
+        sys.path.append(os.path.abspath(_the_current_path.replace("/./", "/")))
+    else:
+        # normal process
+        sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+except Exception as e:
+    pass
+
 from auto_everything.io import IO
 from auto_everything.disk import Disk
 from auto_everything.python import Python
@@ -39,6 +54,7 @@ class Tools():
             #print('running in a normal Python process')
             resource_basic_folder_path = disk.get_directory_path(__file__)
         self.resource_basic_folder_path = disk.join_paths(resource_basic_folder_path, 'resources').replace("/./", "/")
+        self.auto_everything_basic_folder_path = disk.join_paths(resource_basic_folder_path, 'auto_everything').replace("/./", "/")
 
         # get python executable path
         self.host_python_executable_path = "python"
@@ -251,6 +267,8 @@ cd {self.project_root_folder} && {binary_version_of_yppm} run
             source_folder_path = disk.join_paths(self.resource_basic_folder_path, default_template_name)
             disk.copy_a_folder(source_folder_path=source_folder_path, target_folder_path=project_path)
 
+            disk.copy_a_folder(source_folder_path=self.auto_everything_basic_folder_path, target_folder_path=disk.join_paths(project_path, "auto_everything"))
+
             os.chdir(project_path)
             self.__init__()
 
@@ -260,6 +278,8 @@ cd {self.project_root_folder} && {binary_version_of_yppm} run
         elif default_template_name == "simple_backend_and_frontend_project":
             source_folder_path = disk.join_paths(self.resource_basic_folder_path, default_template_name)
             disk.copy_a_folder(source_folder_path=source_folder_path, target_folder_path=project_path)
+
+            disk.copy_a_folder(source_folder_path=self.auto_everything_basic_folder_path, target_folder_path=disk.join_paths(project_path, "back_end", "auto_everything"))
 
             os.chdir(project_path)
             self.__init__()
@@ -283,7 +303,6 @@ cd {self.project_root_folder} && {binary_version_of_yppm} run
                 "main": "main.py",
                 "scripts": {},
                 "dependencies": [
-                    "auto_everything"
                 ]
             }
             """

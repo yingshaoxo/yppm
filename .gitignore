@@ -1,3 +1,5 @@
+.dist/
+.github/
 *.vscode/
 *.swp
 # ignore resources tempraryly

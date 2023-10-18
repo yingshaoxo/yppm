@@ -22,9 +22,9 @@ time_ = Time()
 
 class Tools():
     def __init__(self) -> None:
-        self.project_root_folder = disk.get_directory_path(os.path.realpath(os.path.abspath(__file__))) 
+        self.project_root_folder = disk.get_directory_path(os.path.realpath(os.path.abspath(__file__)))
         self.src_project_root_folder = disk.join_paths(self.project_root_folder, "src")
-    
+
     def build_package(self):
         terminal.run(f"""
         rm -fr dist/
@@ -35,9 +35,8 @@ class Tools():
     def publish_package(self):
         terminal.run(f"""
         python3 -m pip install --upgrade twine
-        python3 -m twine upload dist/* 
+        python3 -m twine upload dist/*
                      """)
-    
     def build(self):
         virtual_env_folder = disk.join_paths(self.project_root_folder, ".venv")
         activate_file = disk.join_paths(virtual_env_folder, "bin/activate")
@@ -50,8 +49,8 @@ class Tools():
         python3 -m pip install pyinstaller==5.13.0  --break-system-packages
         #python3 -m pip install "git+https://github.com/yingshaoxo/auto_everything.git@dev"
 
-        #python3 -m PyInstaller yppm/main.py --noconfirm --onefile --add-data "./yppm/resources:resources" --hidden-import auto_everything --name yppm 
-        python3 -m PyInstaller yppm/main.py --noconfirm --add-data "./yppm/resources:resources" --hidden-import auto_everything --name yppm 
+        #python3 -m PyInstaller yppm/main.py --noconfirm --onefile --add-data "./yppm/resources:resources" --hidden-import auto_everything --name yppm
+        python3 -m PyInstaller yppm/main.py --noconfirm --add-data "./yppm/resources:resources" --add-data "./yppm/auto_everything:auto_everything" --hidden-import auto_everything --name yppm
 
         rm -fr dist/yppm/resources/backend_and_frontend_project
 
@@ -78,7 +77,7 @@ class Tools():
 
         echo 'Done'
                      """, wait=True)
-    
+
     def dev(self):
         print("\n\n\nIn watching, when you change code, I'll do the compile and installation for you.")
 
@@ -97,7 +96,7 @@ class Tools():
                 print("\n\n\nIn watching, when you change code, I'll do the compile and installation for you.")
 
             sleep(5)
-    
+
 
 py.make_it_runnable()
 py.fire2(Tools)
