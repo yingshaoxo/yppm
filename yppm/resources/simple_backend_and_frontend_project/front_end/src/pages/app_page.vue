@@ -58,7 +58,7 @@ onMounted(async () => {
     <div class="inner_box">
       <p><span class="less_obvious_text">Name</span>: <span class="margin_left">{{ dict.an_app.name }}</span></p>
 
-      <p><span class="less_obvious_text">URL</span>: <a class="margin_left" target="_blank" :href="dict.an_app.url">{{ dict.an_app.url }}</a></p>
+      <p><span class="less_obvious_text">URL</span>: <a class="margin_left" target="_blank" :href="dict.an_app.url??''">{{ dict.an_app.url }}</a></p>
 
       <p><span class="less_obvious_text">Contact</span>: <span class="margin_left">{{ dict.an_app.author_contact_method }}</span></p>
 

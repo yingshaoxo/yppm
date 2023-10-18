@@ -44,16 +44,16 @@ class Tools():
             output_folder=output_folder_for_python
         )
 
-    # def build_front_end(self):
-    #     t.run(f"""
-    #     cd {self.project_root_folder}
-    #     cd front_end
-    #     yarn
-    #     yarn build
-    #     rm -fr ../backend_service/backend_service/vue/*
-    #     mkdir -p ../backend_service/backend_service/vue
-    #     cp -fr dist/* ../backend_service/backend_service/vue/
-    #     """)
+    def build_front_end(self):
+        t.run(f"""
+        cd {self.project_root_folder}
+        cd front_end
+        npm i
+        npm run build
+        #rm -fr ../back_end/vue/*
+        #mkdir -p ../back_end/vue/*
+        #cp -fr dist/* ../back_end/vue/
+        """)
 
     # def rebuild_docker_image(self):
     #     # self.build_front_end()
@@ -63,9 +63,6 @@ class Tools():
     #     docker rmi yingshaoxo/it_has_alternatives
     #     docker-compose -f docker-compose.service.yaml up -d
     #     """)
-
-    # def run(self):
-    #     pass
 
 
 py.make_it_runnable()

@@ -49,7 +49,7 @@ def _search_function(self: Any, item_filter: Any, page_number:int|None=None, pag
                 return None
             if search_temp_dict["_search_counting"] > search_temp_dict["_real_end"]:
                 return None
-        
+
         return final_result
 
     return self.database_of_yingshaoxo.search(one_row_dict_handler=one_row_dict_filter)
@@ -80,7 +80,7 @@ def _raw_search_function(self: Any, one_row_json_string_handler: Callable[[str],
                 return None
             if search_temp_dict["_search_counting"] > search_temp_dict["_real_end"]:
                 return None
-        
+
         return result
 
     return list(self.database_of_yingshaoxo.raw_search(one_row_json_string_handler=new_one_row_json_string_handler))
@@ -140,8 +140,8 @@ def _update(self, old_item_filter: Any, new_item: Any):
 
 
 class Yingshaoxo_Database_An_App:
-    def __init__(self, database_base_folder: str) -> None:
-        self.database_of_yingshaoxo = Database_Of_Yingshaoxo(database_name="An_App", database_base_folder=database_base_folder)
+    def __init__(self, database_base_folder: str, use_sqlite: bool = False) -> None:
+        self.database_of_yingshaoxo = Database_Of_Yingshaoxo(database_name="An_App", database_base_folder=database_base_folder, use_sqlite=use_sqlite)
 
     def add(self, item: An_App):
         return self.database_of_yingshaoxo.add(data=item.to_dict())
@@ -157,15 +157,15 @@ class Yingshaoxo_Database_An_App:
 
     def delete(self, item_filter: An_App):
         return _delete(self=self, item_filter=item_filter)
-    
+
     def update(self, old_item_filter: An_App, new_item: An_App):
         return _update(self=self, old_item_filter=old_item_filter, new_item=new_item)
 
 
 class Yingshaoxo_Database_Excutor_app_store:
-    def __init__(self, database_base_folder: str):
+    def __init__(self, database_base_folder: str, use_sqlite: bool = False):
         self._database_base_folder = database_base_folder
-        self.An_App = Yingshaoxo_Database_An_App(database_base_folder=self._database_base_folder)
+        self.An_App = Yingshaoxo_Database_An_App(database_base_folder=self._database_base_folder, use_sqlite=use_sqlite)
 
 
 if __name__ == "__main__":

@@ -2,7 +2,7 @@
     "name": "simple_backend_and_frontend_project",
     "version": "0.0.0",
     "author": "yingshaoxo@gmail.com",
-    "main": "main.py",
+    "main": "back_end/main.py",
     "scripts": {},
     "dependencies": [
         "auto_everything"

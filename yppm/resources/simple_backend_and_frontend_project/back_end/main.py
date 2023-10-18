@@ -41,7 +41,7 @@ print(f"resource_basic_folder_path: {resource_basic_folder_path}")
 print(f"database_path: {the_database_path}")
 print()
 disk.create_a_folder(the_database_path)
-database_excutor_for_remote_service = Yingshaoxo_Database_Excutor_app_store(database_base_folder=the_database_path)
+database_excutor_for_remote_service = Yingshaoxo_Database_Excutor_app_store(database_base_folder=the_database_path, use_sqlite=False)
 
 
 class App_Store_Service(app_store_pure_python_rpc.Service_app_store):
@@ -101,10 +101,51 @@ class App_Store_Service(app_store_pure_python_rpc.Service_app_store):
         return default_response
 
 
+def generate_robots_txt_and_sitemap_xml(domain: str, output_folder: str):
+    import urllib.parse
+    robots = f"""
+User-agent: *
+Sitemap: {domain}/sitemaps.xml
+""".strip()
+
+    sitemap_part = """
+"""
+    sitemap_part_list = []
+    search_list = database_excutor_for_remote_service.An_App.search(item_filter=app_store_objects.An_App())
+    for one in search_list:
+        last_modify_time = time_.get_datetime_object_from_timestamp(one.create_time_in_10_numbers_timestamp_format).strftime("%y-%m-%d")
+        safe_name = urllib.parse.quote_plus(one.name)
+        sitemap_part_list.append(f"""
+   <url>
+      <loc>{domain}/app_page?name={safe_name}</loc>
+      <lastmod>{last_modify_time}</lastmod>
+      <changefreq>weekly</changefreq>
+      <priority>0.8</priority>
+   </url>
+""")
+    sitemap_part_list_text = "\n".join(sitemap_part_list)
+
+    sitemap = f"""
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+{sitemap_part_list_text}
+</urlset>
+""".strip()
+
+    robot_txt_path = disk.join_paths(output_folder, "robots.txt")
+    io_.write(robot_txt_path, robots)
+
+    sitemap_xml_path = disk.join_paths(output_folder, "sitemap.xml")
+    io_.write(sitemap_xml_path, sitemap)
+
+
 def run_service(port: str):
     database_excutor_for_remote_service.An_App.database_of_yingshaoxo.refactor_database()
     service_instance = App_Store_Service()
-    app_store_pure_python_rpc.run(service_instance, port=port)
+
+    html_folder_path = "../front_end/dist"
+    generate_robots_txt_and_sitemap_xml(domain="http://127.0.0.1:3333", output_folder=html_folder_path)
+    app_store_pure_python_rpc.run(service_instance, port=port, html_folder_path=html_folder_path)
 
 
 run_service("3333")
