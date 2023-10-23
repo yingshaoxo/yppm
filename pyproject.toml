@@ -1,6 +1,6 @@
 [project]
 name = "yppm"
-version = "0.0.7"
+version = "0.0.8"
 authors = [
   { name="yingshaoxo", email="yingshaoxo@gmail.com" },
 ]
@@ -30,8 +30,8 @@ where = ["."]
 mypkg = ["*.sh", "*.md"]
 
 [project.urls]
-"Homepage" = "https://github.com/yingshaoxo/yppm"
-"Bug Tracker" = "https://github.com/yingshaoxo/yppm/issues"
+"Homepage" = "https://gitlab.com/yingshaoxo/yppm"
+"Bug Tracker" = "https://gitlab.com/yingshaoxo/yppm/issues"
 
 [build-system]
 requires = ["setuptools>=68.1.2"]

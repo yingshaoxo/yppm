@@ -140,8 +140,8 @@ def _update(self, old_item_filter: Any, new_item: Any):
 
 
 class Yingshaoxo_Database_An_App:
-    def __init__(self, database_base_folder: str, use_sqlite: bool = False) -> None:
-        self.database_of_yingshaoxo = Database_Of_Yingshaoxo(database_name="An_App", database_base_folder=database_base_folder, use_sqlite=use_sqlite)
+    def __init__(self, database_base_folder: str, use_sqlite: bool = False, global_multiprocessing_shared_dict: Any | None = None) -> None:
+        self.database_of_yingshaoxo = Database_Of_Yingshaoxo(database_name="An_App", database_base_folder=database_base_folder, use_sqlite=use_sqlite, global_multiprocessing_shared_dict=global_multiprocessing_shared_dict)
 
     def add(self, item: An_App):
         return self.database_of_yingshaoxo.add(data=item.to_dict())
@@ -163,9 +163,9 @@ class Yingshaoxo_Database_An_App:
 
 
 class Yingshaoxo_Database_Excutor_app_store:
-    def __init__(self, database_base_folder: str, use_sqlite: bool = False):
+    def __init__(self, database_base_folder: str, use_sqlite: bool = False, global_multiprocessing_shared_dict: Any | None = None):
         self._database_base_folder = database_base_folder
-        self.An_App = Yingshaoxo_Database_An_App(database_base_folder=self._database_base_folder, use_sqlite=use_sqlite)
+        self.An_App = Yingshaoxo_Database_An_App(database_base_folder=self._database_base_folder, use_sqlite=use_sqlite, global_multiprocessing_shared_dict=global_multiprocessing_shared_dict)
 
 
 if __name__ == "__main__":

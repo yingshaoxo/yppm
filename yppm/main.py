@@ -5,6 +5,7 @@ import os
 import sys
 import platform
 import json
+from time import sleep
 
 try:
     if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
@@ -167,6 +168,7 @@ class Tools():
                 else:
                     if name == file_name_without_content_after_dot:
                         return disk.get_absolute_path(file)
+        return None
 
     def _hack_into_virtual_env_bash_command(self):
         self._create_virtual_env()
@@ -552,9 +554,25 @@ cd {self.project_root_folder} && {binary_version_of_yppm} run
         {self._hack_into_virtual_env_bash_command()}
 
         export PIP_BREAK_SYSTEM_PACKAGES=1
-        {pip_path} install pyinstaller
+        {pip_path} install pyinstaller==5.13.0
+        """)
 
-        {python_path} -m pyinstaller {entry_point_python_script} {arguments} --noconfirm --onefile --hidden-import auto_everything --name {name}
+        pyinstaller_path = self._get_virtual_env_program("pyinstaller", exact_match=True)
+        if pyinstaller_path == None:
+            pyinstaller_path = f"{python_path} -m pyinstaller"
+
+        try:
+            hidden_import_list = [one.split("=")[0] for one in package_object.get("dependencies") if not (one.startswith("git") or one.startswith("http"))]
+            hidden_import_list = [f"--hidden-import {one}" for one in hidden_import_list]
+            hidden_import_list_text = " ".join(hidden_import_list)
+        except Exception as e:
+            print(e)
+            hidden_import_list_text = ""
+
+        terminal.run(f"""
+        {self._hack_into_virtual_env_bash_command()}
+
+        {pyinstaller_path} {entry_point_python_script} {arguments} --noconfirm --onefile --add-data "./auto_everything:auto_everything" {hidden_import_list_text} --name {name}
          """)
 
     def build_with_nuitka(self, arguments: str = ""):
@@ -583,8 +601,8 @@ cd {self.project_root_folder} && {binary_version_of_yppm} run
         {self._hack_into_virtual_env_bash_command()}
 
         export PIP_BREAK_SYSTEM_PACKAGES=1
-        {pip_path} install nuitka
-        {pip_path} install patchelf
+        {pip_path} install nuitka==1.8.4
+        {pip_path} install patchelf==0.17.2.1
 
         {python_path} -m nuitka {arguments} --static-libpython=yes --standalone --follow-imports {entry_point_python_script} -o {name}
          """)
