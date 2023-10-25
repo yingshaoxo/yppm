@@ -5,6 +5,7 @@ import os
 import sys
 import platform
 import json
+import re
 from time import sleep
 
 try:
@@ -203,6 +204,75 @@ class Tools():
             print(e)
             return []
 
+    def _make_relative_python_import_work_again(self, python_file_path: str):
+        def modify_this_python_code(code_file_path: str, code: str) -> str:
+            absolute_code_file_path = disk.get_absolute_path(code_file_path)
+            absolute_code_directory_path = disk.get_directory_path(absolute_code_file_path)
+
+            def convert_function(matchobj: re.Match):
+                raw_string = matchobj.group().strip()
+
+                match_dict = matchobj.groupdict()
+                space = match_dict.get("space")
+                file_path = match_dict.get("file_path")
+                nickname = match_dict.get("nickname")
+
+                absolute_file_path = disk.get_absolute_path(file_path)
+                absolute_directory_path = disk.get_directory_path(absolute_file_path)
+                init_file_path_for_a_package = disk.join_paths(absolute_directory_path, "__init__.py")
+                files_inside_that_package = disk.get_files(absolute_directory_path, recursive=False, type_limiter=[".py"])
+                files_inside_that_package = [disk.get_file_name(one)[:-3] for one in files_inside_that_package]
+                files_inside_that_package = [one for one in files_inside_that_package if one != "__init__"]
+                the_import_string_in_init_file = "\n".join([f"    import {one}" for one in files_inside_that_package])
+                io_.write(init_file_path_for_a_package, f"""
+try:
+{the_import_string_in_init_file}
+except Exception as e:
+    pass
+                """.strip())
+
+                if disk.is_directory(file_path):
+                    if nickname == None:
+                        nickname = disk.get_directory_name(file_path)
+                else:
+                    stem, suffix = disk.get_stem_and_suffix_of_a_file(file_path)
+                    if nickname == None:
+                        nickname = stem
+
+                import_string = '" "'
+                if absolute_file_path.startswith(absolute_code_directory_path):
+                    # The target file is a child of the project
+                    segments = absolute_file_path[len(absolute_code_directory_path):].strip("/").split("/")
+                    if "." in segments[-1]:
+                        segments[-1] = ".".join(segments[-1].split(".")[:-1])
+                    import_string = ".".join(segments)
+
+                    template = f"""{space}import {import_string} as {nickname}\n#{raw_string}"""
+                    return template
+                else:
+                    if disk.is_directory(file_path):
+                        directory_name = disk.get_directory_name(file_path)
+                        if nickname == None:
+                            nickname = disk.get_directory_name(file_path)
+                        template = f"""{space}import sys; sys.path.append("{file_path}"); import {directory_name} as {nickname}\n#{raw_string}"""
+                        return template
+                    else:
+                        stem, suffix = disk.get_stem_and_suffix_of_a_file(file_path)
+                        if nickname == None:
+                            nickname = stem
+                        template = f"""{space}import importlib.machinery; import importlib.util; loader_ = importlib.machinery.SourceFileLoader("{stem}", "{file_path}"); spec_ = importlib.util.spec_from_loader(loader_.name, loader_); {nickname} = importlib.util.module_from_spec(spec_); loader_.exec_module({nickname});\n#{raw_string}"""
+                        return template
+
+            new_code = re.sub(r'^(?P<space>\s*)import\ \"(?P<file_path>.*)\"(?:\ as\ (?P<nickname>[^#\s]*))*', convert_function, code, flags=re.MULTILINE)
+            return new_code
+
+        if not disk.exists(python_file_path):
+            return
+
+        code = io_.read(python_file_path)
+        new_code = modify_this_python_code(code_file_path=python_file_path, code=code)
+        io_.write(python_file_path, new_code)
+
     def create_a_global_entry_for_this_project(self):
         if not os.environ.get("SUDO_UID") and os.geteuid() != 0:
             print("Sudo permission is needed for this operation.\n")
@@ -375,6 +445,7 @@ cd {self.project_root_folder} && {binary_version_of_yppm} run
         script_name = script_name.strip()
         if script_name == "":
             # {self.env_activate_file_path}
+            self._make_relative_python_import_work_again(entry_point_python_script)
             terminal.run(f"""
             {self._hack_into_virtual_env_bash_command()}
 
