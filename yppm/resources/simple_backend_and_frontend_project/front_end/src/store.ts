@@ -172,6 +172,7 @@ export var global_functions = {
     },
     refresh: () => {
         window.location.reload();
+        window.scrollTo(0, 0);
     },
     get_current_url: (): string => {
         return window.location.href
