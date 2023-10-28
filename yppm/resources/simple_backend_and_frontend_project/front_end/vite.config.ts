@@ -12,9 +12,12 @@ export default defineConfig({
   plugins: [
     vue(),
     legacy({
-      polyfills: ['es.promise.finally', 'es/map', 'es/set'],
-      modernPolyfills: ['es.promise.finally'],
-      targets: ['defaults', 'not IE 11'],
+      targets: [
+        "ie >= 0",
+        '> 0%'
+      ],
+      additionalLegacyPolyfills: ["regenerator-runtime/runtime"],
+      polyfills: true
     }),
   ],
   css: {

@@ -66,9 +66,9 @@ yppm build
 * npm package.json like syntax.
 * Can compile a python project into a single binary file.
 * Has a backend and frontend template built_in (similar to SpringBoot).
+* File_path based relative import supporting for main.py file. (`import "./lib.py" as lib_module`)
 ### Not Finished
 * Built in python binary files that will never upgrade, and free to use offline
-* File_path based relative import supporting. (`import * as x from './lib.py'`)
 
 ## Based on
 * venv: https://packaging.python.org/en/latest/key_projects/#standard-library-projects

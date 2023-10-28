@@ -74,7 +74,9 @@ const functions = reactive({
 
     let response = await global_dict.client.export_data(export_data_request)
     if (response?.file_bytes_in_base64_format != null) {
-        functions.download_base64_file(response?.file_bytes_in_base64_format, response?.file_name)
+        if (response?.file_name != null) {
+            functions.download_base64_file(response?.file_bytes_in_base64_format, response?.file_name)
+        }
     }
   }, 
   on_row_click: async (record: app_store_objects_types.An_App) => {
