@@ -4,7 +4,7 @@ Yingshaoxo Python Package Manager
 ## Install
 ```bash
 python3 -m pip install yppm --break-system-packages
-alias yppm="python3 -m yppm"
+alias yppm="python3 -m yppm" && echo "alias yppm='python3 -m yppm'" >> ~/.bashrc && source ~/.bashrc
 
 yppm about
 ```
@@ -12,11 +12,12 @@ yppm about
 or
 
 ```bash
-# sudo su
-# wget https://github.com/yingshaoxo/yppm/raw/main/Install.sh -O - | sudo bash
+git clone https://github.com/yingshaoxo/yppm.git
+cd yppm
+python3 -m pip install -e .
+alias yppm="python3 -m yppm" && echo "alias yppm='python3 -m yppm'" >> ~/.bashrc && source ~/.bashrc
 
-
-Fuck the github because they banned my github account for no clear reason, when you visit "https://github.com/yingshaoxo/yppm", you'll only see 404 page.
+# Use github on care, you may get banned(404) by saying the 'fuck' word: https://yingshaoxo.xyz/pictures/github/index.html
 ```
 
 ## Usage
