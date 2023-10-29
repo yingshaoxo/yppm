@@ -9,6 +9,7 @@ import { global_dict } from "./store";
 import { global_functions } from "./store";
 
 let dict = reactive({
+    show_user_agreement: false,
     show_add_app_dialog: false,
     an_app: new global_dict.app_store_objects.An_App(),
     question: "1 + 1 = ?",
@@ -34,6 +35,11 @@ let functions = reactive({
 
 onBeforeMount(async () => {
     await global_functions.init()
+
+    let agree_value = global_functions.get_value("agree_key", false);
+    if (!agree_value) {
+        dict.show_user_agreement = true
+    }
 })
 </script>
 
@@ -53,6 +59,27 @@ onBeforeMount(async () => {
     >
         <PlusOutlined />
     </div>
+
+    <a-modal 
+        v-model:visible="dict.show_user_agreement" 
+        title="User Agreement" 
+        @ok="async () => {
+            dict.show_user_agreement = false
+            global_functions.set_value('agree_key', true)
+        }"
+        :destroyOnClose="true"
+        :maskClosable="true"
+        width="80%" 
+    >
+        <p>We know other people's products spent millions of words in their user agreement paper, just to express "we are not responsible for the side effects of our product, and we remain every rights about our product and your content in our platform. We could do whatever we want."</p>
+        <p>But we are different. We tell you directly: "We are not responsible for the side effects of this product, and we do not censorship any contents inside of this platform, even if its a spam or false advertising. "</p>
+
+        <p class="_less_obvious_text">(Because you never know if an advertising is false one or not unless you lose money, if "a good product" 5 years later has quality issue or not, a censored sentence become truth 10 years later or not.)</p>
+        <p class="_less_obvious_text">(You should take responsibility about your copyright or Intelligence_Property leaking, not us.)</p>
+
+        <p>We do not lie.</p>
+        <p class="_red">By agreeing this policy, you agree to give up any rights to lawsuit our platform.</p>
+    </a-modal>
     
     <a-modal 
         v-model:visible="dict.show_add_app_dialog" 

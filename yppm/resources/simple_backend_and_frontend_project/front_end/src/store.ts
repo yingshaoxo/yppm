@@ -42,7 +42,7 @@ enum page_name_dict {
 export var global_dict = reactive({
     show_dialog_window: false,
     show_global_loading: false,
-    dialog_message: "Welcome to yingshaoxo's style shop!",
+    dialog_message: "Welcome to yingshaoxo's app store!",
     current_page_name: "",
     current_page_data: {} as any,
     page_name_dict,
