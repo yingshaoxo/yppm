@@ -445,7 +445,10 @@ cd {self.project_root_folder} && {binary_version_of_yppm} run
         script_name = script_name.strip()
         if script_name == "":
             # {self.env_activate_file_path}
-            self._make_relative_python_import_work_again(entry_point_python_script)
+            try:
+                self._make_relative_python_import_work_again(entry_point_python_script)
+            except Exception as e:
+                print(e)
             terminal.run(f"""
             {self._hack_into_virtual_env_bash_command()}
 
