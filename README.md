@@ -3,21 +3,18 @@ Yingshaoxo Python Package Manager
 
 ## Install
 ```bash
-python3 -m pip install yppm --break-system-packages
-alias yppm="python3 -m yppm" && echo "alias yppm='python3 -m yppm'" >> ~/.bashrc && source ~/.bashrc
+curl -sSL https://raw.githubusercontent.com/yingshaoxo/yppm/main/Install.sh | bash
 
-yppm about
+# Use github on care, you may get banned(404) by saying the 'fuck' word: https://yingshaoxo.xyz/pictures/github/index.html
 ```
 
 or
 
 ```bash
-git clone https://github.com/yingshaoxo/yppm.git
-cd yppm
-python3 -m pip install -e .
+python3 -m pip install yppm --break-system-packages
 alias yppm="python3 -m yppm" && echo "alias yppm='python3 -m yppm'" >> ~/.bashrc && source ~/.bashrc
 
-# Use github on care, you may get banned(404) by saying the 'fuck' word: https://yingshaoxo.xyz/pictures/github/index.html
+yppm about
 ```
 
 ## Usage

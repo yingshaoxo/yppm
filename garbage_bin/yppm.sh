@@ -1,1 +1,0 @@
-python3 ~/.yppm/yppm/__main__.py
