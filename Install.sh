@@ -22,8 +22,8 @@ fi
 if $the_real_py_command -m pip show yppm > /dev/null; then
     echo "python package yppm installed."
 else
-    #$the_real_py_command -m pip install yppm --break-system-packages
-    $the_real_py_command -m pip install "git+https://github.com/yingshaoxo/yppm.git@main"
+    $the_real_py_command -m pip install yppm --break-system-packages
+    #$the_real_py_command -m pip install "git+https://github.com/yingshaoxo/yppm.git@main"
 fi
 
 if yppm about > /dev/null; then
