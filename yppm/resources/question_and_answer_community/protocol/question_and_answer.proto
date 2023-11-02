@@ -1,0 +1,229 @@
+syntax = "proto3";
+
+service question_and_answer_service {
+    //No JWT
+    rpc visitor_get_json_web_token (Get_JSON_Web_Token_Request) returns (Get_JSON_Web_Token_Response);
+    rpc visitor_is_json_web_token_ok (Is_JSON_Web_Token_Ok_Request) returns (Is_JSON_Web_Token_Ok_Response);
+
+    rpc visitor_search (Search_Request) returns (Search_Response);
+    rpc visitor_get_a_post (Get_A_Post_Request) returns (Get_A_Post_Response); 
+    rpc visitor_get_comment_list_by_id_list (Get_Comment_List_By_Id_List_Request) returns (Get_Comment_List_By_Id_List_Response); //have a switch, it decide if server will return hidden post or not
+
+    //Normal User
+    rpc user_add_post (Add_Post_Request) returns (Add_Post_Response); //anyone can do it
+    rpc user_update_post (Update_Post_Request) returns (Update_Post_Response);//only writer can do it
+    rpc user_delete_post (Delete_Post_Request) returns (Delete_Post_Response);//only writer can do it
+    rpc user_comment_post (Comment_Post_Request) returns (Comment_Post_Response);//anyone can do it
+    rpc user_modify_comment (Modify_Comment_Request) returns (Modify_Comment_Response);//only writer can do it
+    rpc user_delete_comment (Delete_Comment_Request) returns (Delete_Comment_Response);//only writer can do it
+    rpc user_like_or_dislike_a_post_or_comment (Like_Or_Dislike_Request) returns (Like_Or_Dislike_Response);//anyone can do it, but they can only do once
+
+    rpc user_download_backup_data(Download_Backup_Data_Request) returns (Download_Backup_Data_Response);
+    rpc user_upload_backup_data(Upload_Backup_Data_Request) returns (Upload_Backup_Data_Response);
+
+    //Admin
+    rpc admin_download_backup_data(Download_Backup_Data_Request) returns (Download_Backup_Data_Response);
+    rpc admin_upload_backup_data(Upload_Backup_Data_Request) returns (Upload_Backup_Data_Response);
+}
+
+enum User_Type {
+    user = 1;
+    admin = 2;
+}
+
+message A_User {
+    int64 create_time_in_10_numbers_timestamp_format = 1;
+    string id = 2;
+    string email = 3; // make sure to tell user they could use a new type of email system, the yingshaoxo_email_protocol
+    string password = 4;
+    string user_type = 5;
+    string json_web_token = 6;
+    int64 likes = 7; 
+    int64 dislikes = 8; 
+}
+
+/*
+yingshaoxo_email_protocol
+
+
+You simply define one single POST API, let anyone wants to send message to you, send a post request to your subdomain, for example, email.your_domain.com:
+
+Something like:
+
+Request: {title, content, author_email_url}
+
+Response: {success, error}
+
+
+And another thing you have to do is make a 20MB size of "spam,AD,normal" text AI classifier
+
+
+#idea #yingshaoxo
+*/
+
+message A_Post {
+    string owner_id = 1;
+    string id = 2;
+    // id == title[:30].replace(" ", "_").replace("-", "_") + 6 characters long random_hash
+    string title = 3;
+    string description = 4;
+    repeated string comment_id_list = 5; 
+    repeated string likes = 6; 
+    repeated string dislikes = 7; 
+    int64 create_time_in_10_numbers_timestamp_format = 8;
+    int64 update_time_in_10_numbers_timestamp_format = 9;
+}
+
+message A_Comment {
+    string owner_id = 1;
+    string id = 2;
+    // id == owner_id[:30] + 6 characters long random_hash
+    string parent_post_id = 3;
+    string parent_post_owner_id = 4;
+    string description = 5;
+    bool hidden = 6;
+    repeated string comment_id_list = 7; 
+    repeated string likes = 8; 
+    repeated string dislikes = 9; 
+    int64 create_time_in_10_numbers_timestamp_format = 999;
+    int64 update_time_in_10_numbers_timestamp_format = 999;
+}
+
+message Get_JSON_Web_Token_Request {
+    string email = 1;
+    string password = 2;
+}
+
+message Get_JSON_Web_Token_Response {
+    string error = 1;
+    string json_web_token = 2;
+    User_Type user_type = 3;
+}
+
+message Is_JSON_Web_Token_Ok_Request {
+    string json_web_token = 1;
+}
+
+message Is_JSON_Web_Token_Ok_Response {
+    string error = 1;
+    bool ok = 2;
+    string user_type = 3;
+}
+
+message Search_Request {
+    string search_input = 1;
+    int64 page_size = 2;
+    int64 page_number = 3;
+    string owner_id = 4;
+    bool show_hidden = 5;
+}
+
+message Search_Response {
+    optional string error = 1;
+    repeated A_Post post_list = 2;
+    repeated A_Comment comment_list = 2;
+}
+
+message Get_A_Post_Request {
+    string id = 1;
+}
+
+message Get_A_Post_Response {
+    optional string error = 1;
+    A_Post post = 2;
+}
+
+message Get_Comment_List_By_Id_List_Request {
+    repeated string comment_id_list = 1;
+}
+
+message Get_Comment_List_By_Id_List_Response {
+    optional string error = 1;
+    repeated A_Comment comment_list = 2;
+}
+
+message Add_Post_Request {
+    A_Post a_post = 1;
+}
+
+message Add_Post_Response {
+    string error = 1;
+    bool success = 2;
+    string post_id = 3;
+}
+
+message Update_Post_Request {
+    A_Post a_post = 1;
+}
+
+message Update_Post_Response {
+    string error = 1;
+    bool success = 2;
+}
+
+message Delete_Post_Request {
+    A_Post a_post = 1;
+}
+
+message Delete_Post_Response {
+    string error = 1;
+    bool success = 2;
+}
+
+message Comment_Post_Request {
+    A_Comment a_comment = 1;
+}
+
+message Comment_Post_Response {
+    string error = 1;
+    bool success = 2;
+    string comment_id = 3;
+}
+
+message Modify_Comment_Request {
+    A_Comment a_comment = 1;
+}
+
+message Modify_Comment_Response {
+    string error = 1;
+    bool success = 2;
+}
+
+message Delete_Comment_Request {
+    A_Comment a_comment = 1;
+}
+
+message Delete_Comment_Response {
+    string error = 1;
+    bool success = 2;
+}
+
+message Like_Or_Dislike_Request {
+    A_Post a_post = 1;
+    A_Comment a_comment = 2;
+    bool like = 3;
+    bool dislike = 4;
+}
+
+message Like_Or_Dislike_Response {
+    string error = 1;
+    bool success = 2;
+}
+
+message Download_Backup_Data_Request {
+}
+
+message Download_Backup_Data_Response {
+    string error = 1;
+    string file_name = 2;
+    string file_bytes_in_base64_format = 3;
+}
+
+message Upload_Backup_Data_Request {
+    string file_bytes_in_base64_format = 1;
+}
+
+message Upload_Backup_Data_Response {
+    string error = 1;
+    bool success = 2;
+}

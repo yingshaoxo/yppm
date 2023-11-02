@@ -1,0 +1,28 @@
+{
+  "name": "unlimited_question_and_answer_community",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "vue-cli-service serve",
+    "build": "vue-cli-service build"
+  },
+  "dependencies": {
+    "core-js": "3.33.2",
+    "vue": "2.7.14",
+    "vue-class-component": "7.2.6",
+    "vue-property-decorator": "9.1.2"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "5.0.8",
+    "@vue/cli-plugin-typescript": "5.0.8",
+    "@vue/cli-service": "5.0.8",
+    "less": "4.2.0",
+    "less-loader": "8.1.1",
+    "typescript": "4.5.5",
+    "vue-template-compiler": "2.7.15"
+  },
+  "browserslist": [
+    "ie >= 0",
+    "> 0%"
+  ]
+}

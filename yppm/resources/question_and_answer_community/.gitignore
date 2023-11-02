@@ -1,0 +1,6 @@
+.vscode/
+.github/
+*.swp
+
+.venv/
+.python_modules/

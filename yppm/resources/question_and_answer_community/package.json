@@ -1,0 +1,9 @@
+{
+    "name": "unlimited_question_and_answer_community",
+    "version": "0.0.0",
+    "author": "yingshaoxo@gmail.com",
+    "main": "main.py",
+    "scripts": {},
+    "dependencies": [
+    ]
+}
