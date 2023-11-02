@@ -309,7 +309,7 @@ cd {self.project_root_folder} && {binary_version_of_yppm} run
             "Which project template you want to use? ", [
                 ("basic_python_project", None),
                 ("simple_backend_and_frontend_project", None)
-                # ("backend_and_frontend_project", None)
+                # ("question_and_answer_community", None)
             ]
         )
 
