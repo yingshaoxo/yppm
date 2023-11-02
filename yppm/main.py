@@ -133,6 +133,7 @@ class Tools():
         self._add_to_gitignore(".vscode/")
         self._add_to_gitignore(".github/")
         self._add_to_gitignore("*.swp")
+        self._add_to_gitignore(".python_modules/")
 
         self._add_to_dockerignore(".venv/")
         self._add_to_dockerignore("__pycache__/")
