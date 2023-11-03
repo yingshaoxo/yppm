@@ -48,15 +48,24 @@ export default class App extends Vue {}
 </template>
 
 <style lang="less">
+@import "./assets/css/css_for_human.less";
+
 #app {
     font-family: Avenir, Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-align: center;
-    color: #2c3e50;
 
     margin: 0px;
     height: 100%;
     width: 100%;
+
+    /*
+    background-color: rgba(248, 249, 250, 1);
+    */
+    background-color: rgba(224, 224, 224, 1);
+
+    ._columns;
+    ._center;
 }
 </style>
