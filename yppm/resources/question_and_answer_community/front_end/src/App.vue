@@ -16,7 +16,7 @@ import { global_dict, global_functions } from './store';
         })
 
         onMounted(() => {
-            console.log("hi");
+            //console.log("hi");
         });
 
         return {
@@ -24,7 +24,6 @@ import { global_dict, global_functions } from './store';
             global_functions,
             dict,
             increment() {
-                global_functions.hi();
             },
         };
     },
@@ -60,9 +59,6 @@ export default class App extends Vue {}
     height: 100%;
     width: 100%;
 
-    /*
-    background-color: rgba(248, 249, 250, 1);
-    */
     background-color: rgba(224, 224, 224, 1);
 
     ._columns;

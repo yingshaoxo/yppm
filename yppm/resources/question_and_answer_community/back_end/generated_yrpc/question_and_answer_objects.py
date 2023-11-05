@@ -184,6 +184,7 @@ class A_Comment(YRPC_OBJECT_BASE_CLASS):
     parent_post_owner_id: str | None = None
     description: str | None = None
     hidden: bool | None = None
+    parent_comment_id: str | None = None
     comment_id_list: list[str] | None = None
     likes: list[str] | None = None
     dislikes: list[str] | None = None
@@ -197,6 +198,7 @@ class A_Comment(YRPC_OBJECT_BASE_CLASS):
         "parent_post_owner_id": str,
         "description": str,
         "hidden": bool,
+        "parent_comment_id": str,
         "comment_id_list": str,
         "likes": str,
         "dislikes": str,
@@ -212,6 +214,7 @@ class A_Comment(YRPC_OBJECT_BASE_CLASS):
         parent_post_owner_id: str = "parent_post_owner_id"
         description: str = "description"
         hidden: str = "hidden"
+        parent_comment_id: str = "parent_comment_id"
         comment_id_list: str = "comment_id_list"
         likes: str = "likes"
         dislikes: str = "dislikes"
@@ -220,6 +223,43 @@ class A_Comment(YRPC_OBJECT_BASE_CLASS):
 
     def from_dict(self, dict: dict[str, Any]):
         new_variable: A_Comment = super().from_dict(dict)
+        return new_variable
+
+
+@dataclass()
+class Ask_Yingshaoxo_Ai_Request(YRPC_OBJECT_BASE_CLASS):
+    input: str | None = None
+
+    _property_name_to_its_type_dict = {
+        "input": str,
+    }
+
+    @dataclass()
+    class _key_string_dict:
+        input: str = "input"
+
+    def from_dict(self, dict: dict[str, Any]):
+        new_variable: Ask_Yingshaoxo_Ai_Request = super().from_dict(dict)
+        return new_variable
+
+
+@dataclass()
+class Ask_Yingshaoxo_Ai_Response(YRPC_OBJECT_BASE_CLASS):
+    error: str | None = None
+    answers: str | None = None
+
+    _property_name_to_its_type_dict = {
+        "error": str,
+        "answers": str,
+    }
+
+    @dataclass()
+    class _key_string_dict:
+        error: str = "error"
+        answers: str = "answers"
+
+    def from_dict(self, dict: dict[str, Any]):
+        new_variable: Ask_Yingshaoxo_Ai_Response = super().from_dict(dict)
         return new_variable
 
 

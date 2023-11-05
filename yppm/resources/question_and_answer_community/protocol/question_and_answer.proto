@@ -2,6 +2,8 @@ syntax = "proto3";
 
 service question_and_answer_service {
     //No JWT
+    rpc ask_yingshaoxo_ai (Ask_Yingshaoxo_Ai_Request) returns (Ask_Yingshaoxo_Ai_Response); 
+
     rpc visitor_get_json_web_token (Get_JSON_Web_Token_Request) returns (Get_JSON_Web_Token_Response);
     rpc visitor_is_json_web_token_ok (Is_JSON_Web_Token_Ok_Request) returns (Is_JSON_Web_Token_Ok_Response);
 
@@ -82,11 +84,21 @@ message A_Comment {
     string parent_post_owner_id = 4;
     string description = 5;
     bool hidden = 6;
+    string parent_comment_id = 3;
     repeated string comment_id_list = 7; 
     repeated string likes = 8; 
     repeated string dislikes = 9; 
     int64 create_time_in_10_numbers_timestamp_format = 999;
     int64 update_time_in_10_numbers_timestamp_format = 999;
+}
+
+message Ask_Yingshaoxo_Ai_Request {
+    string input = 1;
+}
+
+message Ask_Yingshaoxo_Ai_Response {
+    string error = 1;
+    string answers = 2;
 }
 
 message Get_JSON_Web_Token_Request {

@@ -369,6 +369,7 @@ export interface _A_Comment {
     parent_post_owner_id: string | null;
     description: string | null;
     hidden: boolean | null;
+    parent_comment_id: string | null;
     comment_id_list: string[] | null;
     likes: string[] | null;
     dislikes: string[] | null;
@@ -383,6 +384,7 @@ export class A_Comment {
     parent_post_owner_id: string | null = null;
     description: string | null = null;
     hidden: boolean | null = null;
+    parent_comment_id: string | null = null;
     comment_id_list: string[] | null = null;
     likes: string[] | null = null;
     dislikes: string[] | null = null;
@@ -396,6 +398,7 @@ export class A_Comment {
             parent_post_owner_id: "string",
             description: "string",
             hidden: "boolean",
+            parent_comment_id: "string",
             comment_id_list: "string",
             likes: "string",
             dislikes: "string",
@@ -410,6 +413,7 @@ export class A_Comment {
         parent_post_owner_id: "parent_post_owner_id",
         description: "description",
         hidden: "hidden",
+        parent_comment_id: "parent_comment_id",
         comment_id_list: "comment_id_list",
         likes: "likes",
         dislikes: "dislikes",
@@ -418,13 +422,14 @@ export class A_Comment {
     };
 
     /*
-    constructor(owner_id: string | null = null, id: string | null = null, parent_post_id: string | null = null, parent_post_owner_id: string | null = null, description: string | null = null, hidden: boolean | null = null, comment_id_list: string[] | null = null, likes: string[] | null = null, dislikes: string[] | null = null, create_time_in_10_numbers_timestamp_format: number | null = null, update_time_in_10_numbers_timestamp_format: number | null = null) {
+    constructor(owner_id: string | null = null, id: string | null = null, parent_post_id: string | null = null, parent_post_owner_id: string | null = null, description: string | null = null, hidden: boolean | null = null, parent_comment_id: string | null = null, comment_id_list: string[] | null = null, likes: string[] | null = null, dislikes: string[] | null = null, create_time_in_10_numbers_timestamp_format: number | null = null, update_time_in_10_numbers_timestamp_format: number | null = null) {
             this.owner_id = owner_id
             this.id = id
             this.parent_post_id = parent_post_id
             this.parent_post_owner_id = parent_post_owner_id
             this.description = description
             this.hidden = hidden
+            this.parent_comment_id = parent_comment_id
             this.comment_id_list = comment_id_list
             this.likes = likes
             this.dislikes = dislikes
@@ -444,6 +449,105 @@ export class A_Comment {
 
     from_dict(item: _A_Comment): A_Comment {
         let an_item = new A_Comment()
+        let new_dict = _general_from_dict_function(an_item, item)
+
+        for (const key of Object.keys(new_dict)) {
+            let value = new_dict[key]
+            //@ts-ignore
+            this[key] = value
+            //@ts-ignore
+            an_item[key] = value
+        }
+
+        return an_item
+    }
+}
+
+
+export interface _Ask_Yingshaoxo_Ai_Request {
+    input: string | null;
+}
+
+export class Ask_Yingshaoxo_Ai_Request {
+    input: string | null = null;
+
+    _property_name_to_its_type_dict = {
+            input: "string",
+    };
+
+    _key_string_dict = {
+        input: "input",
+    };
+
+    /*
+    constructor(input: string | null = null) {
+            this.input = input
+    }
+    */
+
+    to_dict(): _Ask_Yingshaoxo_Ai_Request {
+        return _general_to_dict_function(this);
+    }
+
+    _clone(): Ask_Yingshaoxo_Ai_Request {
+        let clone = Object.assign(Object.create(Object.getPrototypeOf(this)), this)
+        return clone
+    }
+
+    from_dict(item: _Ask_Yingshaoxo_Ai_Request): Ask_Yingshaoxo_Ai_Request {
+        let an_item = new Ask_Yingshaoxo_Ai_Request()
+        let new_dict = _general_from_dict_function(an_item, item)
+
+        for (const key of Object.keys(new_dict)) {
+            let value = new_dict[key]
+            //@ts-ignore
+            this[key] = value
+            //@ts-ignore
+            an_item[key] = value
+        }
+
+        return an_item
+    }
+}
+
+
+export interface _Ask_Yingshaoxo_Ai_Response {
+    error: string | null;
+    answers: string | null;
+}
+
+export class Ask_Yingshaoxo_Ai_Response {
+    error: string | null = null;
+    answers: string | null = null;
+
+    _property_name_to_its_type_dict = {
+            error: "string",
+            answers: "string",
+    };
+
+    _key_string_dict = {
+        error: "error",
+        answers: "answers",
+    };
+
+    /*
+    constructor(error: string | null = null, answers: string | null = null) {
+            this.error = error
+            this.answers = answers
+    }
+    */
+
+    to_dict(): _Ask_Yingshaoxo_Ai_Response {
+        return _general_to_dict_function(this);
+    }
+
+    _clone(): Ask_Yingshaoxo_Ai_Response {
+        let clone = Object.assign(Object.create(Object.getPrototypeOf(this)), this)
+        return clone
+    }
+
+    from_dict(item: _Ask_Yingshaoxo_Ai_Response): Ask_Yingshaoxo_Ai_Response {
+        let an_item = new Ask_Yingshaoxo_Ai_Response()
         let new_dict = _general_from_dict_function(an_item, item)
 
         for (const key of Object.keys(new_dict)) {

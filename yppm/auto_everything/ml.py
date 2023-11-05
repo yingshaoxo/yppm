@@ -15,6 +15,193 @@ time_ = Time()
 store = Store('auto_everything_ml_module')
 
 
+#####
+#Some basic functions
+#####
+def split_string_into_list_by_symbols(input_text, special_symbols = "\n ,.!?()[]{}<>;:’‘“”\"'`’‘「」『』【】〖〗《》《 》〈 〉〔 〕（ ）﹙ ﹚【 】［ ］｛ ｝〖 〗「 」『 』《 》〈 〉《》〔 〕【 】（ ）﹙﹚｛ ｝‘ ’“ ”‘ ’“ ”〞 〝— -—— ……~·•※☆★●○■□▲△▼▽⊙⊕⊖⊘⊚⊛⊜⊝◆◇◊⊿◣◢◥◤@#$%^&*+=_|\\/:;"):
+    """
+    return list like: [
+        { "language": "symbol", "text": },
+        { "language": "not_symbol", "text": },
+    ]
+    it should be a mixed result list, the order of symbol and not_symbol should follow orginal text
+    """
+    result_list = []
+    index = 0
+    temp_string = ""
+    last_symbol_flag =True
+    if len(input_text) > 0:
+        if input_text[-1] in special_symbols:
+            last_symbol_flag = True
+        else:
+            last_symbol_flag = False
+    is_symbol = True
+    while True:
+        current_char = input_text[index]
+
+        if current_char in special_symbols:
+            is_symbol = True
+        else:
+            is_symbol = False
+
+        if last_symbol_flag != is_symbol:
+            if last_symbol_flag == True:
+                result_list.append({
+                    "language": "symbol",
+                    "text": temp_string
+                })
+            else:
+                result_list.append({
+                    "language": "not_symbol",
+                    "text": temp_string
+                })
+            temp_string = ""
+
+        last_symbol_flag = is_symbol
+        temp_string += current_char
+
+        index += 1
+        if index >= len(input_text):
+            break
+
+    if len(result_list) > 0:
+        if result_list[0]["text"] == "":
+            result_list = result_list[1:]
+    if temp_string != "":
+        is_symbol = True
+        if temp_string[-1] in special_symbols:
+            is_symbol = True
+        else:
+            is_symbol = False
+
+        if is_symbol == True:
+            result_list.append({
+                "language": "symbol",
+                "text": temp_string
+            })
+        else:
+            result_list.append({
+                "language": "language",
+                "text": temp_string
+            })
+
+    return result_list
+
+def split_string_into_english_and_not_english_list(input_text):
+    """
+    Split a string into a list of language segments based on Chinese and English characters.
+
+    :param input_text: The input string to split.
+    :return: A list of language segments with Chinese and English text.
+    """
+    """
+    return list like: [
+        { "language": "en", "text": },
+        { "language": "not_en", "text": },
+    ]
+    """
+    result_list = []
+    index = 0
+    temp_string = ""
+    last_symbol_flag = False
+    if len(input_text) > 0:
+        if input_text[-1].isascii():
+            last_symbol_flag = True
+        else:
+            last_symbol_flag = False
+    is_en = True
+    while True:
+        current_char = input_text[index]
+
+        if current_char.isascii():
+            is_en = True
+        else:
+            is_en = False
+
+        if last_symbol_flag != is_en:
+            if last_symbol_flag == False:
+                result_list.append({
+                    "language": "not_en",
+                    "text": temp_string
+                })
+            else:
+                result_list.append({
+                    "language": "en",
+                    "text": temp_string
+                })
+            temp_string = ""
+
+        last_symbol_flag = is_en
+        temp_string += current_char
+
+        index += 1
+        if index >= len(input_text):
+            break
+
+    if len(result_list) > 0:
+        if result_list[0]["text"] == "":
+            result_list = result_list[1:]
+    if temp_string != "":
+        if temp_string[-1].isascii():
+            is_en = True
+        else:
+            is_en = False
+
+        if is_en == False:
+            result_list.append({
+                "language": "not_en",
+                "text": temp_string
+            })
+        else:
+            result_list.append({
+                "language": "en",
+                "text": temp_string
+            })
+
+    return result_list
+
+def string_split_by_using_yingshaoxo_method(input_text, without_punctuation: bool = False):
+    """
+    Split a string into language segments based on symbols, English and not_English text.
+
+    return list like: [
+        { "language": "en", "text": },
+        { "language": "not_en", "text": },
+        { "language": "symbol", "text": },
+    ]
+    """
+    final_list = []
+    symbol_list = split_string_into_list_by_symbols(input_text)
+    for one in symbol_list:
+        if one["language"] == "symbol":
+            if without_punctuation == False:
+                final_list.append({
+                    "language": "symbol",
+                    "text": one["text"]
+                })
+            else:
+                pass
+        else:
+            language_list = split_string_into_english_and_not_english_list(one["text"])
+            final_list += language_list
+    return final_list
+
+def string_split_to_pure_segment_list_by_using_yingshaoxo_method(input_text, without_punctuation: bool = False):
+    """
+    Split a string into language segments based on symbols, English and not_English text.
+
+    return list like: ["how", "are", "you", "?"]
+    """
+    final_list = []
+    a_list = string_split_by_using_yingshaoxo_method(input_text, without_punctuation=without_punctuation)
+    for one in a_list:
+        if one["language"] == "not_en":
+            final_list += list(one["text"])
+        else:
+            final_list += [one["text"]]
+    return final_list
+
+
 class DataProcessor():
     """
     To implement some functionality related to data
@@ -29,7 +216,7 @@ class DataProcessor():
 
         Parameters
         ----------
-        the_list: 
+        the_list:
         sequence_length: int
             how long you want the subsequence to be.
 
@@ -54,6 +241,33 @@ class DataProcessor():
 
 class Yingshaoxo_Text_Generator():
     """
+    # dict based next word generator
+
+    ```
+    One word Predict next word
+    One word predict next word
+    Two words predict next word
+    Three words predict next word
+    ... words predict next word
+    ```
+
+    When you use it, use it from bottom to top, use longest sequence to predict the next word first.
+    """
+    """
+    Extreme Lite version of chatgpt:
+
+    Use one sentence predicts the next concept word. Then use concept word to predict next x words.
+
+    What it is? Call wiki.
+    Why? Call a wiki or Q&A site.
+    How to do it? Call a Q&A website.
+    How to write code? Call stackiverflow.
+
+    > use text similarity to do the search
+
+    #lite #chatgpt #yingshaoxo
+    """
+    """
     1. First you have to have a folder where has multiple txt files
     2. This class will parse those text, convert it into 30000, 3000, 300, 30, 3, 1 char length sub_context_window, we slide that window by one char each search time
     3. If we found previous x_chars matchs the input_text user asks in our database, we return the following chars from database to the user
@@ -69,7 +283,7 @@ class Yingshaoxo_Text_Generator():
         准确率将高得惊人
         https://huggingface.co/distilbert-base-cased-distilled-squad?context=My+name+is+%E8%83%A1%E8%8B%B1%E6%9D%B0&question=What+is+my+name%3F
 
-    Wha kind of problem I have solved using traditional programming?
+    Wha kind of problem I have solved using traditional programming (similarity)?
     1. ChatBot
     2. Sentence translation
     3. Grammar correction
@@ -77,23 +291,287 @@ class Yingshaoxo_Text_Generator():
     5. Code completion
     6. Sentence rewrite
     """
-    def __init__(self, input_txt_folder_path: str, only_search_the_first_level_of_folders: bool = True, type_limiter: list[str] = [".txt", ".md"], use_machine_learning: bool = False, debug_mode: bool = False):
+    def __init__(self, input_txt_folder_path: str = "", type_limiter: list[str] = [".txt", ".md"], use_machine_learning: bool = False, debug_mode: bool = False):
         self.debug_mode = debug_mode
         self.input_txt_folder_path = input_txt_folder_path
 
-        self.text_source_data = ""
-        files = disk.get_files(self.input_txt_folder_path, recursive=not only_search_the_first_level_of_folders, type_limiter=type_limiter)
-        for file in files:
-            self.text_source_data += io_.read(file)
+        if input_txt_folder_path == "":
+            self.text_source_data = ""
+        else:
+            self.text_source_data = self.get_source_text_data_by_using_yingshaoxo_method(input_txt_folder_path=input_txt_folder_path, type_limiter=type_limiter)
             self.lower_case_text_source_data = self.text_source_data.lower()
-        
+
         self.use_machine_learning = use_machine_learning
         if (use_machine_learning == True):
             # pip install sentence_transformers
             from sentence_transformers import SentenceTransformer, util
             self.sentence_transformers_model = SentenceTransformer('all-MiniLM-L6-v2')
             self.sentence_transformers_utility = util
-    
+
+    def get_source_text_data_by_using_yingshaoxo_method(self, input_txt_folder_path: str, type_limiter: list[str] = [".txt", ".md"]) -> str:
+        text_source_data = ""
+        if disk.exists(input_txt_folder_path):
+            files = disk.get_files(input_txt_folder_path, recursive=True, type_limiter=type_limiter, use_gitignore_file=True)
+            for file in files:
+                text_source_data += io_.read(file)
+            return text_source_data
+        else:
+            return ""
+
+    def get_global_string_dict_by_using_yingshaoxo_method(self, source_text_data: str, levels: int = 10):
+        global_string_dict = {
+        }
+
+        def get_x_level_dict(source_text: str, x: int):
+            level_dict = {}
+            for index, _ in enumerate(source_text):
+                if index < (x-1):
+                    continue
+                if index == len(source_text) - x:
+                    break
+                current_chars = source_text[index-(x-1): index+1]
+                next_char = source_text[index+1]
+                if current_chars in level_dict:
+                    if next_char in level_dict[current_chars]:
+                        level_dict[current_chars][next_char] += 1
+                    else:
+                        level_dict[current_chars][next_char] = 1
+                else:
+                    level_dict[current_chars] = {next_char: 1}
+
+            pure_level_dict = {}
+            for key, value in level_dict.items():
+                biggest_value = 0
+                biggest_key = None
+                for key2, value2 in value.items():
+                    if value2 > biggest_value:
+                        biggest_value = value2
+                        biggest_key = key2
+                pure_level_dict[key] = biggest_key
+
+            return pure_level_dict
+
+        max_level = levels
+        for level in reversed(list(range(1, 1+max_level))):
+            global_string_dict[level] = get_x_level_dict(source_text_data, level)
+
+        return global_string_dict
+
+    def get_next_x_chars_by_using_yingshaoxo_method(self, input_text: str, x: int, levels: int = 10, source_text_data: str|None = None, global_string_dict: dict|None = None) -> Any:
+        """
+        This will generate text based on hash map or hash dict. If you use it in memory, the speed would be super quick.
+        """
+        if source_text_data == None:
+            source_text_data = self.text_source_data
+
+        if global_string_dict != None:
+            pass
+        else:
+            global_string_dict = self.get_global_string_dict_by_using_yingshaoxo_method(source_text_data, levels)
+
+        def predict_next_char(input_text: str):
+            for level in global_string_dict.keys():
+                last_chars = input_text[len(input_text)-level:]
+                if last_chars in global_string_dict[level].keys():
+                    return global_string_dict[level][last_chars]
+            return None
+
+        def predict_next_x_chars(input_text: str, x: int):
+            complete_text = input_text
+            for _ in range(x):
+                result = predict_next_char(complete_text)
+                if result == None:
+                    break
+                else:
+                    complete_text += result
+            return complete_text
+
+        final_text = predict_next_x_chars(input_text=input_text, x=x)
+        return final_text[len(input_text):]
+
+    def get_global_string_corrector_dict_by_using_yingshaoxo_method(self, source_text_data: str, levels: int = 10):
+        global_string_dict = {
+        }
+
+        seperator = "☺"
+
+        def get_x_level_dict(source_text: str, x: int):
+            level_dict = {}
+            for index, _ in enumerate(source_text):
+                if index < x:
+                    continue
+                if index == len(source_text) - x:
+                    break
+                current_chars = source_text[index-x: index] + seperator + source_text[index+1: index+x+1]
+                center_char = source_text[index]
+                if current_chars in level_dict:
+                    if center_char in level_dict[current_chars]:
+                        level_dict[current_chars][center_char] += 1
+                    else:
+                        level_dict[current_chars][center_char] = 1
+                else:
+                    level_dict[current_chars] = {center_char: 1}
+
+            pure_level_dict = {}
+            for key, value in level_dict.items():
+                biggest_value = 0
+                biggest_key = None
+                for key2, value2 in value.items():
+                    if value2 > biggest_value:
+                        biggest_value = value2
+                        biggest_key = key2
+                pure_level_dict[key] = biggest_key
+
+            return pure_level_dict
+
+        max_level = levels
+        for level in reversed(list(range(1, 1+max_level))):
+            global_string_dict[level] = get_x_level_dict(source_text_data, level)
+            break
+
+        return global_string_dict
+
+    def correct_sentence_by_using_yingshaoxo_method(self, input_text: str, levels: int = 6, source_text_data: str|None = None, global_string_corrector_dict: dict|None = None) -> any:
+        """
+        This will correct text based on pure text or hash map or hash dict. if you use it in memory, the speed would be super quick.
+        If you can modify this function from char level to word level, the accuracy could be 100%.
+        """
+        if source_text_data == None:
+            source_text_data = self.text_source_data
+
+        if global_string_corrector_dict != None:
+            pass
+        else:
+            global_string_corrector_dict = self.get_global_string_corrector_dict_by_using_yingshaoxo_method(source_text_data, levels)
+
+        input_text = "\n"*len(global_string_corrector_dict) + input_text + "\n"*len(global_string_corrector_dict)
+
+        seperator = "☺"
+        new_text = ""
+        for level in global_string_corrector_dict.keys():
+            for index, _ in enumerate(input_text):
+                if index < (level-1):
+                    new_text += input_text[index]
+                    continue
+                if index >= len(input_text) - level:
+                    new_text += input_text[index]
+                    continue
+                current_chars = input_text[index-level: index] + seperator + input_text[index+1: index+1+level]
+                if current_chars in global_string_corrector_dict[level].keys():
+                    new_text += global_string_corrector_dict[level][current_chars]
+                else:
+                    new_text += input_text[index]
+            break
+        return new_text
+
+    def correct_sentence_by_using_yingshaoxo_regex_method(self, input_text: str, source_data_text: str, level: int=3) -> str:
+        import re
+
+        def find_match_string_in_source_data(before_chars: str, after_chars: str):
+            before_chars = re.escape(before_chars)
+            after_chars = re.escape(after_chars)
+            result_list = re.findall(pattern=f"{before_chars}(.){after_chars}", string=source_data_text)
+            counting_dict = {}
+            for one in result_list:
+                if one in counting_dict.keys():
+                    counting_dict[one] += 1
+                else:
+                    counting_dict[one] = 1
+            items = list(counting_dict.items())
+            items.sort(key=lambda item: item[1], reverse=True)
+            if len(items) > 0:
+                return items[0][0]
+            else:
+                return None
+
+        new_text = ""
+        for index, _ in enumerate(input_text):
+            if index < (level-1):
+                new_text += input_text[index]
+                continue
+            if index >= len(input_text) - level:
+                new_text += input_text[index]
+                continue
+            before_chars = input_text[index-level: index]
+            after_chars = input_text[index+1: index+1+level]
+            #print(before_chars, input_text[index], after_chars)
+            new_chars = find_match_string_in_source_data(before_chars, after_chars)
+            if new_chars != None:
+                new_text += new_chars
+            else:
+                new_text += input_text[index]
+
+        return new_text
+
+    def get_global_string_word_based_corrector_dict_by_using_yingshaoxo_method(self, source_text_data: str, levels: int = 10):
+        global_string_dict = {}
+
+        seperator = "☺"
+
+        def get_x_level_dict(source_text: str, x: int):
+            level_dict = {}
+            tokens = string_split_to_pure_segment_list_by_using_yingshaoxo_method(source_text)
+            for index in range(len(tokens)):
+                if index < x:
+                    continue
+                if index == len(tokens) - x:
+                    break
+                current_words = ''.join(tokens[index-x: index]) + seperator + ''.join(tokens[index+1: index+x+1])
+                center_word = tokens[index]
+                if current_words in level_dict:
+                    if center_word in level_dict[current_words]:
+                        level_dict[current_words][center_word] += 1
+                    else:
+                        level_dict[current_words][center_word] = 1
+                else:
+                    level_dict[current_words] = {center_word: 1}
+
+            pure_level_dict = {}
+            for key, value in level_dict.items():
+                biggest_value = 0
+                biggest_key = None
+                for key2, value2 in value.items():
+                    if value2 > biggest_value:
+                        biggest_value = value2
+                        biggest_key = key2
+                pure_level_dict[key] = biggest_key
+
+            return pure_level_dict
+
+        max_level = levels
+        for level in reversed(list(range(1, 1+max_level))):
+            global_string_dict[level] = get_x_level_dict(source_text_data, level)
+            break
+
+        return global_string_dict
+
+    def correct_sentence_based_on_word_by_using_yingshaoxo_method(self, input_text: str, levels: int = 10, source_text_data: str|None = None, global_string_corrector_dict: dict|None = None) -> any:
+        if source_text_data == None:
+            source_text_data = ""
+
+        if global_string_corrector_dict != None:
+            pass
+        else:
+            global_string_corrector_dict = self.get_global_string_word_based_corrector_dict_by_using_yingshaoxo_method(source_text_data, levels)
+
+        input_text = "\n" * len(global_string_corrector_dict) + input_text + "\n" * len(global_string_corrector_dict)
+
+        seperator = "☺"
+        new_text = ""
+        for level in global_string_corrector_dict.keys():
+            tokens = string_split_to_pure_segment_list_by_using_yingshaoxo_method(input_text)
+            for index in range(len(tokens)):
+                if index < level or index >= len(tokens) - level:
+                    new_text += tokens[index]
+                    continue
+                current_words = ''.join(tokens[index - level: index]) + seperator + ''.join(tokens[index + 1 : index + 1 + level])
+                if current_words in global_string_corrector_dict[level].keys():
+                    new_text += global_string_corrector_dict[level][current_words]
+                else:
+                    new_text += tokens[index]
+            break
+        return new_text
+
     @staticmethod
     def get_random_text_deriation_from_source_text(source_text: str, random_remove_some_characters: bool = False, random_add_some_characters: bool = False, random_char_source_text: str = "") -> str:
         source_text_lines = source_text.split("\n")
@@ -110,17 +588,17 @@ class Yingshaoxo_Text_Generator():
         random_length = int(len(source_text) * 0.2)
         if random_remove_some_characters:
             for i in range(random_length):
-                random_index = random.randint(0, len(final_random_text)-1)	
+                random_index = random.randint(0, len(final_random_text)-1)
                 final_random_text = final_random_text[:random_index] + final_random_text[random_index + 1:]
         if random_add_some_characters:
             for i in range(random_length):
-                random_index = random.randint(0, len(final_random_text)-1)	
+                random_index = random.randint(0, len(final_random_text)-1)
                 if (random_char_source_text == ""):
                     random_char_source_text = source_text
                 final_random_text = final_random_text[:random_index] + random.choice(random_char_source_text) + final_random_text[random_index:]
 
         return final_random_text
-    
+
     def get_similarity_of_two_sentences(self, sentence_1: str, sentence_2: str, use_both_machine_learning_and_traditional_method: bool = False) -> float:
         if use_both_machine_learning_and_traditional_method == True:
             sentence_embedding_list = self.sentence_transformers_model.encode(sentences=[sentence_1, sentence_2], convert_to_tensor=True)
@@ -135,7 +613,7 @@ class Yingshaoxo_Text_Generator():
                 return float(similarity.cpu().numpy()[0][0])
             else:
                 return language.compare_two_sentences(sentence_1, sentence_2)
-    
+
     def _count_how_many_sub_string_in_previous_context(self, start_index: int, input_text: str, how_long_the_text_you_want_to_get: int = 1024):
         input_text = input_text.lower()
 
@@ -185,7 +663,7 @@ class Yingshaoxo_Text_Generator():
                 #    break
 
         if len(found_dict.keys()) > 0:
-            random_key = random.choice(list(found_dict.keys())) 
+            random_key = random.choice(list(found_dict.keys()))
             return self.text_source_data[found_dict[random_key]["end"]-how_long_the_text_you_want_to_get:found_dict[random_key]["end"]+how_long_the_text_you_want_to_get], found_dict[random_key]["following"]
         else:
             if use_fuzz_search == False:
@@ -261,7 +739,7 @@ class Yingshaoxo_Text_Generator():
                 if (self.debug_mode):
                     print(f"last_input_sentence: {last_input_sentence}")
                 break
-        
+
         similarity_list = []
         for index, one_target in enumerate(context_splits):
             if one_target ["is_punctuation_or_space"] == False:
@@ -294,9 +772,9 @@ class Yingshaoxo_Text_Generator():
             the_seperator_index -= 1
 
         return "".join([one["text"] for one in context_splits[the_seperator_index:]])
-    
+
     @staticmethod
-    def next_code_generation(data_source_folder_path: str, input_text: str, quck_mode: bool = True, type_limiter: list[str] = [".txt", ".py", ".md"], how_long_the_text_you_want_to_get: int = 1024):
+    def next_code_generation(input_text: str, type_limiter: list[str] = [".txt", ".py", ".md"], how_long_the_text_you_want_to_get: int = 1024, quck_mode: bool = True, data_source_text: str | None = None, data_source_folder_path: str | None = None, only_return_source_text: bool = False):
         """
         1. take the previous text as input
         2. take sub_string of the input_text, from right to left, from long to short.
@@ -309,29 +787,38 @@ class Yingshaoxo_Text_Generator():
         text_source_data = ""
         should_update_datasource = False
 
-        datestamp_string = store.get('last_code_generation_database_update_time', None)
-        if (datestamp_string == None):
-            should_update_datasource = True
-        else:
-            old_time = time_.get_datetime_object_from_timestamp(int(datestamp_string))
-            new_time = time_.get_datetime_object_from_timestamp(time_.get_current_timestamp_in_10_digits_format())
-            if (new_time - old_time).days > 3: #update the database for every 3 days
+        if data_source_text == None:
+            if data_source_txt_file_path == None:
+                return ""
+
+            datestamp_string = store.get('last_code_generation_database_update_time', None)
+            if (datestamp_string == None):
                 should_update_datasource = True
+            else:
+                old_time = time_.get_datetime_object_from_timestamp(int(datestamp_string))
+                new_time = time_.get_datetime_object_from_timestamp(time_.get_current_timestamp_in_10_digits_format())
+                if (new_time - old_time).days > 3: #update the database for every 3 days
+                    should_update_datasource = True
 
-        data_source_txt_file_path = terminal.fix_path("~/.auto_everything/ml/code_completion_data_source.txt")
-        disk.create_a_folder(disk.get_directory_path(data_source_txt_file_path))
-        if (not disk.exists(data_source_txt_file_path)):
-            io_.write(file_path=data_source_txt_file_path, content="")
+            data_source_txt_file_path = terminal.fix_path("~/.auto_everything/ml/code_completion_data_source.txt")
+            disk.create_a_folder(disk.get_directory_path(data_source_txt_file_path))
+            if (not disk.exists(data_source_txt_file_path)):
+                io_.write(file_path=data_source_txt_file_path, content="")
 
-        if should_update_datasource == True:
-            files = disk.get_files(folder=terminal.fix_path(data_source_folder_path), type_limiter=type_limiter)
-            io_.write(file_path=data_source_txt_file_path, content="")
-            for file in files:
-                io_.append(file_path=data_source_txt_file_path, content=io_.read(file) + "\n\n\n\n")
-            store.set('last_code_generation_database_update_time', str(time_.get_current_timestamp_in_10_digits_format()))
+            if should_update_datasource == True:
+                files = disk.get_files(folder=terminal.fix_path(data_source_folder_path), type_limiter=type_limiter)
+                io_.write(file_path=data_source_txt_file_path, content="")
+                for file in files:
+                    io_.append(file_path=data_source_txt_file_path, content=io_.read(file) + "\n\n\n\n")
+                store.set('last_code_generation_database_update_time', str(time_.get_current_timestamp_in_10_digits_format()))
+            else:
+                text_source_data = io_.read(data_source_txt_file_path)
+
+            if only_return_source_text == True:
+                return text_source_data
         else:
-            text_source_data = io_.read(data_source_txt_file_path)
-        
+            text_source_data = data_source_text
+
         def real_next_code_generation(input_text: str, how_long_the_text_you_want_to_get: int = 1024):
             if (input_text.strip() == ""):
                 return ""
@@ -350,7 +837,7 @@ class Yingshaoxo_Text_Generator():
                 following = text_source_data[end: end + how_long_the_text_you_want_to_get]
                 following = following.rstrip()
                 return following
-        
+
         return real_next_code_generation(input_text=input_text, how_long_the_text_you_want_to_get=how_long_the_text_you_want_to_get)
 
     def text_to_text_harding_coding_transforming(self, input_text_list: list[str], output_text_list: list[str], text_you_want_to_transform: str):
@@ -361,13 +848,13 @@ class Yingshaoxo_Text_Generator():
         4. tip 3 is still in [MASK] level. If you want to handle the sentence segment sorting problem, you have to predict the 'move farwrd x characters' and 'move backword x chracter' information. Which can also be treated like a mask.
 
         speak of the process speed, use cache.
-        
+
         this function could be used on 'wrong word correction', 'punctuation adding', 'sub_sentence rewrite'
 
         for 'summarytion task', get substrings from source_text, then get substrings from target_text, see how many substring shold get removed, get couting of those substrings that should get removed over the whole dataset.
             for the next time, in a new input sentence, we get those substring ranks, simply remove those substring that has higher 'garbage rank number'
-        
-        for 'sorting task', get substrings from input_text, then try to use before_context and following_context to do a search in target dataset, get the percentage of start_index/the_whole_length_of_the_sentence. 
+
+        for 'sorting task', get substrings from input_text, then try to use before_context and following_context to do a search in target dataset, get the percentage of start_index/the_whole_length_of_the_sentence.
             do a compare for the substring in the input_text, so you would get a percentage number of weather to move that substring farward or backward.
         """
         print("Haven't get implemented yet.")
@@ -414,6 +901,10 @@ class Yingshaoxo_Computer_Vision():
 
 
 class Yingshaoxo_Speech_Recognizer():
+    """
+    If you have a text_to_speech dataset, you could make a reverse coding.
+    Use voice similarity to get target voice, then use 1:1 speech_to_text dataset to get the target text.
+    """
     def __init__(self, language: str = 'en'):
         # pip install vosk
         # pip install sounddevice
@@ -436,7 +927,7 @@ class Yingshaoxo_Speech_Recognizer():
         self.KaldiRecognizer = KaldiRecognizer
 
         self.microphone_bytes_data_queue = queue.Queue()
-    
+
     def recognize_following_speech(self, timeout_in_seconds: int | None = None) -> str:
         while self.microphone_bytes_data_queue.empty() == False:
             self.microphone_bytes_data_queue.get_nowait()
@@ -450,7 +941,7 @@ class Yingshaoxo_Speech_Recognizer():
         try:
             device_info = self.sounddevice.query_devices(None, "input")
             samplerate = int(device_info["default_samplerate"]) #type:ignore
-                
+
             with self.sounddevice.RawInputStream(samplerate=samplerate, blocksize = 8000, device=None,
                     dtype="int16", channels=1, callback=callback):
                 rec = self.KaldiRecognizer(self.vosk_model, samplerate)
@@ -478,6 +969,10 @@ class Yingshaoxo_Speech_Recognizer():
 
 
 class Yingshaoxo_Translator():
+    """
+    translation is kind of 1:1 task
+    if you have a super big dataset, you replace longest sentence first, you'll get 100% accurate translation
+    """
     def __init__(self):
         # pip install dl-translate
         import dl_translate
@@ -486,7 +981,7 @@ class Yingshaoxo_Translator():
         self.dl_translate_model = self.dl_translate.TranslationModel(device="auto")
         self.languages = self.dl_translate.lang
         self._language = Language()
-    
+
     def translate(self, text: str, from_language: Any, to_language: Any, sentence_seperation: bool = False) -> str:
         try:
             text = text.strip()
@@ -515,7 +1010,7 @@ class Yingshaoxo_Translator():
         except Exception as e:
             print(e)
             return text
-    
+
     def chinese_to_english(self, text: str, sentence_seperation: bool = False):
         return self.translate(text=text, from_language=self.languages.CHINESE, to_language=self.languages.ENGLISH, sentence_seperation=sentence_seperation)
 
@@ -524,6 +1019,42 @@ class Yingshaoxo_Translator():
 
 
 class Yingshaoxo_Text_to_Speech():
+    """
+    TTS hard coding method 2:
+
+
+    1. Text map to 64k mp3 audio
+
+    2. Use ",." symbol to separate text, so you get less repeated text data
+
+    3. When you got 1GB of data, you get a well functioned TTS
+
+    > You could even use speech recognition to collect audio to text dict data.
+
+    > By using this method, you could get almost 100% accurate TTS for your voice
+
+
+    #tts #yingshaoxo
+    """
+    """
+    TTS hard coding method, 1:
+
+
+    Word to Sound directly, but with software to control it's strongth, tune, pause length between words.
+
+    The strongth is actually the relative audio volume between a word, a sentence. (Or audio volume line)
+
+    And the tune will need you to change each word length.
+
+    Audio Line: 40 50 70 100 (volume %, from low to high)
+
+    Audio length: 1 1.8 1 (word relative length, "how are you?")
+
+    Audio pause length: 0.1 0.1 (word pause relative length for "how are you")
+
+
+    #tts #yingshaoxo
+    """
     def __init__(self):
         #pip install TTS
         #sudo apt install ffmpeg                 or          https://github.com/markus-perl/ffmpeg-build-script#:~:text=maintain%20different%20systems.-,Installation,-Quick%20install%20and
@@ -593,7 +1124,7 @@ class Yingshaoxo_Text_to_Speech():
 
         if len(language_list) > 0:
             language_list[-1]["text"] += text[-1]
-        
+
         new_list = []
         for index, one in enumerate(language_list):
             new_text = language_list[index]["text"].strip()
@@ -628,7 +1159,7 @@ class Yingshaoxo_Text_to_Speech():
         self.terminal.run(f"""
         ffplay -autoexit -nodisp "{output_file}"
                 """, wait=True)
-        
+
         self.disk.delete_a_file(output_file)
 
     def speak_it(self, text: str):
@@ -636,6 +1167,11 @@ class Yingshaoxo_Text_to_Speech():
         for one in data_:
             print(one)
             self._speak_it(language=one["language"], text=one["text"])
+
+
+class ML():
+    def __init__(self):
+        self.Yingshaoxo_Text_Generator = Yingshaoxo_Text_Generator
 
 
 if __name__ == "__main__":

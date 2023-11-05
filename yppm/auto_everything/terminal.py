@@ -126,6 +126,47 @@ class Terminal:
         path = self.fix_path(path)
         return os.path.exists(path)
 
+    def software_exists(self, software_name: str) -> bool:
+        """
+        cheack if a software exists
+        return true is it exists
+
+        Parameters
+        ----------
+        software_name : string
+            for example, "wget", "curl", "git", "python3", "node"
+        """
+        has_which = False
+        if "exists" in self.run_command(f"""
+            if which version >/dev/null; then
+                echo "exists"
+            else
+                exit 0
+            fi
+        """):
+            has_which = True
+
+        if has_which:
+            if "exists" in self.run_command(f"""
+                if which {software_name} >/dev/null; then
+                    echo "exists"
+                else
+                    exit 0
+                fi
+            """):
+                return True
+        else:
+            if "exists" in self.run_command(f"""
+                if {software_name} --version >/dev/null; then
+                    echo "exists"
+                else
+                    exit 0
+                fi
+            """):
+                return True
+
+        return False
+
     def __text_to_sh(self, text: str, wait: bool=False) -> Tuple[str, str]:
         m = hashlib.sha256()
         m.update(str(datetime.now()).encode("utf-8"))

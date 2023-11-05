@@ -41,9 +41,9 @@ print(f"resource_basic_folder_path: {resource_basic_folder_path}")
 print(f"database_path: {the_database_path}")
 print()
 disk.create_a_folder(the_database_path)
-multiprocess_manager_socket_service = multiprocessing.Manager()
-global_shared_dict = multiprocess_manager_socket_service.dict()
-database_excutor_for_remote_service = Yingshaoxo_Database_Excutor_app_store(database_base_folder=the_database_path, use_sqlite=False, global_multiprocessing_shared_dict=global_shared_dict)
+#multiprocess_manager_socket_service = multiprocessing.Manager()
+#global_shared_dict = multiprocess_manager_socket_service.dict()
+database_excutor_for_remote_service = Yingshaoxo_Database_Excutor_app_store(database_base_folder=the_database_path, use_sqlite=False, global_multiprocessing_shared_dict=None)
 
 
 class App_Store_Service(app_store_pure_python_rpc.Service_app_store):

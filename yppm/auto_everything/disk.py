@@ -1,25 +1,27 @@
 from __future__ import annotations
-import base64
-from dataclasses import dataclass
-import datetime
-import pathlib
-import tempfile
+
 from typing import Any, Iterable, List, Tuple
-from pathlib import Path
+
 import os
 import re
 import json
-import hashlib
-import unicodedata
-import string
-from io import BytesIO
-from fnmatch import fnmatch
-import shutil
 import random
-
+import string
+import hashlib
 import copy
 import struct
 import sys
+import base64
+import datetime
+import shutil
+from io import BytesIO
+
+from dataclasses import dataclass
+import pathlib
+import tempfile
+from pathlib import Path
+import unicodedata
+from fnmatch import fnmatch
 
 from auto_everything.terminal import Terminal
 t = Terminal(debug=True)
@@ -50,6 +52,133 @@ class _FileInfo:
     level: int
     # parent: _FileInfo | None = None # You could try to make a global dict[path, _FilelInfo], then iterate twice to set parent
     children: List[_FileInfo] | None = None
+
+
+class Sha1():
+    """A class that mimics that hashlib api and implements the SHA-1 algorithm."""
+
+    def __init__(self):
+        # Initial digest variables
+        self._h = (
+            0x67452301,
+            0xEFCDAB89,
+            0x98BADCFE,
+            0x10325476,
+            0xC3D2E1F0,
+        )
+
+        # bytes object with 0 <= len < 64 used to store the end of the message
+        # if the message length is not congruent to 64
+        self._unprocessed = b''
+        # Length in bytes of all data that has been processed so far
+        self._message_byte_length = 0
+
+    def _left_rotate(self, n, b):
+        """Left rotate a 32-bit integer n by b bits."""
+        return ((n << b) | (n >> (32 - b))) & 0xffffffff
+
+    def _process_chunk(self, chunk, h0, h1, h2, h3, h4):
+        """Process a chunk of data and return the new digest variables."""
+        assert len(chunk) == 64
+
+        w = [0] * 80
+
+        # Break chunk into sixteen 4-byte big-endian words w[i]
+        for i in range(16):
+            w[i] = struct.unpack(b'>I', chunk[i * 4:i * 4 + 4])[0]
+
+        # Extend the sixteen 4-byte words into eighty 4-byte words
+        for i in range(16, 80):
+            w[i] = self._left_rotate(w[i - 3] ^ w[i - 8] ^ w[i - 14] ^ w[i - 16], 1)
+
+        # Initialize hash value for this chunk
+        a = h0
+        b = h1
+        c = h2
+        d = h3
+        e = h4
+
+        for i in range(80):
+            if 0 <= i <= 19:
+                # Use alternative 1 for f from FIPS PB 180-1 to avoid bitwise not
+                f = d ^ (b & (c ^ d))
+                k = 0x5A827999
+            elif 20 <= i <= 39:
+                f = b ^ c ^ d
+                k = 0x6ED9EBA1
+            elif 40 <= i <= 59:
+                f = (b & c) | (b & d) | (c & d)
+                k = 0x8F1BBCDC
+            elif 60 <= i <= 79:
+                f = b ^ c ^ d
+                k = 0xCA62C1D6
+
+            a, b, c, d, e = ((self._left_rotate(a, 5) + f + e + k + w[i]) & 0xffffffff,
+                             a, self._left_rotate(b, 30), c, d)
+
+        # Add this chunk's hash to result so far
+        h0 = (h0 + a) & 0xffffffff
+        h1 = (h1 + b) & 0xffffffff
+        h2 = (h2 + c) & 0xffffffff
+        h3 = (h3 + d) & 0xffffffff
+        h4 = (h4 + e) & 0xffffffff
+
+        return h0, h1, h2, h3, h4
+
+    def update(self, arg: bytes | bytearray):
+        """Update the current digest.
+
+        This may be called repeatedly, even after calling digest or hexdigest.
+
+        Arguments:
+            arg: bytes, bytearray, or BytesIO object to read from.
+        """
+        if isinstance(arg, (bytes, bytearray)):
+            arg = BytesIO(arg)
+
+        # Try to build a chunk out of the unprocessed data, if any
+        chunk = self._unprocessed + arg.read(64 - len(self._unprocessed))
+
+        # Read the rest of the data, 64 bytes at a time
+        while len(chunk) == 64:
+            self._h = self._process_chunk(chunk, *self._h)
+            self._message_byte_length += 64
+            chunk = arg.read(64)
+
+        self._unprocessed = chunk
+        return self
+
+    def digest(self):
+        """Produce the final hash value (big-endian) as a bytes object"""
+        return b''.join(struct.pack(b'>I', h) for h in self._produce_digest())
+
+    def hexdigest(self):
+        """Produce the final hash value (big-endian) as a hex string"""
+        return '%08x%08x%08x%08x%08x' % self._produce_digest()
+
+    def _produce_digest(self):
+        """Return finalized digest variables for the data processed so far."""
+        # Pre-processing:
+        message = self._unprocessed
+        message_byte_length = self._message_byte_length + len(message)
+
+        # append the bit '1' to the message
+        message += b'\x80'
+
+        # append 0 <= k < 512 bits '0', so that the resulting message length (in bytes)
+        # is congruent to 56 (mod 64)
+        message += b'\x00' * ((56 - (message_byte_length + 1) % 64) % 64)
+
+        # append length of message (before pre-processing), in bits, as 64-bit big-endian integer
+        message_bit_length = message_byte_length * 8
+        message += struct.pack(b'>Q', message_bit_length)
+
+        # Process the final chunk
+        # At this point, the length of the message is either 64 or 128 bytes.
+        h = self._process_chunk(message[:64], *self._h)
+        if len(message) == 64:
+            return h
+        return self._process_chunk(message[64:], *h)
 
 
 class Sha256:
@@ -288,10 +417,29 @@ class Disk:
         gitignore_text: str
             similar to git's .gitignore file, if any file matchs any rule, it won't be inside of the 'return file list'
         use_gitignore_file: bool
-            if true, this function will not return any file/folder that matchs .gitignore file rules
+            if true, this function will not return any file/folder that matchs .gitignore file rules. And gitignore_text property will lose its effects.
         """
         folder = self._expand_user(folder)
         assert os.path.exists(folder), f"{folder} is not exist!"
+
+        if use_gitignore_file == True:
+            files = self.get_folder_and_files_with_gitignore(folder=folder, recursive=recursive, return_list_than_tree=True)
+            new_files = []
+            for file in files:
+                ok = False
+                if file.is_file == False:
+                    continue
+                if type_limiter == None:
+                    ok = True
+                else:
+                    for type_limit in type_limiter:
+                        if file.path.endswith(type_limit):
+                            ok = True
+                            break
+                if ok == True:
+                    new_files.append(file.path)
+            return new_files
+
         if recursive == True:
             files:list[str] = []
             for root, dirnames, filenames in os.walk(folder):
@@ -335,6 +483,7 @@ class Disk:
 
             files = result_files
 
+        """
         if use_gitignore_file:
             if "version" not in t.run_command("git --version").lower():
                 print("error: git needs to get installed for using 'use_gitignore_file' paramater.")
@@ -367,6 +516,7 @@ class Disk:
                     if ok:
                         new_files.append(file)
             files = new_files
+        """
 
         return files
 
@@ -476,7 +626,19 @@ class Disk:
         gitignore_text: str|None = None,
     ) -> _FileInfo:
         """
-        Get files recursively under a folder.
+        Get files and folders recursively under a folder.
+        This function will return you a tree object as:
+        ```
+            @dataclass
+            class _FileInfo:
+                path: str
+                is_folder: bool
+                is_file: bool
+                folder: str
+                name: str
+                level: int
+                children: List[_FileInfo] | None = None
+        ```
 
         Parameters
         ----------
@@ -486,6 +648,8 @@ class Disk:
         gitignore_text: str
             similar to git's .gitignore file, if any file matchs any rule, it won't be inside of the 'return file list'
         """
+        folder = self._expand_user(folder)
+
         root = _FileInfo(
             path=folder,
             is_folder=True,
@@ -547,6 +711,115 @@ class Disk:
         dive(root)
 
         return root
+
+    def get_folder_and_files_with_gitignore(
+        self,
+        folder: str,
+        recursive: bool = True,
+        include_docker_ignore_file: bool = False,
+        return_list_than_tree: bool = False,
+    ) -> _FileInfo | list[_FileInfo]:
+        """
+        Get files and folders recursively under a folder.
+        This function will return you a tree object as:
+        ```
+            @dataclass
+            class _FileInfo:
+                path: str
+                is_folder: bool
+                is_file: bool
+                folder: str
+                name: str
+                level: int
+                children: List[_FileInfo] | None = None
+        ```
+
+        Parameters
+        ----------
+        folder: string
+        recursive: bool = True,
+        include_docker_ignore_file: bool = False,
+        return_list_than_tree: bool = False,
+        """
+        folder = self._expand_user(folder)
+
+        root = _FileInfo(
+            path=folder,
+            is_folder=True,
+            is_file=False,
+            folder=self.get_directory_name(folder),
+            name=self.get_file_name(folder),
+            level=0,
+            children=None
+        )
+
+        def dive(node: _FileInfo, git_ignore_pattern_list: list[str] = []):
+            folder = node.path
+
+            if not os.path.isdir(folder):
+                return
+
+            items = os.listdir(folder)
+            if len(items) == 0:
+                return
+
+            ignore_pattern_list = git_ignore_pattern_list
+            if ".gitignore" in items:
+                temp_git_ignore_text = self.read_bytes_from_file(os.path.join(folder, ".gitignore")).decode("utf-8", errors="ignore")
+                temp_git_ignore_pattern_list = self._parse_gitignore_text_to_list(gitignore_text=temp_git_ignore_text)
+                ignore_pattern_list += temp_git_ignore_pattern_list
+            if include_docker_ignore_file == True:
+                if ".dockerignore" in items:
+                    temp_git_ignore_text = self.read_bytes_from_file(os.path.join(folder, ".dockerignore")).decode("utf-8", errors="ignore")
+                    temp_git_ignore_pattern_list = self._parse_gitignore_text_to_list(gitignore_text=temp_git_ignore_text)
+                    ignore_pattern_list += temp_git_ignore_pattern_list
+            ignore_pattern_list.append(".git")
+            ignore_pattern_list = list(set(ignore_pattern_list))
+            #print(ignore_pattern_list)
+
+            files_and_folders: list[_FileInfo] = []
+            for filename in items:
+                file_path = os.path.join(folder, filename)
+
+                if self._file_match_the_gitignore_rule_list(
+                    start_folder=node.path,
+                    file_path=file_path,
+                    ignore_pattern_list=ignore_pattern_list,
+                ):
+                    continue
+
+                new_node = _FileInfo(
+                    path=file_path,
+                    is_folder=os.path.isdir(file_path),
+                    is_file=os.path.isfile(file_path),
+                    folder=self.get_directory_name(file_path),
+                    name=self.get_file_name(file_path),
+                    level=node.level + 1,
+                    children=None
+                )
+                if recursive == True:
+                    dive(node=new_node, git_ignore_pattern_list=ignore_pattern_list)
+                files_and_folders.append(
+                    new_node
+                )
+
+            files_and_folders.sort(key=lambda node_: self._super_sort_key_function(node_.name))
+            node.children = files_and_folders
+
+        dive(root, [])
+
+        if return_list_than_tree == False:
+            return root
+        else:
+            result_list = []
+            queue = [root]
+            while len(queue) > 0:
+                node = queue[0]
+                queue = queue[1:]
+                if node.children != None:
+                    queue += node.children
+                result_list.append(node)
+            return result_list[1:]
 
     def sort_files_by_time(self, files: List[str], reverse: bool = False):
         files.sort(key=os.path.getmtime, reverse=reverse)
@@ -1038,15 +1311,31 @@ class Disk:
         folder_path = self._expand_user(folder_path)
         Path(folder_path).mkdir(parents=True, exist_ok=True)
 
-    def copy_a_folder(self, source_folder_path: str, target_folder_path: str):
+    def copy_a_folder(self, source_folder_path: str, target_folder_path: str, use_gitignore_file: bool = False):
         source_folder_path = self._expand_user(source_folder_path)
         target_folder_path = self._expand_user(target_folder_path)
+
+        source_folder_path = os.path.abspath(source_folder_path)
+        target_folder_path = os.path.abspath(target_folder_path)
 
         if (not self.exists(target_folder_path)):
             self.create_a_folder(target_folder_path)
         else:
             if not self.is_directory(target_folder_path):
                 self.delete_a_file(target_folder_path)
+
+        if use_gitignore_file == True:
+            source_files = self.get_folder_and_files_with_gitignore(folder=source_folder_path, recursive=True, return_list_than_tree=True)
+            for source_file in source_files:
+                sub_file_name = source_file.path[len(source_folder_path):]
+                sub_file_name = sub_file_name.lstrip("/\\")
+                target_file_path = self.join_paths(target_folder_path, sub_file_name)
+                if source_file.is_folder:
+                    self.create_a_folder(target_file_path)
+                else:
+                    #self.write_bytes_into_file(target_file_path, self.read_bytes_from_file(source_file.path))
+                    self.copy_a_file(source_file.path, target_file_path)
+            return
 
         try:
             shutil.copytree(source_folder_path, target_folder_path, dirs_exist_ok=True)

@@ -52,6 +52,15 @@ class Client_question_and_answer:
         except Exception as e: 
             return {self._special_error_key: str(e)}
 
+    def ask_yingshaoxo_ai(self, item: Ask_Yingshaoxo_Ai_Request, ignore_error: bool | None=None) -> Ask_Yingshaoxo_Ai_Response | None:
+        result = self._get_reponse_or_error_by_url_path_and_input("ask_yingshaoxo_ai", item.to_dict())
+        if self._special_error_key in result.keys():
+            if ((ignore_error == None) or ((ignore_error != None) and (not ignore_error))):
+                self._error_handle_function(result[self._special_error_key])
+            return None
+        else:
+            return Ask_Yingshaoxo_Ai_Response().from_dict(result)
+
     def visitor_get_json_web_token(self, item: Get_JSON_Web_Token_Request, ignore_error: bool | None=None) -> Get_JSON_Web_Token_Response | None:
         result = self._get_reponse_or_error_by_url_path_and_input("visitor_get_json_web_token", item.to_dict())
         if self._special_error_key in result.keys():
