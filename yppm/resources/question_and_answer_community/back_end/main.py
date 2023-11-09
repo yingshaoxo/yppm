@@ -140,15 +140,19 @@ class Question_And_Answer_Service(question_and_answer_pure_python_rpc.Service_qu
                 if search_text.lower() in str(json_object).lower():
                     return json_object
                 return None
-            search_list = database_excutor_for_remote_service.A_Post.raw_search(one_row_json_string_handler=a_handler, page_number=item.page_number, page_size=item.page_size)
-            # need to do a comment search in the future for more accurate result
+            post_search_list = database_excutor_for_remote_service.A_Post.raw_search(one_row_json_string_handler=a_handler, page_number=item.page_number, page_size=item.page_size)
+            default_response.post_search_list = []
 
-            if len(search_list) == 0:
-                default_response.post_list = []
-                return default_response
-            else:
-                default_response.post_list = search_list
-                return default_response
+            def a_comment_handler(raw_json_text: str) -> dict[str, Any] | None:
+                search_text = item.search_input
+                json_object = json.loads(raw_json_text)
+                if search_text.lower() in str(json_object).lower():
+                    return json_object
+                return None
+            comment_search_list = database_excutor_for_remote_service.A_Comment.raw_search(one_row_json_string_handler=a_comment_handler, page_number=item.page_number, page_size=item.page_size)
+            default_response.comment_list = comment_search_list
+
+            return default_response
         except Exception as e:
             print(f"Error: {e}")
             #default_response.error = str(e)

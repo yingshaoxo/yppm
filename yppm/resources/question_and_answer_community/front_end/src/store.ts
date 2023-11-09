@@ -3,9 +3,6 @@ import { reactive } from 'vue';
 import * as question_and_answer_objects from './generated_yrpc/question_and_answer_objects'
 import * as question_and_answer_rpc from './generated_yrpc/question_and_answer_rpc'
 
-import home_page from "./pages/home_page.vue"
-import app_page from "./pages/app_page.vue"
-
 const interceptor_function = (data: any) => {
     if (Object.keys(data).includes('error')) {
         if (data?.error) {
@@ -47,8 +44,10 @@ export var global_dict = reactive({
     current_page_name: "",
     current_page_data: {} as any,
     page_name_dict: {
-        home_chat_page: "home_chat_page",
-        post_detail_page: "post_detail_page",
+        search_page: "search_page",
+        chat_page: "chat_page",
+        detail_page: "detail_page",
+        //user_detail_page: "user_detail_page",
     },
     client: new question_and_answer_rpc.Client_question_and_answer(
             get_host_url(""),
@@ -104,7 +103,7 @@ export var global_functions = {
         if ((<any>Object).values(global_dict.page_name_dict).includes(the_current_route_name)) {
             global_dict.current_page_name = the_current_route_name
         } else {
-            global_dict.current_page_name = global_dict.page_name_dict.home_chat_page
+            global_dict.current_page_name = global_dict.page_name_dict.search_page
         }
     },
     go_to_page: (page_name: string, data: any = {}) => {

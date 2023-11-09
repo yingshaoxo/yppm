@@ -1,21 +1,29 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import { reactive, onMounted } from 'vue';
+import { reactive, onMounted, onBeforeMount } from 'vue';
 
-import HomeChatPage from './pages/visitor/home_chat_page.vue';
+import Visitor_HomeSearchPage from './pages/visitor/search_page.vue';
+import Visitor_HomeChatPage from './pages/visitor/chat_page.vue';
+import Visitor_DetailPage from './pages/visitor/detail_page.vue';
 
 import { global_dict, global_functions } from './store';
 
 @Component({
     components: {
-        HomeChatPage,
+        Visitor_HomeSearchPage,
+        Visitor_HomeChatPage,
+        Visitor_DetailPage
     },
 
     setup() {
         const dict = reactive({
         })
 
-        onMounted(() => {
+        onBeforeMount(()=>{
+            global_functions.go_to_page_based_on_current_url()
+        })
+
+        onMounted(async () => {
             //console.log("hi");
         });
 
@@ -34,9 +42,18 @@ export default class App extends Vue {}
 
 <template>
     <div id="app">
-        <div>
-            <HomeChatPage />
+        <div v-if="global_dict.current_page_name == 'search_page'">
+            <Visitor_HomeSearchPage />
         </div>
+
+        <div v-if="global_dict.current_page_name == 'chat_page'">
+            <Visitor_HomeChatPage />
+        </div>
+
+        <div v-if="global_dict.current_page_name == 'detail_page'">
+            <Visitor_DetailPage />
+        </div>
+
         <!--img alt="Vue logo" src="./assets/logo.png"-->
         <!--
         <h1>{{ global_dict.hi }}</h1>
