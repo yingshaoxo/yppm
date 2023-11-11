@@ -11,7 +11,7 @@ This website should also have another page, which is the detail page, where it h
 
 If a user want to create/edit/check a question/answer/comment, they will do it at detail page.
 
-**I have to make sure there have one public account for everyone to add stuff. So they don't have to register/login to add question and comment**
+**I have to make sure there have one public account for everyone to add stuff. So they don't have to register/login to add question and comment** (In the end, I simply cut off the whole user system)
 
 **In the end, it should look like 知*乎+T*tter(no char limitation)**
 

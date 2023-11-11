@@ -15,44 +15,48 @@ import * as question_and_answer_objects from '../../generated_yrpc/question_and_
     */
     setup() {
         const dict = reactive({
-            history_context: "",
-            input_value: "",
-            message_list: [
-                {
-                    sender: "others",
-                    text: "Hi, there!",
-                }
-            ]
+            a_post: {
+                owner_id: "",
+                id: "",
+                title: "Hi",
+                description: "You are died.",
+                comment_id_list: ["1", "2"],
+                create_time_in_10_numbers_timestamp_format: null,
+                tag: null, // for example, [ad, spam, adult]
+            } as question_and_answer_object_types.A_Post,
+            comment_list: [] as any,
+            left_old_list: [] as any,
+            right_new_list: [] as any,
         });
 
         const functions = reactive({
-            send_question: async (input: string) => {
-                input = input.trim()
-
-                dict.message_list.unshift({
-                    sender: "me",
-                    text: input
-                })
-
-                dict.history_context += input + "\n"
-                let real_input = dict.history_context.substring(dict.history_context.length-800, dict.history_context.length).trim()
-
-                let request = new question_and_answer_objects.Ask_Yingshaoxo_Ai_Request()
-                request.input = real_input
-                let response = await global_dict.client.ask_yingshaoxo_ai(request)
-                if (response?.answers != null) {
-                    // add answers to list view
-                    dict.message_list.unshift({
-                        sender: "others",
-                        text: response?.answers
-                    })
-                    
+            get_a_post: async () => {
+                let request = new question_and_answer_objects.Get_A_Post_Request()
+                request.id = dict?.a_post?.id
+                let response = await global_dict.client.visitor_get_a_post(request)
+                if (response?.post != null) {
+                    dict.a_post = response?.post
+                    if (dict?.a_post?.comment_id_list != null) {
+                        let request2 = new question_and_answer_objects.Get_Comment_List_By_Id_List_Request()
+                        request2.comment_id_list = dict?.a_post?.comment_id_list
+                        let response2 = await global_dict.client.visitor_get_comment_list_by_id_list(request2)
+                        if (response2?.comment_list != null) {
+                            dict.comment_list = response2?.comment_list
+                            let length = dict?.comment_list?.length
+                            let half_length = Math.round(length / 2)
+                            dict.left_old_list = dict?.comment_list.slice(0, half_length)
+                            dict.right_new_list = dict?.comment_list.slice(half_length, length)
+                            dict.right_new_list.reverse();
+                        }
+                    }
                 }
             }
         })
 
         onMounted(() => {
-            //console.log("hi");
+            if (global_dict?.current_page_data?.id != null) {
+                dict.a_post.id = global_dict?.current_page_data?.id
+            }
         });
 
         return {
@@ -83,32 +87,37 @@ export default class Visitor_Home_Chat_Page extends Vue {
 
 <template>
     <div class="full_screen">
-        <div class="input_container _columns">
-            <textarea class="the_input" @input="()=>{ auto_adjust_input_height(200) }" v-model="dict.input_value"></textarea>
-            <button class="the_send_button" @click="functions.send_question(dict.input_value)">Send</button>
-        </div>
-        <div class="history_message_list">
-            <div v-for="message in dict.message_list">
-                <div class="message_row" :class="{'message_me': message.sender=='me', 'message_other': message.sender=='others'}">
-                    <div class="message message_other_color" :class="{'message_me_color': message.sender=='me', 'message_other_color': message.sender=='others'}">
-                        <pre>{{ message?.text }}</pre>
+        <div class="detail_view_container">
+            <h2 class="title">
+                {{dict.a_post.title}}
+            </h2>
+            <div class="description">
+                {{dict.a_post.description}}
+            </div>
+            <div class="author">
+                @{{dict.a_post.owner_id}}
+            </div>
+
+            <div class="post_seperator">
+            </div>
+
+            <div class="comment_list">
+                <div class="left_old_list">
+                    <div v-for="item in dict.left_old_list">
+                        <span>{{ item?.owner_id }}:</span>
+                        <span>{{item?.description}}</span>
+                    </div>
+                </div>
+                <div class="right_new_list">
+                    <div v-for="item in dict.right_new_list">
+                        <span>{{ item?.owner_id }}:</span>
+                        <span>{{item?.description}}</span>
                     </div>
                 </div>
             </div>
-            <!--div class="message_row message_other">
-                <div class="message message_other_color">
-                    Hi, yingshaoxo
-                </div>
-            </div>
-            <div class="message_row message_me">
-                <div class="message message_me_color">
-                    Hi, stranger.
-                </div>
-            </div-->
         </div>
     </div>
 </template>
-
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="less">
@@ -116,36 +125,69 @@ export default class Visitor_Home_Chat_Page extends Vue {
 
 .full_screen {
     width: 98vw;
-    height: 100vh;
+    min-height: 100vh;
 
     ._rows;
     ._horizontal_center;
 }
 
-.input_container {
+.detail_view_container {
     margin-top: 25px;
 
-    max-height: 100px;
     width: 100%;
-    justify-content: space-between;
-    
-    .the_input {
-        width: 100%;
+    text-align: left;
+
+    .title {
+        padding-left: 16px;
+        padding-right: 16px;
     }
-    .the_send_button {
-        max-height: 40px;
+
+    .description {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+
+    .author {
+        ._less_obvious_text;
+        margin-top: 10px;
+        text-align: right;
+
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+
+    .post_seperator {
+        width: 100%;
+        height: 1px;
+        background-color: rgba(0,0,0);
+
+        margin-top: 16px;
+        margin-bottom: 16px;
     }
 }
 
-.history_message_list {
+.comment_list {
     margin-top: 50px;
 
-    width: 95%;
-    height: 80vh;
+    width: 100%;
 
     overflow: auto;
 
-    ._rows;
+    ._columns;
+
+    .left_old_list {
+        padding: 4px;
+
+        background-color: #FF8A80;
+        width: 50%;
+    }
+
+    .right_new_list {
+        padding: 4px;
+
+        background-color: #BBDEFB;
+        width: 50%;
+    }
 
     .message_row {
         width: 100%;

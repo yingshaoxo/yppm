@@ -187,92 +187,6 @@ const _general_from_dict_function = (old_object: any, new_object: any): any => {
     return old_object
 }
 
-export enum User_Type {
-    // yingshaoxo: I strongly recommend you use enum as a string type in other message data_model
-    user = "user",
-    admin = "admin",
-}
-
-export interface _A_User {
-    create_time_in_10_numbers_timestamp_format: number | null;
-    id: string | null;
-    email: string | null;
-    password: string | null;
-    user_type: string | null;
-    json_web_token: string | null;
-    likes: number | null;
-    dislikes: number | null;
-}
-
-export class A_User {
-    create_time_in_10_numbers_timestamp_format: number | null = null;
-    id: string | null = null;
-    email: string | null = null;
-    password: string | null = null;
-    user_type: string | null = null;
-    json_web_token: string | null = null;
-    likes: number | null = null;
-    dislikes: number | null = null;
-
-    _property_name_to_its_type_dict = {
-            create_time_in_10_numbers_timestamp_format: "number",
-            id: "string",
-            email: "string",
-            password: "string",
-            user_type: "string",
-            json_web_token: "string",
-            likes: "number",
-            dislikes: "number",
-    };
-
-    _key_string_dict = {
-        create_time_in_10_numbers_timestamp_format: "create_time_in_10_numbers_timestamp_format",
-        id: "id",
-        email: "email",
-        password: "password",
-        user_type: "user_type",
-        json_web_token: "json_web_token",
-        likes: "likes",
-        dislikes: "dislikes",
-    };
-
-    /*
-    constructor(create_time_in_10_numbers_timestamp_format: number | null = null, id: string | null = null, email: string | null = null, password: string | null = null, user_type: string | null = null, json_web_token: string | null = null, likes: number | null = null, dislikes: number | null = null) {
-            this.create_time_in_10_numbers_timestamp_format = create_time_in_10_numbers_timestamp_format
-            this.id = id
-            this.email = email
-            this.password = password
-            this.user_type = user_type
-            this.json_web_token = json_web_token
-            this.likes = likes
-            this.dislikes = dislikes
-    }
-    */
-
-    to_dict(): _A_User {
-        return _general_to_dict_function(this);
-    }
-
-    _clone(): A_User {
-        let clone = Object.assign(Object.create(Object.getPrototypeOf(this)), this)
-        return clone
-    }
-
-    from_dict(item: _A_User): A_User {
-        let an_item = new A_User()
-        let new_dict = _general_from_dict_function(an_item, item)
-
-        for (const key of Object.keys(new_dict)) {
-            let value = new_dict[key]
-            //@ts-ignore
-            this[key] = value
-            //@ts-ignore
-            an_item[key] = value
-        }
-
-        return an_item
-    }
-}
 
 
 export interface _A_Post {
@@ -281,10 +195,8 @@ export interface _A_Post {
     title: string | null;
     description: string | null;
     comment_id_list: string[] | null;
-    likes: string[] | null;
-    dislikes: string[] | null;
     create_time_in_10_numbers_timestamp_format: number | null;
-    update_time_in_10_numbers_timestamp_format: number | null;
+    tag: string | null;
 }
 
 export class A_Post {
@@ -293,10 +205,8 @@ export class A_Post {
     title: string | null = null;
     description: string | null = null;
     comment_id_list: string[] | null = null;
-    likes: string[] | null = null;
-    dislikes: string[] | null = null;
     create_time_in_10_numbers_timestamp_format: number | null = null;
-    update_time_in_10_numbers_timestamp_format: number | null = null;
+    tag: string | null = null;
 
     _property_name_to_its_type_dict = {
             owner_id: "string",
@@ -304,10 +214,8 @@ export class A_Post {
             title: "string",
             description: "string",
             comment_id_list: "string",
-            likes: "string",
-            dislikes: "string",
             create_time_in_10_numbers_timestamp_format: "number",
-            update_time_in_10_numbers_timestamp_format: "number",
+            tag: "string",
     };
 
     _key_string_dict = {
@@ -316,23 +224,19 @@ export class A_Post {
         title: "title",
         description: "description",
         comment_id_list: "comment_id_list",
-        likes: "likes",
-        dislikes: "dislikes",
         create_time_in_10_numbers_timestamp_format: "create_time_in_10_numbers_timestamp_format",
-        update_time_in_10_numbers_timestamp_format: "update_time_in_10_numbers_timestamp_format",
+        tag: "tag",
     };
 
     /*
-    constructor(owner_id: string | null = null, id: string | null = null, title: string | null = null, description: string | null = null, comment_id_list: string[] | null = null, likes: string[] | null = null, dislikes: string[] | null = null, create_time_in_10_numbers_timestamp_format: number | null = null, update_time_in_10_numbers_timestamp_format: number | null = null) {
+    constructor(owner_id: string | null = null, id: string | null = null, title: string | null = null, description: string | null = null, comment_id_list: string[] | null = null, create_time_in_10_numbers_timestamp_format: number | null = null, tag: string | null = null) {
             this.owner_id = owner_id
             this.id = id
             this.title = title
             this.description = description
             this.comment_id_list = comment_id_list
-            this.likes = likes
-            this.dislikes = dislikes
             this.create_time_in_10_numbers_timestamp_format = create_time_in_10_numbers_timestamp_format
-            this.update_time_in_10_numbers_timestamp_format = update_time_in_10_numbers_timestamp_format
+            this.tag = tag
     }
     */
 
@@ -368,13 +272,8 @@ export interface _A_Comment {
     parent_post_id: string | null;
     parent_post_owner_id: string | null;
     description: string | null;
-    hidden: boolean | null;
-    parent_comment_id: string | null;
-    comment_id_list: string[] | null;
-    likes: string[] | null;
-    dislikes: string[] | null;
     create_time_in_10_numbers_timestamp_format: number | null;
-    update_time_in_10_numbers_timestamp_format: number | null;
+    tag: string | null;
 }
 
 export class A_Comment {
@@ -383,13 +282,8 @@ export class A_Comment {
     parent_post_id: string | null = null;
     parent_post_owner_id: string | null = null;
     description: string | null = null;
-    hidden: boolean | null = null;
-    parent_comment_id: string | null = null;
-    comment_id_list: string[] | null = null;
-    likes: string[] | null = null;
-    dislikes: string[] | null = null;
     create_time_in_10_numbers_timestamp_format: number | null = null;
-    update_time_in_10_numbers_timestamp_format: number | null = null;
+    tag: string | null = null;
 
     _property_name_to_its_type_dict = {
             owner_id: "string",
@@ -397,13 +291,8 @@ export class A_Comment {
             parent_post_id: "string",
             parent_post_owner_id: "string",
             description: "string",
-            hidden: "boolean",
-            parent_comment_id: "string",
-            comment_id_list: "string",
-            likes: "string",
-            dislikes: "string",
             create_time_in_10_numbers_timestamp_format: "number",
-            update_time_in_10_numbers_timestamp_format: "number",
+            tag: "string",
     };
 
     _key_string_dict = {
@@ -412,29 +301,19 @@ export class A_Comment {
         parent_post_id: "parent_post_id",
         parent_post_owner_id: "parent_post_owner_id",
         description: "description",
-        hidden: "hidden",
-        parent_comment_id: "parent_comment_id",
-        comment_id_list: "comment_id_list",
-        likes: "likes",
-        dislikes: "dislikes",
         create_time_in_10_numbers_timestamp_format: "create_time_in_10_numbers_timestamp_format",
-        update_time_in_10_numbers_timestamp_format: "update_time_in_10_numbers_timestamp_format",
+        tag: "tag",
     };
 
     /*
-    constructor(owner_id: string | null = null, id: string | null = null, parent_post_id: string | null = null, parent_post_owner_id: string | null = null, description: string | null = null, hidden: boolean | null = null, parent_comment_id: string | null = null, comment_id_list: string[] | null = null, likes: string[] | null = null, dislikes: string[] | null = null, create_time_in_10_numbers_timestamp_format: number | null = null, update_time_in_10_numbers_timestamp_format: number | null = null) {
+    constructor(owner_id: string | null = null, id: string | null = null, parent_post_id: string | null = null, parent_post_owner_id: string | null = null, description: string | null = null, create_time_in_10_numbers_timestamp_format: number | null = null, tag: string | null = null) {
             this.owner_id = owner_id
             this.id = id
             this.parent_post_id = parent_post_id
             this.parent_post_owner_id = parent_post_owner_id
             this.description = description
-            this.hidden = hidden
-            this.parent_comment_id = parent_comment_id
-            this.comment_id_list = comment_id_list
-            this.likes = likes
-            this.dislikes = dislikes
             this.create_time_in_10_numbers_timestamp_format = create_time_in_10_numbers_timestamp_format
-            this.update_time_in_10_numbers_timestamp_format = update_time_in_10_numbers_timestamp_format
+            this.tag = tag
     }
     */
 
@@ -563,225 +442,11 @@ export class Ask_Yingshaoxo_Ai_Response {
 }
 
 
-export interface _Get_JSON_Web_Token_Request {
-    email: string | null;
-    password: string | null;
-}
-
-export class Get_JSON_Web_Token_Request {
-    email: string | null = null;
-    password: string | null = null;
-
-    _property_name_to_its_type_dict = {
-            email: "string",
-            password: "string",
-    };
-
-    _key_string_dict = {
-        email: "email",
-        password: "password",
-    };
-
-    /*
-    constructor(email: string | null = null, password: string | null = null) {
-            this.email = email
-            this.password = password
-    }
-    */
-
-    to_dict(): _Get_JSON_Web_Token_Request {
-        return _general_to_dict_function(this);
-    }
-
-    _clone(): Get_JSON_Web_Token_Request {
-        let clone = Object.assign(Object.create(Object.getPrototypeOf(this)), this)
-        return clone
-    }
-
-    from_dict(item: _Get_JSON_Web_Token_Request): Get_JSON_Web_Token_Request {
-        let an_item = new Get_JSON_Web_Token_Request()
-        let new_dict = _general_from_dict_function(an_item, item)
-
-        for (const key of Object.keys(new_dict)) {
-            let value = new_dict[key]
-            //@ts-ignore
-            this[key] = value
-            //@ts-ignore
-            an_item[key] = value
-        }
-
-        return an_item
-    }
-}
-
-
-export interface _Get_JSON_Web_Token_Response {
-    error: string | null;
-    json_web_token: string | null;
-    user_type: User_Type | null;
-}
-
-export class Get_JSON_Web_Token_Response {
-    error: string | null = null;
-    json_web_token: string | null = null;
-    user_type: User_Type | null = null;
-
-    _property_name_to_its_type_dict = {
-            error: "string",
-            json_web_token: "string",
-            user_type: User_Type,
-    };
-
-    _key_string_dict = {
-        error: "error",
-        json_web_token: "json_web_token",
-        user_type: "user_type",
-    };
-
-    /*
-    constructor(error: string | null = null, json_web_token: string | null = null, user_type: User_Type | null = null) {
-            this.error = error
-            this.json_web_token = json_web_token
-            this.user_type = user_type
-    }
-    */
-
-    to_dict(): _Get_JSON_Web_Token_Response {
-        return _general_to_dict_function(this);
-    }
-
-    _clone(): Get_JSON_Web_Token_Response {
-        let clone = Object.assign(Object.create(Object.getPrototypeOf(this)), this)
-        return clone
-    }
-
-    from_dict(item: _Get_JSON_Web_Token_Response): Get_JSON_Web_Token_Response {
-        let an_item = new Get_JSON_Web_Token_Response()
-        let new_dict = _general_from_dict_function(an_item, item)
-
-        for (const key of Object.keys(new_dict)) {
-            let value = new_dict[key]
-            //@ts-ignore
-            this[key] = value
-            //@ts-ignore
-            an_item[key] = value
-        }
-
-        return an_item
-    }
-}
-
-
-export interface _Is_JSON_Web_Token_Ok_Request {
-    json_web_token: string | null;
-}
-
-export class Is_JSON_Web_Token_Ok_Request {
-    json_web_token: string | null = null;
-
-    _property_name_to_its_type_dict = {
-            json_web_token: "string",
-    };
-
-    _key_string_dict = {
-        json_web_token: "json_web_token",
-    };
-
-    /*
-    constructor(json_web_token: string | null = null) {
-            this.json_web_token = json_web_token
-    }
-    */
-
-    to_dict(): _Is_JSON_Web_Token_Ok_Request {
-        return _general_to_dict_function(this);
-    }
-
-    _clone(): Is_JSON_Web_Token_Ok_Request {
-        let clone = Object.assign(Object.create(Object.getPrototypeOf(this)), this)
-        return clone
-    }
-
-    from_dict(item: _Is_JSON_Web_Token_Ok_Request): Is_JSON_Web_Token_Ok_Request {
-        let an_item = new Is_JSON_Web_Token_Ok_Request()
-        let new_dict = _general_from_dict_function(an_item, item)
-
-        for (const key of Object.keys(new_dict)) {
-            let value = new_dict[key]
-            //@ts-ignore
-            this[key] = value
-            //@ts-ignore
-            an_item[key] = value
-        }
-
-        return an_item
-    }
-}
-
-
-export interface _Is_JSON_Web_Token_Ok_Response {
-    error: string | null;
-    ok: boolean | null;
-    user_type: string | null;
-}
-
-export class Is_JSON_Web_Token_Ok_Response {
-    error: string | null = null;
-    ok: boolean | null = null;
-    user_type: string | null = null;
-
-    _property_name_to_its_type_dict = {
-            error: "string",
-            ok: "boolean",
-            user_type: "string",
-    };
-
-    _key_string_dict = {
-        error: "error",
-        ok: "ok",
-        user_type: "user_type",
-    };
-
-    /*
-    constructor(error: string | null = null, ok: boolean | null = null, user_type: string | null = null) {
-            this.error = error
-            this.ok = ok
-            this.user_type = user_type
-    }
-    */
-
-    to_dict(): _Is_JSON_Web_Token_Ok_Response {
-        return _general_to_dict_function(this);
-    }
-
-    _clone(): Is_JSON_Web_Token_Ok_Response {
-        let clone = Object.assign(Object.create(Object.getPrototypeOf(this)), this)
-        return clone
-    }
-
-    from_dict(item: _Is_JSON_Web_Token_Ok_Response): Is_JSON_Web_Token_Ok_Response {
-        let an_item = new Is_JSON_Web_Token_Ok_Response()
-        let new_dict = _general_from_dict_function(an_item, item)
-
-        for (const key of Object.keys(new_dict)) {
-            let value = new_dict[key]
-            //@ts-ignore
-            this[key] = value
-            //@ts-ignore
-            an_item[key] = value
-        }
-
-        return an_item
-    }
-}
-
-
 export interface _Search_Request {
     search_input: string | null;
     page_size: number | null;
     page_number: number | null;
     owner_id: string | null;
-    show_hidden: boolean | null;
 }
 
 export class Search_Request {
@@ -789,14 +454,12 @@ export class Search_Request {
     page_size: number | null = null;
     page_number: number | null = null;
     owner_id: string | null = null;
-    show_hidden: boolean | null = null;
 
     _property_name_to_its_type_dict = {
             search_input: "string",
             page_size: "number",
             page_number: "number",
             owner_id: "string",
-            show_hidden: "boolean",
     };
 
     _key_string_dict = {
@@ -804,16 +467,14 @@ export class Search_Request {
         page_size: "page_size",
         page_number: "page_number",
         owner_id: "owner_id",
-        show_hidden: "show_hidden",
     };
 
     /*
-    constructor(search_input: string | null = null, page_size: number | null = null, page_number: number | null = null, owner_id: string | null = null, show_hidden: boolean | null = null) {
+    constructor(search_input: string | null = null, page_size: number | null = null, page_number: number | null = null, owner_id: string | null = null) {
             this.search_input = search_input
             this.page_size = page_size
             this.page_number = page_number
             this.owner_id = owner_id
-            this.show_hidden = show_hidden
     }
     */
 
@@ -1099,22 +760,27 @@ export class Get_Comment_List_By_Id_List_Response {
 
 
 export interface _Add_Post_Request {
+    username: string | null;
     a_post: A_Post | null;
 }
 
 export class Add_Post_Request {
+    username: string | null = null;
     a_post: A_Post | null = null;
 
     _property_name_to_its_type_dict = {
+            username: "string",
             a_post: A_Post,
     };
 
     _key_string_dict = {
+        username: "username",
         a_post: "a_post",
     };
 
     /*
-    constructor(a_post: A_Post | null = null) {
+    constructor(username: string | null = null, a_post: A_Post | null = null) {
+            this.username = username
             this.a_post = a_post
     }
     */
@@ -1202,221 +868,28 @@ export class Add_Post_Response {
 }
 
 
-export interface _Update_Post_Request {
-    a_post: A_Post | null;
-}
-
-export class Update_Post_Request {
-    a_post: A_Post | null = null;
-
-    _property_name_to_its_type_dict = {
-            a_post: A_Post,
-    };
-
-    _key_string_dict = {
-        a_post: "a_post",
-    };
-
-    /*
-    constructor(a_post: A_Post | null = null) {
-            this.a_post = a_post
-    }
-    */
-
-    to_dict(): _Update_Post_Request {
-        return _general_to_dict_function(this);
-    }
-
-    _clone(): Update_Post_Request {
-        let clone = Object.assign(Object.create(Object.getPrototypeOf(this)), this)
-        return clone
-    }
-
-    from_dict(item: _Update_Post_Request): Update_Post_Request {
-        let an_item = new Update_Post_Request()
-        let new_dict = _general_from_dict_function(an_item, item)
-
-        for (const key of Object.keys(new_dict)) {
-            let value = new_dict[key]
-            //@ts-ignore
-            this[key] = value
-            //@ts-ignore
-            an_item[key] = value
-        }
-
-        return an_item
-    }
-}
-
-
-export interface _Update_Post_Response {
-    error: string | null;
-    success: boolean | null;
-}
-
-export class Update_Post_Response {
-    error: string | null = null;
-    success: boolean | null = null;
-
-    _property_name_to_its_type_dict = {
-            error: "string",
-            success: "boolean",
-    };
-
-    _key_string_dict = {
-        error: "error",
-        success: "success",
-    };
-
-    /*
-    constructor(error: string | null = null, success: boolean | null = null) {
-            this.error = error
-            this.success = success
-    }
-    */
-
-    to_dict(): _Update_Post_Response {
-        return _general_to_dict_function(this);
-    }
-
-    _clone(): Update_Post_Response {
-        let clone = Object.assign(Object.create(Object.getPrototypeOf(this)), this)
-        return clone
-    }
-
-    from_dict(item: _Update_Post_Response): Update_Post_Response {
-        let an_item = new Update_Post_Response()
-        let new_dict = _general_from_dict_function(an_item, item)
-
-        for (const key of Object.keys(new_dict)) {
-            let value = new_dict[key]
-            //@ts-ignore
-            this[key] = value
-            //@ts-ignore
-            an_item[key] = value
-        }
-
-        return an_item
-    }
-}
-
-
-export interface _Delete_Post_Request {
-    a_post: A_Post | null;
-}
-
-export class Delete_Post_Request {
-    a_post: A_Post | null = null;
-
-    _property_name_to_its_type_dict = {
-            a_post: A_Post,
-    };
-
-    _key_string_dict = {
-        a_post: "a_post",
-    };
-
-    /*
-    constructor(a_post: A_Post | null = null) {
-            this.a_post = a_post
-    }
-    */
-
-    to_dict(): _Delete_Post_Request {
-        return _general_to_dict_function(this);
-    }
-
-    _clone(): Delete_Post_Request {
-        let clone = Object.assign(Object.create(Object.getPrototypeOf(this)), this)
-        return clone
-    }
-
-    from_dict(item: _Delete_Post_Request): Delete_Post_Request {
-        let an_item = new Delete_Post_Request()
-        let new_dict = _general_from_dict_function(an_item, item)
-
-        for (const key of Object.keys(new_dict)) {
-            let value = new_dict[key]
-            //@ts-ignore
-            this[key] = value
-            //@ts-ignore
-            an_item[key] = value
-        }
-
-        return an_item
-    }
-}
-
-
-export interface _Delete_Post_Response {
-    error: string | null;
-    success: boolean | null;
-}
-
-export class Delete_Post_Response {
-    error: string | null = null;
-    success: boolean | null = null;
-
-    _property_name_to_its_type_dict = {
-            error: "string",
-            success: "boolean",
-    };
-
-    _key_string_dict = {
-        error: "error",
-        success: "success",
-    };
-
-    /*
-    constructor(error: string | null = null, success: boolean | null = null) {
-            this.error = error
-            this.success = success
-    }
-    */
-
-    to_dict(): _Delete_Post_Response {
-        return _general_to_dict_function(this);
-    }
-
-    _clone(): Delete_Post_Response {
-        let clone = Object.assign(Object.create(Object.getPrototypeOf(this)), this)
-        return clone
-    }
-
-    from_dict(item: _Delete_Post_Response): Delete_Post_Response {
-        let an_item = new Delete_Post_Response()
-        let new_dict = _general_from_dict_function(an_item, item)
-
-        for (const key of Object.keys(new_dict)) {
-            let value = new_dict[key]
-            //@ts-ignore
-            this[key] = value
-            //@ts-ignore
-            an_item[key] = value
-        }
-
-        return an_item
-    }
-}
-
-
 export interface _Comment_Post_Request {
+    username: string | null;
     a_comment: A_Comment | null;
 }
 
 export class Comment_Post_Request {
+    username: string | null = null;
     a_comment: A_Comment | null = null;
 
     _property_name_to_its_type_dict = {
+            username: "string",
             a_comment: A_Comment,
     };
 
     _key_string_dict = {
+        username: "username",
         a_comment: "a_comment",
     };
 
     /*
-    constructor(a_comment: A_Comment | null = null) {
+    constructor(username: string | null = null, a_comment: A_Comment | null = null) {
+            this.username = username
             this.a_comment = a_comment
     }
     */
@@ -1504,336 +977,24 @@ export class Comment_Post_Response {
 }
 
 
-export interface _Modify_Comment_Request {
-    a_comment: A_Comment | null;
-}
-
-export class Modify_Comment_Request {
-    a_comment: A_Comment | null = null;
-
-    _property_name_to_its_type_dict = {
-            a_comment: A_Comment,
-    };
-
-    _key_string_dict = {
-        a_comment: "a_comment",
-    };
-
-    /*
-    constructor(a_comment: A_Comment | null = null) {
-            this.a_comment = a_comment
-    }
-    */
-
-    to_dict(): _Modify_Comment_Request {
-        return _general_to_dict_function(this);
-    }
-
-    _clone(): Modify_Comment_Request {
-        let clone = Object.assign(Object.create(Object.getPrototypeOf(this)), this)
-        return clone
-    }
-
-    from_dict(item: _Modify_Comment_Request): Modify_Comment_Request {
-        let an_item = new Modify_Comment_Request()
-        let new_dict = _general_from_dict_function(an_item, item)
-
-        for (const key of Object.keys(new_dict)) {
-            let value = new_dict[key]
-            //@ts-ignore
-            this[key] = value
-            //@ts-ignore
-            an_item[key] = value
-        }
-
-        return an_item
-    }
-}
-
-
-export interface _Modify_Comment_Response {
-    error: string | null;
-    success: boolean | null;
-}
-
-export class Modify_Comment_Response {
-    error: string | null = null;
-    success: boolean | null = null;
-
-    _property_name_to_its_type_dict = {
-            error: "string",
-            success: "boolean",
-    };
-
-    _key_string_dict = {
-        error: "error",
-        success: "success",
-    };
-
-    /*
-    constructor(error: string | null = null, success: boolean | null = null) {
-            this.error = error
-            this.success = success
-    }
-    */
-
-    to_dict(): _Modify_Comment_Response {
-        return _general_to_dict_function(this);
-    }
-
-    _clone(): Modify_Comment_Response {
-        let clone = Object.assign(Object.create(Object.getPrototypeOf(this)), this)
-        return clone
-    }
-
-    from_dict(item: _Modify_Comment_Response): Modify_Comment_Response {
-        let an_item = new Modify_Comment_Response()
-        let new_dict = _general_from_dict_function(an_item, item)
-
-        for (const key of Object.keys(new_dict)) {
-            let value = new_dict[key]
-            //@ts-ignore
-            this[key] = value
-            //@ts-ignore
-            an_item[key] = value
-        }
-
-        return an_item
-    }
-}
-
-
-export interface _Delete_Comment_Request {
-    a_comment: A_Comment | null;
-}
-
-export class Delete_Comment_Request {
-    a_comment: A_Comment | null = null;
-
-    _property_name_to_its_type_dict = {
-            a_comment: A_Comment,
-    };
-
-    _key_string_dict = {
-        a_comment: "a_comment",
-    };
-
-    /*
-    constructor(a_comment: A_Comment | null = null) {
-            this.a_comment = a_comment
-    }
-    */
-
-    to_dict(): _Delete_Comment_Request {
-        return _general_to_dict_function(this);
-    }
-
-    _clone(): Delete_Comment_Request {
-        let clone = Object.assign(Object.create(Object.getPrototypeOf(this)), this)
-        return clone
-    }
-
-    from_dict(item: _Delete_Comment_Request): Delete_Comment_Request {
-        let an_item = new Delete_Comment_Request()
-        let new_dict = _general_from_dict_function(an_item, item)
-
-        for (const key of Object.keys(new_dict)) {
-            let value = new_dict[key]
-            //@ts-ignore
-            this[key] = value
-            //@ts-ignore
-            an_item[key] = value
-        }
-
-        return an_item
-    }
-}
-
-
-export interface _Delete_Comment_Response {
-    error: string | null;
-    success: boolean | null;
-}
-
-export class Delete_Comment_Response {
-    error: string | null = null;
-    success: boolean | null = null;
-
-    _property_name_to_its_type_dict = {
-            error: "string",
-            success: "boolean",
-    };
-
-    _key_string_dict = {
-        error: "error",
-        success: "success",
-    };
-
-    /*
-    constructor(error: string | null = null, success: boolean | null = null) {
-            this.error = error
-            this.success = success
-    }
-    */
-
-    to_dict(): _Delete_Comment_Response {
-        return _general_to_dict_function(this);
-    }
-
-    _clone(): Delete_Comment_Response {
-        let clone = Object.assign(Object.create(Object.getPrototypeOf(this)), this)
-        return clone
-    }
-
-    from_dict(item: _Delete_Comment_Response): Delete_Comment_Response {
-        let an_item = new Delete_Comment_Response()
-        let new_dict = _general_from_dict_function(an_item, item)
-
-        for (const key of Object.keys(new_dict)) {
-            let value = new_dict[key]
-            //@ts-ignore
-            this[key] = value
-            //@ts-ignore
-            an_item[key] = value
-        }
-
-        return an_item
-    }
-}
-
-
-export interface _Like_Or_Dislike_Request {
-    a_post: A_Post | null;
-    a_comment: A_Comment | null;
-    like: boolean | null;
-    dislike: boolean | null;
-}
-
-export class Like_Or_Dislike_Request {
-    a_post: A_Post | null = null;
-    a_comment: A_Comment | null = null;
-    like: boolean | null = null;
-    dislike: boolean | null = null;
-
-    _property_name_to_its_type_dict = {
-            a_post: A_Post,
-            a_comment: A_Comment,
-            like: "boolean",
-            dislike: "boolean",
-    };
-
-    _key_string_dict = {
-        a_post: "a_post",
-        a_comment: "a_comment",
-        like: "like",
-        dislike: "dislike",
-    };
-
-    /*
-    constructor(a_post: A_Post | null = null, a_comment: A_Comment | null = null, like: boolean | null = null, dislike: boolean | null = null) {
-            this.a_post = a_post
-            this.a_comment = a_comment
-            this.like = like
-            this.dislike = dislike
-    }
-    */
-
-    to_dict(): _Like_Or_Dislike_Request {
-        return _general_to_dict_function(this);
-    }
-
-    _clone(): Like_Or_Dislike_Request {
-        let clone = Object.assign(Object.create(Object.getPrototypeOf(this)), this)
-        return clone
-    }
-
-    from_dict(item: _Like_Or_Dislike_Request): Like_Or_Dislike_Request {
-        let an_item = new Like_Or_Dislike_Request()
-        let new_dict = _general_from_dict_function(an_item, item)
-
-        for (const key of Object.keys(new_dict)) {
-            let value = new_dict[key]
-            //@ts-ignore
-            this[key] = value
-            //@ts-ignore
-            an_item[key] = value
-        }
-
-        return an_item
-    }
-}
-
-
-export interface _Like_Or_Dislike_Response {
-    error: string | null;
-    success: boolean | null;
-}
-
-export class Like_Or_Dislike_Response {
-    error: string | null = null;
-    success: boolean | null = null;
-
-    _property_name_to_its_type_dict = {
-            error: "string",
-            success: "boolean",
-    };
-
-    _key_string_dict = {
-        error: "error",
-        success: "success",
-    };
-
-    /*
-    constructor(error: string | null = null, success: boolean | null = null) {
-            this.error = error
-            this.success = success
-    }
-    */
-
-    to_dict(): _Like_Or_Dislike_Response {
-        return _general_to_dict_function(this);
-    }
-
-    _clone(): Like_Or_Dislike_Response {
-        let clone = Object.assign(Object.create(Object.getPrototypeOf(this)), this)
-        return clone
-    }
-
-    from_dict(item: _Like_Or_Dislike_Response): Like_Or_Dislike_Response {
-        let an_item = new Like_Or_Dislike_Response()
-        let new_dict = _general_from_dict_function(an_item, item)
-
-        for (const key of Object.keys(new_dict)) {
-            let value = new_dict[key]
-            //@ts-ignore
-            this[key] = value
-            //@ts-ignore
-            an_item[key] = value
-        }
-
-        return an_item
-    }
-}
-
-
 export interface _Download_Backup_Data_Request {
-
+    username: string | null;
 }
 
 export class Download_Backup_Data_Request {
-
+    username: string | null = null;
 
     _property_name_to_its_type_dict = {
-
+            username: "string",
     };
 
     _key_string_dict = {
-
+        username: "username",
     };
 
     /*
-    constructor() {
-
+    constructor(username: string | null = null) {
+            this.username = username
     }
     */
 
@@ -1920,38 +1081,38 @@ export class Download_Backup_Data_Response {
 }
 
 
-export interface _Upload_Backup_Data_Request {
-    file_bytes_in_base64_format: string | null;
+export interface _Admin_Download_Backup_Data_Request {
+    token: string | null;
 }
 
-export class Upload_Backup_Data_Request {
-    file_bytes_in_base64_format: string | null = null;
+export class Admin_Download_Backup_Data_Request {
+    token: string | null = null;
 
     _property_name_to_its_type_dict = {
-            file_bytes_in_base64_format: "string",
+            token: "string",
     };
 
     _key_string_dict = {
-        file_bytes_in_base64_format: "file_bytes_in_base64_format",
+        token: "token",
     };
 
     /*
-    constructor(file_bytes_in_base64_format: string | null = null) {
-            this.file_bytes_in_base64_format = file_bytes_in_base64_format
+    constructor(token: string | null = null) {
+            this.token = token
     }
     */
 
-    to_dict(): _Upload_Backup_Data_Request {
+    to_dict(): _Admin_Download_Backup_Data_Request {
         return _general_to_dict_function(this);
     }
 
-    _clone(): Upload_Backup_Data_Request {
+    _clone(): Admin_Download_Backup_Data_Request {
         let clone = Object.assign(Object.create(Object.getPrototypeOf(this)), this)
         return clone
     }
 
-    from_dict(item: _Upload_Backup_Data_Request): Upload_Backup_Data_Request {
-        let an_item = new Upload_Backup_Data_Request()
+    from_dict(item: _Admin_Download_Backup_Data_Request): Admin_Download_Backup_Data_Request {
+        let an_item = new Admin_Download_Backup_Data_Request()
         let new_dict = _general_from_dict_function(an_item, item)
 
         for (const key of Object.keys(new_dict)) {
@@ -1967,12 +1128,121 @@ export class Upload_Backup_Data_Request {
 }
 
 
-export interface _Upload_Backup_Data_Response {
+export interface _Admin_Download_Backup_Data_Response {
+    error: string | null;
+    file_name: string | null;
+    file_bytes_in_base64_format: string | null;
+}
+
+export class Admin_Download_Backup_Data_Response {
+    error: string | null = null;
+    file_name: string | null = null;
+    file_bytes_in_base64_format: string | null = null;
+
+    _property_name_to_its_type_dict = {
+            error: "string",
+            file_name: "string",
+            file_bytes_in_base64_format: "string",
+    };
+
+    _key_string_dict = {
+        error: "error",
+        file_name: "file_name",
+        file_bytes_in_base64_format: "file_bytes_in_base64_format",
+    };
+
+    /*
+    constructor(error: string | null = null, file_name: string | null = null, file_bytes_in_base64_format: string | null = null) {
+            this.error = error
+            this.file_name = file_name
+            this.file_bytes_in_base64_format = file_bytes_in_base64_format
+    }
+    */
+
+    to_dict(): _Admin_Download_Backup_Data_Response {
+        return _general_to_dict_function(this);
+    }
+
+    _clone(): Admin_Download_Backup_Data_Response {
+        let clone = Object.assign(Object.create(Object.getPrototypeOf(this)), this)
+        return clone
+    }
+
+    from_dict(item: _Admin_Download_Backup_Data_Response): Admin_Download_Backup_Data_Response {
+        let an_item = new Admin_Download_Backup_Data_Response()
+        let new_dict = _general_from_dict_function(an_item, item)
+
+        for (const key of Object.keys(new_dict)) {
+            let value = new_dict[key]
+            //@ts-ignore
+            this[key] = value
+            //@ts-ignore
+            an_item[key] = value
+        }
+
+        return an_item
+    }
+}
+
+
+export interface _Admin_Upload_Backup_Data_Request {
+    token: string | null;
+    file_bytes_in_base64_format: string | null;
+}
+
+export class Admin_Upload_Backup_Data_Request {
+    token: string | null = null;
+    file_bytes_in_base64_format: string | null = null;
+
+    _property_name_to_its_type_dict = {
+            token: "string",
+            file_bytes_in_base64_format: "string",
+    };
+
+    _key_string_dict = {
+        token: "token",
+        file_bytes_in_base64_format: "file_bytes_in_base64_format",
+    };
+
+    /*
+    constructor(token: string | null = null, file_bytes_in_base64_format: string | null = null) {
+            this.token = token
+            this.file_bytes_in_base64_format = file_bytes_in_base64_format
+    }
+    */
+
+    to_dict(): _Admin_Upload_Backup_Data_Request {
+        return _general_to_dict_function(this);
+    }
+
+    _clone(): Admin_Upload_Backup_Data_Request {
+        let clone = Object.assign(Object.create(Object.getPrototypeOf(this)), this)
+        return clone
+    }
+
+    from_dict(item: _Admin_Upload_Backup_Data_Request): Admin_Upload_Backup_Data_Request {
+        let an_item = new Admin_Upload_Backup_Data_Request()
+        let new_dict = _general_from_dict_function(an_item, item)
+
+        for (const key of Object.keys(new_dict)) {
+            let value = new_dict[key]
+            //@ts-ignore
+            this[key] = value
+            //@ts-ignore
+            an_item[key] = value
+        }
+
+        return an_item
+    }
+}
+
+
+export interface _Admin_Upload_Backup_Data_Response {
     error: string | null;
     success: boolean | null;
 }
 
-export class Upload_Backup_Data_Response {
+export class Admin_Upload_Backup_Data_Response {
     error: string | null = null;
     success: boolean | null = null;
 
@@ -1993,17 +1263,17 @@ export class Upload_Backup_Data_Response {
     }
     */
 
-    to_dict(): _Upload_Backup_Data_Response {
+    to_dict(): _Admin_Upload_Backup_Data_Response {
         return _general_to_dict_function(this);
     }
 
-    _clone(): Upload_Backup_Data_Response {
+    _clone(): Admin_Upload_Backup_Data_Response {
         let clone = Object.assign(Object.create(Object.getPrototypeOf(this)), this)
         return clone
     }
 
-    from_dict(item: _Upload_Backup_Data_Response): Upload_Backup_Data_Response {
-        let an_item = new Upload_Backup_Data_Response()
+    from_dict(item: _Admin_Upload_Backup_Data_Response): Admin_Upload_Backup_Data_Response {
+        let an_item = new Admin_Upload_Backup_Data_Response()
         let new_dict = _general_from_dict_function(an_item, item)
 
         for (const key of Object.keys(new_dict)) {

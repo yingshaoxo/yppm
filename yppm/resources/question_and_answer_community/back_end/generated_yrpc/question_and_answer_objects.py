@@ -90,51 +90,9 @@ class YRPC_OBJECT_BASE_CLASS:
         return copy.deepcopy(self)
 
 
-class User_Type(Enum):
-    # yingshaoxo: I strongly recommend you use enum as a string type in other message data_model
-    # for example, `User_Type.admin.value`
-    user = "user"
-    admin = "admin"
+
 
         
-@dataclass()
-class A_User(YRPC_OBJECT_BASE_CLASS):
-    create_time_in_10_numbers_timestamp_format: int | None = None
-    id: str | None = None
-    email: str | None = None
-    password: str | None = None
-    user_type: str | None = None
-    json_web_token: str | None = None
-    likes: int | None = None
-    dislikes: int | None = None
-
-    _property_name_to_its_type_dict = {
-        "create_time_in_10_numbers_timestamp_format": int,
-        "id": str,
-        "email": str,
-        "password": str,
-        "user_type": str,
-        "json_web_token": str,
-        "likes": int,
-        "dislikes": int,
-    }
-
-    @dataclass()
-    class _key_string_dict:
-        create_time_in_10_numbers_timestamp_format: str = "create_time_in_10_numbers_timestamp_format"
-        id: str = "id"
-        email: str = "email"
-        password: str = "password"
-        user_type: str = "user_type"
-        json_web_token: str = "json_web_token"
-        likes: str = "likes"
-        dislikes: str = "dislikes"
-
-    def from_dict(self, dict: dict[str, Any]):
-        new_variable: A_User = super().from_dict(dict)
-        return new_variable
-
-
 @dataclass()
 class A_Post(YRPC_OBJECT_BASE_CLASS):
     owner_id: str | None = None
@@ -142,10 +100,8 @@ class A_Post(YRPC_OBJECT_BASE_CLASS):
     title: str | None = None
     description: str | None = None
     comment_id_list: list[str] | None = None
-    likes: list[str] | None = None
-    dislikes: list[str] | None = None
     create_time_in_10_numbers_timestamp_format: int | None = None
-    update_time_in_10_numbers_timestamp_format: int | None = None
+    tag: str | None = None
 
     _property_name_to_its_type_dict = {
         "owner_id": str,
@@ -153,10 +109,8 @@ class A_Post(YRPC_OBJECT_BASE_CLASS):
         "title": str,
         "description": str,
         "comment_id_list": str,
-        "likes": str,
-        "dislikes": str,
         "create_time_in_10_numbers_timestamp_format": int,
-        "update_time_in_10_numbers_timestamp_format": int,
+        "tag": str,
     }
 
     @dataclass()
@@ -166,10 +120,8 @@ class A_Post(YRPC_OBJECT_BASE_CLASS):
         title: str = "title"
         description: str = "description"
         comment_id_list: str = "comment_id_list"
-        likes: str = "likes"
-        dislikes: str = "dislikes"
         create_time_in_10_numbers_timestamp_format: str = "create_time_in_10_numbers_timestamp_format"
-        update_time_in_10_numbers_timestamp_format: str = "update_time_in_10_numbers_timestamp_format"
+        tag: str = "tag"
 
     def from_dict(self, dict: dict[str, Any]):
         new_variable: A_Post = super().from_dict(dict)
@@ -183,13 +135,8 @@ class A_Comment(YRPC_OBJECT_BASE_CLASS):
     parent_post_id: str | None = None
     parent_post_owner_id: str | None = None
     description: str | None = None
-    hidden: bool | None = None
-    parent_comment_id: str | None = None
-    comment_id_list: list[str] | None = None
-    likes: list[str] | None = None
-    dislikes: list[str] | None = None
     create_time_in_10_numbers_timestamp_format: int | None = None
-    update_time_in_10_numbers_timestamp_format: int | None = None
+    tag: str | None = None
 
     _property_name_to_its_type_dict = {
         "owner_id": str,
@@ -197,13 +144,8 @@ class A_Comment(YRPC_OBJECT_BASE_CLASS):
         "parent_post_id": str,
         "parent_post_owner_id": str,
         "description": str,
-        "hidden": bool,
-        "parent_comment_id": str,
-        "comment_id_list": str,
-        "likes": str,
-        "dislikes": str,
         "create_time_in_10_numbers_timestamp_format": int,
-        "update_time_in_10_numbers_timestamp_format": int,
+        "tag": str,
     }
 
     @dataclass()
@@ -213,13 +155,8 @@ class A_Comment(YRPC_OBJECT_BASE_CLASS):
         parent_post_id: str = "parent_post_id"
         parent_post_owner_id: str = "parent_post_owner_id"
         description: str = "description"
-        hidden: str = "hidden"
-        parent_comment_id: str = "parent_comment_id"
-        comment_id_list: str = "comment_id_list"
-        likes: str = "likes"
-        dislikes: str = "dislikes"
         create_time_in_10_numbers_timestamp_format: str = "create_time_in_10_numbers_timestamp_format"
-        update_time_in_10_numbers_timestamp_format: str = "update_time_in_10_numbers_timestamp_format"
+        tag: str = "tag"
 
     def from_dict(self, dict: dict[str, Any]):
         new_variable: A_Comment = super().from_dict(dict)
@@ -264,102 +201,17 @@ class Ask_Yingshaoxo_Ai_Response(YRPC_OBJECT_BASE_CLASS):
 
 
 @dataclass()
-class Get_JSON_Web_Token_Request(YRPC_OBJECT_BASE_CLASS):
-    email: str | None = None
-    password: str | None = None
-
-    _property_name_to_its_type_dict = {
-        "email": str,
-        "password": str,
-    }
-
-    @dataclass()
-    class _key_string_dict:
-        email: str = "email"
-        password: str = "password"
-
-    def from_dict(self, dict: dict[str, Any]):
-        new_variable: Get_JSON_Web_Token_Request = super().from_dict(dict)
-        return new_variable
-
-
-@dataclass()
-class Get_JSON_Web_Token_Response(YRPC_OBJECT_BASE_CLASS):
-    error: str | None = None
-    json_web_token: str | None = None
-    user_type: User_Type | None = None
-
-    _property_name_to_its_type_dict = {
-        "error": str,
-        "json_web_token": str,
-        "user_type": User_Type,
-    }
-
-    @dataclass()
-    class _key_string_dict:
-        error: str = "error"
-        json_web_token: str = "json_web_token"
-        user_type: str = "user_type"
-
-    def from_dict(self, dict: dict[str, Any]):
-        new_variable: Get_JSON_Web_Token_Response = super().from_dict(dict)
-        return new_variable
-
-
-@dataclass()
-class Is_JSON_Web_Token_Ok_Request(YRPC_OBJECT_BASE_CLASS):
-    json_web_token: str | None = None
-
-    _property_name_to_its_type_dict = {
-        "json_web_token": str,
-    }
-
-    @dataclass()
-    class _key_string_dict:
-        json_web_token: str = "json_web_token"
-
-    def from_dict(self, dict: dict[str, Any]):
-        new_variable: Is_JSON_Web_Token_Ok_Request = super().from_dict(dict)
-        return new_variable
-
-
-@dataclass()
-class Is_JSON_Web_Token_Ok_Response(YRPC_OBJECT_BASE_CLASS):
-    error: str | None = None
-    ok: bool | None = None
-    user_type: str | None = None
-
-    _property_name_to_its_type_dict = {
-        "error": str,
-        "ok": bool,
-        "user_type": str,
-    }
-
-    @dataclass()
-    class _key_string_dict:
-        error: str = "error"
-        ok: str = "ok"
-        user_type: str = "user_type"
-
-    def from_dict(self, dict: dict[str, Any]):
-        new_variable: Is_JSON_Web_Token_Ok_Response = super().from_dict(dict)
-        return new_variable
-
-
-@dataclass()
 class Search_Request(YRPC_OBJECT_BASE_CLASS):
     search_input: str | None = None
     page_size: int | None = None
     page_number: int | None = None
     owner_id: str | None = None
-    show_hidden: bool | None = None
 
     _property_name_to_its_type_dict = {
         "search_input": str,
         "page_size": int,
         "page_number": int,
         "owner_id": str,
-        "show_hidden": bool,
     }
 
     @dataclass()
@@ -368,7 +220,6 @@ class Search_Request(YRPC_OBJECT_BASE_CLASS):
         page_size: str = "page_size"
         page_number: str = "page_number"
         owner_id: str = "owner_id"
-        show_hidden: str = "show_hidden"
 
     def from_dict(self, dict: dict[str, Any]):
         new_variable: Search_Request = super().from_dict(dict)
@@ -474,14 +325,17 @@ class Get_Comment_List_By_Id_List_Response(YRPC_OBJECT_BASE_CLASS):
 
 @dataclass()
 class Add_Post_Request(YRPC_OBJECT_BASE_CLASS):
+    username: str | None = None
     a_post: A_Post | None = None
 
     _property_name_to_its_type_dict = {
+        "username": str,
         "a_post": A_Post,
     }
 
     @dataclass()
     class _key_string_dict:
+        username: str = "username"
         a_post: str = "a_post"
 
     def from_dict(self, dict: dict[str, Any]):
@@ -513,89 +367,18 @@ class Add_Post_Response(YRPC_OBJECT_BASE_CLASS):
 
 
 @dataclass()
-class Update_Post_Request(YRPC_OBJECT_BASE_CLASS):
-    a_post: A_Post | None = None
-
-    _property_name_to_its_type_dict = {
-        "a_post": A_Post,
-    }
-
-    @dataclass()
-    class _key_string_dict:
-        a_post: str = "a_post"
-
-    def from_dict(self, dict: dict[str, Any]):
-        new_variable: Update_Post_Request = super().from_dict(dict)
-        return new_variable
-
-
-@dataclass()
-class Update_Post_Response(YRPC_OBJECT_BASE_CLASS):
-    error: str | None = None
-    success: bool | None = None
-
-    _property_name_to_its_type_dict = {
-        "error": str,
-        "success": bool,
-    }
-
-    @dataclass()
-    class _key_string_dict:
-        error: str = "error"
-        success: str = "success"
-
-    def from_dict(self, dict: dict[str, Any]):
-        new_variable: Update_Post_Response = super().from_dict(dict)
-        return new_variable
-
-
-@dataclass()
-class Delete_Post_Request(YRPC_OBJECT_BASE_CLASS):
-    a_post: A_Post | None = None
-
-    _property_name_to_its_type_dict = {
-        "a_post": A_Post,
-    }
-
-    @dataclass()
-    class _key_string_dict:
-        a_post: str = "a_post"
-
-    def from_dict(self, dict: dict[str, Any]):
-        new_variable: Delete_Post_Request = super().from_dict(dict)
-        return new_variable
-
-
-@dataclass()
-class Delete_Post_Response(YRPC_OBJECT_BASE_CLASS):
-    error: str | None = None
-    success: bool | None = None
-
-    _property_name_to_its_type_dict = {
-        "error": str,
-        "success": bool,
-    }
-
-    @dataclass()
-    class _key_string_dict:
-        error: str = "error"
-        success: str = "success"
-
-    def from_dict(self, dict: dict[str, Any]):
-        new_variable: Delete_Post_Response = super().from_dict(dict)
-        return new_variable
-
-
-@dataclass()
 class Comment_Post_Request(YRPC_OBJECT_BASE_CLASS):
+    username: str | None = None
     a_comment: A_Comment | None = None
 
     _property_name_to_its_type_dict = {
+        "username": str,
         "a_comment": A_Comment,
     }
 
     @dataclass()
     class _key_string_dict:
+        username: str = "username"
         a_comment: str = "a_comment"
 
     def from_dict(self, dict: dict[str, Any]):
@@ -627,136 +410,16 @@ class Comment_Post_Response(YRPC_OBJECT_BASE_CLASS):
 
 
 @dataclass()
-class Modify_Comment_Request(YRPC_OBJECT_BASE_CLASS):
-    a_comment: A_Comment | None = None
-
-    _property_name_to_its_type_dict = {
-        "a_comment": A_Comment,
-    }
-
-    @dataclass()
-    class _key_string_dict:
-        a_comment: str = "a_comment"
-
-    def from_dict(self, dict: dict[str, Any]):
-        new_variable: Modify_Comment_Request = super().from_dict(dict)
-        return new_variable
-
-
-@dataclass()
-class Modify_Comment_Response(YRPC_OBJECT_BASE_CLASS):
-    error: str | None = None
-    success: bool | None = None
-
-    _property_name_to_its_type_dict = {
-        "error": str,
-        "success": bool,
-    }
-
-    @dataclass()
-    class _key_string_dict:
-        error: str = "error"
-        success: str = "success"
-
-    def from_dict(self, dict: dict[str, Any]):
-        new_variable: Modify_Comment_Response = super().from_dict(dict)
-        return new_variable
-
-
-@dataclass()
-class Delete_Comment_Request(YRPC_OBJECT_BASE_CLASS):
-    a_comment: A_Comment | None = None
-
-    _property_name_to_its_type_dict = {
-        "a_comment": A_Comment,
-    }
-
-    @dataclass()
-    class _key_string_dict:
-        a_comment: str = "a_comment"
-
-    def from_dict(self, dict: dict[str, Any]):
-        new_variable: Delete_Comment_Request = super().from_dict(dict)
-        return new_variable
-
-
-@dataclass()
-class Delete_Comment_Response(YRPC_OBJECT_BASE_CLASS):
-    error: str | None = None
-    success: bool | None = None
-
-    _property_name_to_its_type_dict = {
-        "error": str,
-        "success": bool,
-    }
-
-    @dataclass()
-    class _key_string_dict:
-        error: str = "error"
-        success: str = "success"
-
-    def from_dict(self, dict: dict[str, Any]):
-        new_variable: Delete_Comment_Response = super().from_dict(dict)
-        return new_variable
-
-
-@dataclass()
-class Like_Or_Dislike_Request(YRPC_OBJECT_BASE_CLASS):
-    a_post: A_Post | None = None
-    a_comment: A_Comment | None = None
-    like: bool | None = None
-    dislike: bool | None = None
-
-    _property_name_to_its_type_dict = {
-        "a_post": A_Post,
-        "a_comment": A_Comment,
-        "like": bool,
-        "dislike": bool,
-    }
-
-    @dataclass()
-    class _key_string_dict:
-        a_post: str = "a_post"
-        a_comment: str = "a_comment"
-        like: str = "like"
-        dislike: str = "dislike"
-
-    def from_dict(self, dict: dict[str, Any]):
-        new_variable: Like_Or_Dislike_Request = super().from_dict(dict)
-        return new_variable
-
-
-@dataclass()
-class Like_Or_Dislike_Response(YRPC_OBJECT_BASE_CLASS):
-    error: str | None = None
-    success: bool | None = None
-
-    _property_name_to_its_type_dict = {
-        "error": str,
-        "success": bool,
-    }
-
-    @dataclass()
-    class _key_string_dict:
-        error: str = "error"
-        success: str = "success"
-
-    def from_dict(self, dict: dict[str, Any]):
-        new_variable: Like_Or_Dislike_Response = super().from_dict(dict)
-        return new_variable
-
-
-@dataclass()
 class Download_Backup_Data_Request(YRPC_OBJECT_BASE_CLASS):
-
+    username: str | None = None
 
     _property_name_to_its_type_dict = {
-
+        "username": str,
     }
 
     @dataclass()
     class _key_string_dict:
-        pass
+        username: str = "username"
 
     def from_dict(self, dict: dict[str, Any]):
         new_variable: Download_Backup_Data_Request = super().from_dict(dict)
@@ -787,24 +450,67 @@ class Download_Backup_Data_Response(YRPC_OBJECT_BASE_CLASS):
 
 
 @dataclass()
-class Upload_Backup_Data_Request(YRPC_OBJECT_BASE_CLASS):
+class Admin_Download_Backup_Data_Request(YRPC_OBJECT_BASE_CLASS):
+    token: str | None = None
+
+    _property_name_to_its_type_dict = {
+        "token": str,
+    }
+
+    @dataclass()
+    class _key_string_dict:
+        token: str = "token"
+
+    def from_dict(self, dict: dict[str, Any]):
+        new_variable: Admin_Download_Backup_Data_Request = super().from_dict(dict)
+        return new_variable
+
+
+@dataclass()
+class Admin_Download_Backup_Data_Response(YRPC_OBJECT_BASE_CLASS):
+    error: str | None = None
+    file_name: str | None = None
     file_bytes_in_base64_format: str | None = None
 
     _property_name_to_its_type_dict = {
+        "error": str,
+        "file_name": str,
         "file_bytes_in_base64_format": str,
     }
 
     @dataclass()
     class _key_string_dict:
+        error: str = "error"
+        file_name: str = "file_name"
         file_bytes_in_base64_format: str = "file_bytes_in_base64_format"
 
     def from_dict(self, dict: dict[str, Any]):
-        new_variable: Upload_Backup_Data_Request = super().from_dict(dict)
+        new_variable: Admin_Download_Backup_Data_Response = super().from_dict(dict)
         return new_variable
 
 
 @dataclass()
-class Upload_Backup_Data_Response(YRPC_OBJECT_BASE_CLASS):
+class Admin_Upload_Backup_Data_Request(YRPC_OBJECT_BASE_CLASS):
+    token: str | None = None
+    file_bytes_in_base64_format: str | None = None
+
+    _property_name_to_its_type_dict = {
+        "token": str,
+        "file_bytes_in_base64_format": str,
+    }
+
+    @dataclass()
+    class _key_string_dict:
+        token: str = "token"
+        file_bytes_in_base64_format: str = "file_bytes_in_base64_format"
+
+    def from_dict(self, dict: dict[str, Any]):
+        new_variable: Admin_Upload_Backup_Data_Request = super().from_dict(dict)
+        return new_variable
+
+
+@dataclass()
+class Admin_Upload_Backup_Data_Response(YRPC_OBJECT_BASE_CLASS):
     error: str | None = None
     success: bool | None = None
 
@@ -819,5 +525,5 @@ class Upload_Backup_Data_Response(YRPC_OBJECT_BASE_CLASS):
         success: str = "success"
 
     def from_dict(self, dict: dict[str, Any]):
-        new_variable: Upload_Backup_Data_Response = super().from_dict(dict)
+        new_variable: Admin_Upload_Backup_Data_Response = super().from_dict(dict)
         return new_variable

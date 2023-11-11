@@ -91,30 +91,6 @@ export class Client_question_and_answer {
         }
     }
 
-    async visitor_get_json_web_token(item: question_and_answer_objects.Get_JSON_Web_Token_Request, ignore_error?: boolean): Promise<question_and_answer_objects.Get_JSON_Web_Token_Response | null> {
-        let result = await this._get_reponse_or_error_by_url_path_and_input("visitor_get_json_web_token", item.to_dict())
-        if (Object.keys(result).includes(this._special_error_key)) {
-            if ((ignore_error == null) || ((ignore_error != null) && (!ignore_error))) {
-                this._error_handle_function(result[this._special_error_key])
-            }
-            return null
-        } else {
-            return new question_and_answer_objects.Get_JSON_Web_Token_Response().from_dict(result)
-        }
-    }
-
-    async visitor_is_json_web_token_ok(item: question_and_answer_objects.Is_JSON_Web_Token_Ok_Request, ignore_error?: boolean): Promise<question_and_answer_objects.Is_JSON_Web_Token_Ok_Response | null> {
-        let result = await this._get_reponse_or_error_by_url_path_and_input("visitor_is_json_web_token_ok", item.to_dict())
-        if (Object.keys(result).includes(this._special_error_key)) {
-            if ((ignore_error == null) || ((ignore_error != null) && (!ignore_error))) {
-                this._error_handle_function(result[this._special_error_key])
-            }
-            return null
-        } else {
-            return new question_and_answer_objects.Is_JSON_Web_Token_Ok_Response().from_dict(result)
-        }
-    }
-
     async visitor_search(item: question_and_answer_objects.Search_Request, ignore_error?: boolean): Promise<question_and_answer_objects.Search_Response | null> {
         let result = await this._get_reponse_or_error_by_url_path_and_input("visitor_search", item.to_dict())
         if (Object.keys(result).includes(this._special_error_key)) {
@@ -163,30 +139,6 @@ export class Client_question_and_answer {
         }
     }
 
-    async user_update_post(item: question_and_answer_objects.Update_Post_Request, ignore_error?: boolean): Promise<question_and_answer_objects.Update_Post_Response | null> {
-        let result = await this._get_reponse_or_error_by_url_path_and_input("user_update_post", item.to_dict())
-        if (Object.keys(result).includes(this._special_error_key)) {
-            if ((ignore_error == null) || ((ignore_error != null) && (!ignore_error))) {
-                this._error_handle_function(result[this._special_error_key])
-            }
-            return null
-        } else {
-            return new question_and_answer_objects.Update_Post_Response().from_dict(result)
-        }
-    }
-
-    async user_delete_post(item: question_and_answer_objects.Delete_Post_Request, ignore_error?: boolean): Promise<question_and_answer_objects.Delete_Post_Response | null> {
-        let result = await this._get_reponse_or_error_by_url_path_and_input("user_delete_post", item.to_dict())
-        if (Object.keys(result).includes(this._special_error_key)) {
-            if ((ignore_error == null) || ((ignore_error != null) && (!ignore_error))) {
-                this._error_handle_function(result[this._special_error_key])
-            }
-            return null
-        } else {
-            return new question_and_answer_objects.Delete_Post_Response().from_dict(result)
-        }
-    }
-
     async user_comment_post(item: question_and_answer_objects.Comment_Post_Request, ignore_error?: boolean): Promise<question_and_answer_objects.Comment_Post_Response | null> {
         let result = await this._get_reponse_or_error_by_url_path_and_input("user_comment_post", item.to_dict())
         if (Object.keys(result).includes(this._special_error_key)) {
@@ -196,42 +148,6 @@ export class Client_question_and_answer {
             return null
         } else {
             return new question_and_answer_objects.Comment_Post_Response().from_dict(result)
-        }
-    }
-
-    async user_modify_comment(item: question_and_answer_objects.Modify_Comment_Request, ignore_error?: boolean): Promise<question_and_answer_objects.Modify_Comment_Response | null> {
-        let result = await this._get_reponse_or_error_by_url_path_and_input("user_modify_comment", item.to_dict())
-        if (Object.keys(result).includes(this._special_error_key)) {
-            if ((ignore_error == null) || ((ignore_error != null) && (!ignore_error))) {
-                this._error_handle_function(result[this._special_error_key])
-            }
-            return null
-        } else {
-            return new question_and_answer_objects.Modify_Comment_Response().from_dict(result)
-        }
-    }
-
-    async user_delete_comment(item: question_and_answer_objects.Delete_Comment_Request, ignore_error?: boolean): Promise<question_and_answer_objects.Delete_Comment_Response | null> {
-        let result = await this._get_reponse_or_error_by_url_path_and_input("user_delete_comment", item.to_dict())
-        if (Object.keys(result).includes(this._special_error_key)) {
-            if ((ignore_error == null) || ((ignore_error != null) && (!ignore_error))) {
-                this._error_handle_function(result[this._special_error_key])
-            }
-            return null
-        } else {
-            return new question_and_answer_objects.Delete_Comment_Response().from_dict(result)
-        }
-    }
-
-    async user_like_or_dislike_a_post_or_comment(item: question_and_answer_objects.Like_Or_Dislike_Request, ignore_error?: boolean): Promise<question_and_answer_objects.Like_Or_Dislike_Response | null> {
-        let result = await this._get_reponse_or_error_by_url_path_and_input("user_like_or_dislike_a_post_or_comment", item.to_dict())
-        if (Object.keys(result).includes(this._special_error_key)) {
-            if ((ignore_error == null) || ((ignore_error != null) && (!ignore_error))) {
-                this._error_handle_function(result[this._special_error_key])
-            }
-            return null
-        } else {
-            return new question_and_answer_objects.Like_Or_Dislike_Response().from_dict(result)
         }
     }
 
@@ -247,19 +163,7 @@ export class Client_question_and_answer {
         }
     }
 
-    async user_upload_backup_data(item: question_and_answer_objects.Upload_Backup_Data_Request, ignore_error?: boolean): Promise<question_and_answer_objects.Upload_Backup_Data_Response | null> {
-        let result = await this._get_reponse_or_error_by_url_path_and_input("user_upload_backup_data", item.to_dict())
-        if (Object.keys(result).includes(this._special_error_key)) {
-            if ((ignore_error == null) || ((ignore_error != null) && (!ignore_error))) {
-                this._error_handle_function(result[this._special_error_key])
-            }
-            return null
-        } else {
-            return new question_and_answer_objects.Upload_Backup_Data_Response().from_dict(result)
-        }
-    }
-
-    async admin_download_backup_data(item: question_and_answer_objects.Download_Backup_Data_Request, ignore_error?: boolean): Promise<question_and_answer_objects.Download_Backup_Data_Response | null> {
+    async admin_download_backup_data(item: question_and_answer_objects.Admin_Download_Backup_Data_Request, ignore_error?: boolean): Promise<question_and_answer_objects.Admin_Download_Backup_Data_Response | null> {
         let result = await this._get_reponse_or_error_by_url_path_and_input("admin_download_backup_data", item.to_dict())
         if (Object.keys(result).includes(this._special_error_key)) {
             if ((ignore_error == null) || ((ignore_error != null) && (!ignore_error))) {
@@ -267,11 +171,11 @@ export class Client_question_and_answer {
             }
             return null
         } else {
-            return new question_and_answer_objects.Download_Backup_Data_Response().from_dict(result)
+            return new question_and_answer_objects.Admin_Download_Backup_Data_Response().from_dict(result)
         }
     }
 
-    async admin_upload_backup_data(item: question_and_answer_objects.Upload_Backup_Data_Request, ignore_error?: boolean): Promise<question_and_answer_objects.Upload_Backup_Data_Response | null> {
+    async admin_upload_backup_data(item: question_and_answer_objects.Admin_Upload_Backup_Data_Request, ignore_error?: boolean): Promise<question_and_answer_objects.Admin_Upload_Backup_Data_Response | null> {
         let result = await this._get_reponse_or_error_by_url_path_and_input("admin_upload_backup_data", item.to_dict())
         if (Object.keys(result).includes(this._special_error_key)) {
             if ((ignore_error == null) || ((ignore_error != null) && (!ignore_error))) {
@@ -279,7 +183,7 @@ export class Client_question_and_answer {
             }
             return null
         } else {
-            return new question_and_answer_objects.Upload_Backup_Data_Response().from_dict(result)
+            return new question_and_answer_objects.Admin_Upload_Backup_Data_Response().from_dict(result)
         }
     }
 }

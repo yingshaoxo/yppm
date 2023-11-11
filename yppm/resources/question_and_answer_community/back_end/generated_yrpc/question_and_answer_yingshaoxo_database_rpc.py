@@ -139,29 +139,6 @@ def _update(self, old_item_filter: Any, new_item: Any):
     self.database_of_yingshaoxo.update(one_row_dict_handler=one_row_dict_handler)
 
 
-class Yingshaoxo_Database_A_User:
-    def __init__(self, database_base_folder: str, use_sqlite: bool = False, global_multiprocessing_shared_dict: Any | None = None, auto_backup: bool = False) -> None:
-        self.database_of_yingshaoxo = Database_Of_Yingshaoxo(database_name="A_User", database_base_folder=database_base_folder, use_sqlite=use_sqlite, global_multiprocessing_shared_dict=global_multiprocessing_shared_dict, auto_backup=auto_backup)
-
-    def add(self, item: A_User):
-        return self.database_of_yingshaoxo.add(data=item.to_dict())
-
-    def search(self, item_filter: A_User, page_number:int|None=None, page_size:int|None=None, start_from:int=0, reverse:bool=False) -> list[A_User]:
-        return [A_User().from_dict(one) for one in _search_function(self=self, item_filter=item_filter, page_number=page_number, page_size=page_size, start_from=start_from, reverse=reverse)]
-
-    def raw_search(self, one_row_json_string_handler: Callable[[str], dict[str, Any] | None], page_number:int|None=None, page_size:int|None=None, start_from:int=0, reverse:bool=False) -> list[A_User]:
-        '''
-        one_row_json_string_handler: a_function to handle search process. If it returns None, we'll ignore it, otherwise, we'll add the return value into the result list.
-        '''
-        return [A_User().from_dict(one) for one in _raw_search_function(self=self, one_row_json_string_handler=one_row_json_string_handler, page_number=page_number, page_size=page_size, start_from=start_from, reverse=reverse)]
-
-    def delete(self, item_filter: A_User):
-        return _delete(self=self, item_filter=item_filter)
-
-    def update(self, old_item_filter: A_User, new_item: A_User):
-        return _update(self=self, old_item_filter=old_item_filter, new_item=new_item)
-
-
 class Yingshaoxo_Database_A_Post:
     def __init__(self, database_base_folder: str, use_sqlite: bool = False, global_multiprocessing_shared_dict: Any | None = None, auto_backup: bool = False) -> None:
         self.database_of_yingshaoxo = Database_Of_Yingshaoxo(database_name="A_Post", database_base_folder=database_base_folder, use_sqlite=use_sqlite, global_multiprocessing_shared_dict=global_multiprocessing_shared_dict, auto_backup=auto_backup)
@@ -211,7 +188,6 @@ class Yingshaoxo_Database_A_Comment:
 class Yingshaoxo_Database_Excutor_question_and_answer:
     def __init__(self, database_base_folder: str, use_sqlite: bool = False, global_multiprocessing_shared_dict: Any | None = None, auto_backup: bool = False):
         self._database_base_folder = database_base_folder
-        self.A_User = Yingshaoxo_Database_A_User(database_base_folder=self._database_base_folder, use_sqlite=use_sqlite, global_multiprocessing_shared_dict=global_multiprocessing_shared_dict, auto_backup=auto_backup)
         self.A_Post = Yingshaoxo_Database_A_Post(database_base_folder=self._database_base_folder, use_sqlite=use_sqlite, global_multiprocessing_shared_dict=global_multiprocessing_shared_dict, auto_backup=auto_backup)
         self.A_Comment = Yingshaoxo_Database_A_Comment(database_base_folder=self._database_base_folder, use_sqlite=use_sqlite, global_multiprocessing_shared_dict=global_multiprocessing_shared_dict, auto_backup=auto_backup)
 

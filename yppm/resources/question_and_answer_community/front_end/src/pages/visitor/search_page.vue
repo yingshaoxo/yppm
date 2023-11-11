@@ -90,7 +90,7 @@ export default class Visitor_Home_Chat_Page extends Vue {
                 </div>
             </div>
         </div>
-        <div class="button_group">
+        <div class="button_group" v-if="(dict?.post_list?.length != 0) || (dict?.comment_list?.length != 0)">
             <button class="button">Next Page</button>
             <button class="button">Previous Page</button>
         </div>

@@ -61,7 +61,23 @@ export var global_dict = reactive({
             },
             before_request_function,
             after_request_function,
+    ),
+    /*
+    public_client: new question_and_answer_rpc.Client_question_and_answer(
+            get_host_url(""),
+            {
+                jwt: "Fuck censorship! Build our own stuff, including platforms. Let freedom ring in our kingdom!"
+            }, 
+            (error_string: string)=>{
+                global_functions.print(error_string)
+            },
+            (data: any)=>{
+                interceptor_function(data)
+            },
+            before_request_function,
+            after_request_function,
     )
+    */
 })
 
 export var global_functions = {
@@ -202,6 +218,13 @@ export var global_functions = {
       return ""
       */
     },
+    get_username: (): string => {
+        let username = global_functions.get_value("username")
+        if (username == null) {
+            username = ""
+        }
+        return username
+    }
 }
 
 export default {

@@ -61,24 +61,6 @@ class Client_question_and_answer:
         else:
             return Ask_Yingshaoxo_Ai_Response().from_dict(result)
 
-    def visitor_get_json_web_token(self, item: Get_JSON_Web_Token_Request, ignore_error: bool | None=None) -> Get_JSON_Web_Token_Response | None:
-        result = self._get_reponse_or_error_by_url_path_and_input("visitor_get_json_web_token", item.to_dict())
-        if self._special_error_key in result.keys():
-            if ((ignore_error == None) or ((ignore_error != None) and (not ignore_error))):
-                self._error_handle_function(result[self._special_error_key])
-            return None
-        else:
-            return Get_JSON_Web_Token_Response().from_dict(result)
-
-    def visitor_is_json_web_token_ok(self, item: Is_JSON_Web_Token_Ok_Request, ignore_error: bool | None=None) -> Is_JSON_Web_Token_Ok_Response | None:
-        result = self._get_reponse_or_error_by_url_path_and_input("visitor_is_json_web_token_ok", item.to_dict())
-        if self._special_error_key in result.keys():
-            if ((ignore_error == None) or ((ignore_error != None) and (not ignore_error))):
-                self._error_handle_function(result[self._special_error_key])
-            return None
-        else:
-            return Is_JSON_Web_Token_Ok_Response().from_dict(result)
-
     def visitor_search(self, item: Search_Request, ignore_error: bool | None=None) -> Search_Response | None:
         result = self._get_reponse_or_error_by_url_path_and_input("visitor_search", item.to_dict())
         if self._special_error_key in result.keys():
@@ -115,24 +97,6 @@ class Client_question_and_answer:
         else:
             return Add_Post_Response().from_dict(result)
 
-    def user_update_post(self, item: Update_Post_Request, ignore_error: bool | None=None) -> Update_Post_Response | None:
-        result = self._get_reponse_or_error_by_url_path_and_input("user_update_post", item.to_dict())
-        if self._special_error_key in result.keys():
-            if ((ignore_error == None) or ((ignore_error != None) and (not ignore_error))):
-                self._error_handle_function(result[self._special_error_key])
-            return None
-        else:
-            return Update_Post_Response().from_dict(result)
-
-    def user_delete_post(self, item: Delete_Post_Request, ignore_error: bool | None=None) -> Delete_Post_Response | None:
-        result = self._get_reponse_or_error_by_url_path_and_input("user_delete_post", item.to_dict())
-        if self._special_error_key in result.keys():
-            if ((ignore_error == None) or ((ignore_error != None) and (not ignore_error))):
-                self._error_handle_function(result[self._special_error_key])
-            return None
-        else:
-            return Delete_Post_Response().from_dict(result)
-
     def user_comment_post(self, item: Comment_Post_Request, ignore_error: bool | None=None) -> Comment_Post_Response | None:
         result = self._get_reponse_or_error_by_url_path_and_input("user_comment_post", item.to_dict())
         if self._special_error_key in result.keys():
@@ -141,33 +105,6 @@ class Client_question_and_answer:
             return None
         else:
             return Comment_Post_Response().from_dict(result)
-
-    def user_modify_comment(self, item: Modify_Comment_Request, ignore_error: bool | None=None) -> Modify_Comment_Response | None:
-        result = self._get_reponse_or_error_by_url_path_and_input("user_modify_comment", item.to_dict())
-        if self._special_error_key in result.keys():
-            if ((ignore_error == None) or ((ignore_error != None) and (not ignore_error))):
-                self._error_handle_function(result[self._special_error_key])
-            return None
-        else:
-            return Modify_Comment_Response().from_dict(result)
-
-    def user_delete_comment(self, item: Delete_Comment_Request, ignore_error: bool | None=None) -> Delete_Comment_Response | None:
-        result = self._get_reponse_or_error_by_url_path_and_input("user_delete_comment", item.to_dict())
-        if self._special_error_key in result.keys():
-            if ((ignore_error == None) or ((ignore_error != None) and (not ignore_error))):
-                self._error_handle_function(result[self._special_error_key])
-            return None
-        else:
-            return Delete_Comment_Response().from_dict(result)
-
-    def user_like_or_dislike_a_post_or_comment(self, item: Like_Or_Dislike_Request, ignore_error: bool | None=None) -> Like_Or_Dislike_Response | None:
-        result = self._get_reponse_or_error_by_url_path_and_input("user_like_or_dislike_a_post_or_comment", item.to_dict())
-        if self._special_error_key in result.keys():
-            if ((ignore_error == None) or ((ignore_error != None) and (not ignore_error))):
-                self._error_handle_function(result[self._special_error_key])
-            return None
-        else:
-            return Like_Or_Dislike_Response().from_dict(result)
 
     def user_download_backup_data(self, item: Download_Backup_Data_Request, ignore_error: bool | None=None) -> Download_Backup_Data_Response | None:
         result = self._get_reponse_or_error_by_url_path_and_input("user_download_backup_data", item.to_dict())
@@ -178,29 +115,20 @@ class Client_question_and_answer:
         else:
             return Download_Backup_Data_Response().from_dict(result)
 
-    def user_upload_backup_data(self, item: Upload_Backup_Data_Request, ignore_error: bool | None=None) -> Upload_Backup_Data_Response | None:
-        result = self._get_reponse_or_error_by_url_path_and_input("user_upload_backup_data", item.to_dict())
-        if self._special_error_key in result.keys():
-            if ((ignore_error == None) or ((ignore_error != None) and (not ignore_error))):
-                self._error_handle_function(result[self._special_error_key])
-            return None
-        else:
-            return Upload_Backup_Data_Response().from_dict(result)
-
-    def admin_download_backup_data(self, item: Download_Backup_Data_Request, ignore_error: bool | None=None) -> Download_Backup_Data_Response | None:
+    def admin_download_backup_data(self, item: Admin_Download_Backup_Data_Request, ignore_error: bool | None=None) -> Admin_Download_Backup_Data_Response | None:
         result = self._get_reponse_or_error_by_url_path_and_input("admin_download_backup_data", item.to_dict())
         if self._special_error_key in result.keys():
             if ((ignore_error == None) or ((ignore_error != None) and (not ignore_error))):
                 self._error_handle_function(result[self._special_error_key])
             return None
         else:
-            return Download_Backup_Data_Response().from_dict(result)
+            return Admin_Download_Backup_Data_Response().from_dict(result)
 
-    def admin_upload_backup_data(self, item: Upload_Backup_Data_Request, ignore_error: bool | None=None) -> Upload_Backup_Data_Response | None:
+    def admin_upload_backup_data(self, item: Admin_Upload_Backup_Data_Request, ignore_error: bool | None=None) -> Admin_Upload_Backup_Data_Response | None:
         result = self._get_reponse_or_error_by_url_path_and_input("admin_upload_backup_data", item.to_dict())
         if self._special_error_key in result.keys():
             if ((ignore_error == None) or ((ignore_error != None) and (not ignore_error))):
                 self._error_handle_function(result[self._special_error_key])
             return None
         else:
-            return Upload_Backup_Data_Response().from_dict(result)
+            return Admin_Upload_Backup_Data_Response().from_dict(result)

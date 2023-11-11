@@ -22,30 +22,6 @@ class Service_question_and_answer:
 
         return default_response
 
-    async def visitor_get_json_web_token(self, headers: dict[str, str], item: Get_JSON_Web_Token_Request) -> Get_JSON_Web_Token_Response:
-        default_response = Get_JSON_Web_Token_Response()
-
-        try:
-            pass
-        except Exception as e:
-            print(f"Error: {e}")
-            #default_response.error = str(e)
-            #default_response.success = False
-
-        return default_response
-
-    async def visitor_is_json_web_token_ok(self, headers: dict[str, str], item: Is_JSON_Web_Token_Ok_Request) -> Is_JSON_Web_Token_Ok_Response:
-        default_response = Is_JSON_Web_Token_Ok_Response()
-
-        try:
-            pass
-        except Exception as e:
-            print(f"Error: {e}")
-            #default_response.error = str(e)
-            #default_response.success = False
-
-        return default_response
-
     async def visitor_search(self, headers: dict[str, str], item: Search_Request) -> Search_Response:
         default_response = Search_Response()
 
@@ -94,68 +70,8 @@ class Service_question_and_answer:
 
         return default_response
 
-    async def user_update_post(self, headers: dict[str, str], item: Update_Post_Request) -> Update_Post_Response:
-        default_response = Update_Post_Response()
-
-        try:
-            pass
-        except Exception as e:
-            print(f"Error: {e}")
-            #default_response.error = str(e)
-            #default_response.success = False
-
-        return default_response
-
-    async def user_delete_post(self, headers: dict[str, str], item: Delete_Post_Request) -> Delete_Post_Response:
-        default_response = Delete_Post_Response()
-
-        try:
-            pass
-        except Exception as e:
-            print(f"Error: {e}")
-            #default_response.error = str(e)
-            #default_response.success = False
-
-        return default_response
-
     async def user_comment_post(self, headers: dict[str, str], item: Comment_Post_Request) -> Comment_Post_Response:
         default_response = Comment_Post_Response()
-
-        try:
-            pass
-        except Exception as e:
-            print(f"Error: {e}")
-            #default_response.error = str(e)
-            #default_response.success = False
-
-        return default_response
-
-    async def user_modify_comment(self, headers: dict[str, str], item: Modify_Comment_Request) -> Modify_Comment_Response:
-        default_response = Modify_Comment_Response()
-
-        try:
-            pass
-        except Exception as e:
-            print(f"Error: {e}")
-            #default_response.error = str(e)
-            #default_response.success = False
-
-        return default_response
-
-    async def user_delete_comment(self, headers: dict[str, str], item: Delete_Comment_Request) -> Delete_Comment_Response:
-        default_response = Delete_Comment_Response()
-
-        try:
-            pass
-        except Exception as e:
-            print(f"Error: {e}")
-            #default_response.error = str(e)
-            #default_response.success = False
-
-        return default_response
-
-    async def user_like_or_dislike_a_post_or_comment(self, headers: dict[str, str], item: Like_Or_Dislike_Request) -> Like_Or_Dislike_Response:
-        default_response = Like_Or_Dislike_Response()
 
         try:
             pass
@@ -178,8 +94,8 @@ class Service_question_and_answer:
 
         return default_response
 
-    async def user_upload_backup_data(self, headers: dict[str, str], item: Upload_Backup_Data_Request) -> Upload_Backup_Data_Response:
-        default_response = Upload_Backup_Data_Response()
+    async def admin_download_backup_data(self, headers: dict[str, str], item: Admin_Download_Backup_Data_Request) -> Admin_Download_Backup_Data_Response:
+        default_response = Admin_Download_Backup_Data_Response()
 
         try:
             pass
@@ -190,20 +106,8 @@ class Service_question_and_answer:
 
         return default_response
 
-    async def admin_download_backup_data(self, headers: dict[str, str], item: Download_Backup_Data_Request) -> Download_Backup_Data_Response:
-        default_response = Download_Backup_Data_Response()
-
-        try:
-            pass
-        except Exception as e:
-            print(f"Error: {e}")
-            #default_response.error = str(e)
-            #default_response.success = False
-
-        return default_response
-
-    async def admin_upload_backup_data(self, headers: dict[str, str], item: Upload_Backup_Data_Request) -> Upload_Backup_Data_Response:
-        default_response = Upload_Backup_Data_Response()
+    async def admin_upload_backup_data(self, headers: dict[str, str], item: Admin_Upload_Backup_Data_Request) -> Admin_Upload_Backup_Data_Response:
+        default_response = Admin_Upload_Backup_Data_Response()
 
         try:
             pass
@@ -221,18 +125,6 @@ def init(service_instance: Any, router: Any):
         item = Ask_Yingshaoxo_Ai_Request().from_dict(item.to_dict())
         headers = dict(request.headers.items())
         return (await service_instance.ask_yingshaoxo_ai(headers, item)).to_dict()
-
-    @router.post("/visitor_get_json_web_token/", tags=["question_and_answer"])
-    async def visitor_get_json_web_token(request: Request, item: Get_JSON_Web_Token_Request) -> Get_JSON_Web_Token_Response:
-        item = Get_JSON_Web_Token_Request().from_dict(item.to_dict())
-        headers = dict(request.headers.items())
-        return (await service_instance.visitor_get_json_web_token(headers, item)).to_dict()
-
-    @router.post("/visitor_is_json_web_token_ok/", tags=["question_and_answer"])
-    async def visitor_is_json_web_token_ok(request: Request, item: Is_JSON_Web_Token_Ok_Request) -> Is_JSON_Web_Token_Ok_Response:
-        item = Is_JSON_Web_Token_Ok_Request().from_dict(item.to_dict())
-        headers = dict(request.headers.items())
-        return (await service_instance.visitor_is_json_web_token_ok(headers, item)).to_dict()
 
     @router.post("/visitor_search/", tags=["question_and_answer"])
     async def visitor_search(request: Request, item: Search_Request) -> Search_Response:
@@ -258,41 +150,11 @@ def init(service_instance: Any, router: Any):
         headers = dict(request.headers.items())
         return (await service_instance.user_add_post(headers, item)).to_dict()
 
-    @router.post("/user_update_post/", tags=["question_and_answer"])
-    async def user_update_post(request: Request, item: Update_Post_Request) -> Update_Post_Response:
-        item = Update_Post_Request().from_dict(item.to_dict())
-        headers = dict(request.headers.items())
-        return (await service_instance.user_update_post(headers, item)).to_dict()
-
-    @router.post("/user_delete_post/", tags=["question_and_answer"])
-    async def user_delete_post(request: Request, item: Delete_Post_Request) -> Delete_Post_Response:
-        item = Delete_Post_Request().from_dict(item.to_dict())
-        headers = dict(request.headers.items())
-        return (await service_instance.user_delete_post(headers, item)).to_dict()
-
     @router.post("/user_comment_post/", tags=["question_and_answer"])
     async def user_comment_post(request: Request, item: Comment_Post_Request) -> Comment_Post_Response:
         item = Comment_Post_Request().from_dict(item.to_dict())
         headers = dict(request.headers.items())
         return (await service_instance.user_comment_post(headers, item)).to_dict()
-
-    @router.post("/user_modify_comment/", tags=["question_and_answer"])
-    async def user_modify_comment(request: Request, item: Modify_Comment_Request) -> Modify_Comment_Response:
-        item = Modify_Comment_Request().from_dict(item.to_dict())
-        headers = dict(request.headers.items())
-        return (await service_instance.user_modify_comment(headers, item)).to_dict()
-
-    @router.post("/user_delete_comment/", tags=["question_and_answer"])
-    async def user_delete_comment(request: Request, item: Delete_Comment_Request) -> Delete_Comment_Response:
-        item = Delete_Comment_Request().from_dict(item.to_dict())
-        headers = dict(request.headers.items())
-        return (await service_instance.user_delete_comment(headers, item)).to_dict()
-
-    @router.post("/user_like_or_dislike_a_post_or_comment/", tags=["question_and_answer"])
-    async def user_like_or_dislike_a_post_or_comment(request: Request, item: Like_Or_Dislike_Request) -> Like_Or_Dislike_Response:
-        item = Like_Or_Dislike_Request().from_dict(item.to_dict())
-        headers = dict(request.headers.items())
-        return (await service_instance.user_like_or_dislike_a_post_or_comment(headers, item)).to_dict()
 
     @router.post("/user_download_backup_data/", tags=["question_and_answer"])
     async def user_download_backup_data(request: Request, item: Download_Backup_Data_Request) -> Download_Backup_Data_Response:
@@ -300,21 +162,15 @@ def init(service_instance: Any, router: Any):
         headers = dict(request.headers.items())
         return (await service_instance.user_download_backup_data(headers, item)).to_dict()
 
-    @router.post("/user_upload_backup_data/", tags=["question_and_answer"])
-    async def user_upload_backup_data(request: Request, item: Upload_Backup_Data_Request) -> Upload_Backup_Data_Response:
-        item = Upload_Backup_Data_Request().from_dict(item.to_dict())
-        headers = dict(request.headers.items())
-        return (await service_instance.user_upload_backup_data(headers, item)).to_dict()
-
     @router.post("/admin_download_backup_data/", tags=["question_and_answer"])
-    async def admin_download_backup_data(request: Request, item: Download_Backup_Data_Request) -> Download_Backup_Data_Response:
-        item = Download_Backup_Data_Request().from_dict(item.to_dict())
+    async def admin_download_backup_data(request: Request, item: Admin_Download_Backup_Data_Request) -> Admin_Download_Backup_Data_Response:
+        item = Admin_Download_Backup_Data_Request().from_dict(item.to_dict())
         headers = dict(request.headers.items())
         return (await service_instance.admin_download_backup_data(headers, item)).to_dict()
 
     @router.post("/admin_upload_backup_data/", tags=["question_and_answer"])
-    async def admin_upload_backup_data(request: Request, item: Upload_Backup_Data_Request) -> Upload_Backup_Data_Response:
-        item = Upload_Backup_Data_Request().from_dict(item.to_dict())
+    async def admin_upload_backup_data(request: Request, item: Admin_Upload_Backup_Data_Request) -> Admin_Upload_Backup_Data_Response:
+        item = Admin_Upload_Backup_Data_Request().from_dict(item.to_dict())
         headers = dict(request.headers.items())
         return (await service_instance.admin_upload_backup_data(headers, item)).to_dict()
 
