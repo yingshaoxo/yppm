@@ -28,7 +28,7 @@ service question_and_answer_service {
 
     1. Check if it is spam, AD
     2. If it is spam or AD, add tags. And it is a repeated one, delete it
-    3. If it is not spam or AD, merge it into old one, tell them it may be a fake adding
+    3. (optional) If it is not spam or AD, merge it into old one, tell them it may be a fake adding
     */
 }
 

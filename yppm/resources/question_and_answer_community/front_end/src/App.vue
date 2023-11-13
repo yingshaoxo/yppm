@@ -6,21 +6,38 @@ import Visitor_HomeSearchPage from './pages/visitor/search_page.vue';
 import Visitor_HomeChatPage from './pages/visitor/chat_page.vue';
 import Visitor_DetailPage from './pages/visitor/detail_page.vue';
 
+import PopUpPage from './pages/pop_up_page.vue';
+
 import { global_dict, global_functions } from './store';
 
 @Component({
     components: {
         Visitor_HomeSearchPage,
         Visitor_HomeChatPage,
-        Visitor_DetailPage
+        Visitor_DetailPage,
+        PopUpPage
     },
 
     setup() {
         const dict = reactive({
+            need_to_input_username: false,
+            username: "",
+        })
+
+        const functions = reactive({
+            save_username: () => {
+                global_functions.set_value('username', dict.username.trim())
+                dict.need_to_input_username=false
+                global_functions.refresh()
+            }
         })
 
         onBeforeMount(()=>{
-            global_functions.go_to_page_based_on_current_url()
+            if (global_functions.get_value('username') == null) {
+                dict.need_to_input_username = true;
+            } else {
+                global_functions.go_to_page_based_on_current_url()
+            }
         })
 
         onMounted(async () => {
@@ -31,8 +48,7 @@ import { global_dict, global_functions } from './store';
             global_dict,
             global_functions,
             dict,
-            increment() {
-            },
+            functions,
         };
     },
 })
@@ -42,18 +58,29 @@ export default class App extends Vue {}
 
 <template>
     <div id="app">
-        <div v-if="global_dict.current_page_name == 'search_page'">
-            <Visitor_HomeSearchPage />
-        </div>
+        <PopUpPage :display="dict.need_to_input_username">
+            <div class="input_username_window">
+                <p>What is your name?</p>
+                <input v-model="dict.username" placeholder="Please Input Your Name Here...">
+                <button @click="()=>{
+                    functions.save_username()
+                }">Confirm</button>
+            </div>
+        </PopUpPage>
 
-        <div v-if="global_dict.current_page_name == 'chat_page'">
-            <Visitor_HomeChatPage />
-        </div>
+        <template v-if="!dict.need_to_input_username">
+            <div v-if="global_dict.current_page_name == 'search_page'">
+                <Visitor_HomeSearchPage />
+            </div>
 
-        <div v-if="global_dict.current_page_name == 'detail_page'">
-            <Visitor_DetailPage />
-        </div>
+            <div v-if="global_dict.current_page_name == 'chat_page'">
+                <Visitor_HomeChatPage />
+            </div>
 
+            <div v-if="global_dict.current_page_name == 'detail_page'">
+                <Visitor_DetailPage />
+            </div>
+        </template>
         <!--img alt="Vue logo" src="./assets/logo.png"-->
         <!--
         <h1>{{ global_dict.hi }}</h1>
@@ -73,12 +100,38 @@ export default class App extends Vue {}
     text-align: center;
 
     margin: 0px;
-    height: 100%;
+    min-height: 100vh;
     width: 100%;
 
     background-color: rgba(224, 224, 224, 1);
 
     ._columns;
     ._center;
+}
+
+.input_username_window {
+    ._rows;
+
+    padding-top: 80px;
+    padding-left: 40px;
+    padding-right: 40px;
+    background-color: rgba(255,255,255);
+
+    >* {
+        margin-bottom: 24px;
+    }
+
+    width: 100vw;
+    height: 100vh;
+    text-align: left;
+
+    input {
+        border: 1px solid #000;
+        height: 25px;
+    }
+
+    button {
+        padding: 4px;
+    }
 }
 </style>

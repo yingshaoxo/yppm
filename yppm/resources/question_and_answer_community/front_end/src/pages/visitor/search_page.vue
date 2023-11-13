@@ -24,8 +24,9 @@ import * as question_and_answer_objects from '../../generated_yrpc/question_and_
         });
 
         const functions = reactive({
-            search: async (input: string) => {
-                input = input.trim()
+            search: async () => {
+                let input = dict?.input_value.trim()
+                dict.input_value = input
 
                 let request = new question_and_answer_objects.Search_Request()
                 request.search_input = input
@@ -33,14 +34,16 @@ import * as question_and_answer_objects from '../../generated_yrpc/question_and_
                 request.page_number = dict.page_number
 
                 let response = await global_dict.client.visitor_search(request)
-                console.log(response)
                 if (response?.post_list != null) {
                     dict.post_list = response?.post_list
                 }
                 if (response?.comment_list != null) {
                     dict.comment_list = response?.comment_list
                 }
-            }
+            },
+            jump_to_detail_page: async (item: any) => {
+                global_functions.go_to_page("detail_page", {id: item?.id})
+            } 
         })
 
         onMounted(() => {
@@ -75,12 +78,14 @@ export default class Visitor_Home_Chat_Page extends Vue {
 <template>
     <div class="full_screen">
         <div class="input_container _columns">
-            <textarea class="the_input" @input="()=>{ auto_adjust_input_height(200) }" v-model="dict.input_value"></textarea>
-            <button class="the_search_button" @click="functions.search(dict.input_value)">Search</button>
+            <textarea class="the_input" @input="()=>{ auto_adjust_input_height(200) }" v-model="dict.input_value" v-on:keyup.enter="functions.search"></textarea>
+            <button class="the_search_button" @click="functions.search()">Search</button>
         </div>
         <div class="history_post_list">
             <div class="post_row" v-for="item in dict.post_list">
-                <div class="text">
+                <div class="text"
+                    @click="()=>{functions.jump_to_detail_page(item)}"
+                >
                     {{ item?.title }}
                 </div>
             </div>
@@ -91,8 +96,16 @@ export default class Visitor_Home_Chat_Page extends Vue {
             </div>
         </div>
         <div class="button_group" v-if="(dict?.post_list?.length != 0) || (dict?.comment_list?.length != 0)">
-            <button class="button">Next Page</button>
-            <button class="button">Previous Page</button>
+            <button class="button" @click="()=>{dict.page_number += 1; functions.search();}">Next Page</button>
+            <button class="button" @click="()=>{dict.page_number -= 1; functions.search();}">Previous Page</button>
+        </div>
+
+        <div class="right_floating_button"
+            @click="()=>{
+                global_functions.go_to_page('detail_page', {})
+            }"
+        >
+            <span>+</span>
         </div>
     </div>
 </template>
@@ -103,7 +116,7 @@ export default class Visitor_Home_Chat_Page extends Vue {
 @import "../../assets/css/css_for_human.less";
 
 .full_screen {
-    width: 98vw;
+    width: 95vw;
     height: 100vh;
 
     ._rows;
@@ -111,7 +124,7 @@ export default class Visitor_Home_Chat_Page extends Vue {
 }
 
 .input_container {
-    margin-top: 25px;
+    margin-top: 35px;
 
     max-height: 100px;
     width: 100%;
@@ -129,6 +142,7 @@ export default class Visitor_Home_Chat_Page extends Vue {
     margin-top: 50px;
 
     width: 95%;
+    height: 100%;
     text-align: left;
 
     ._rows;
@@ -149,6 +163,7 @@ export default class Visitor_Home_Chat_Page extends Vue {
 
 .button_group {
     margin-top: 50px;
+    margin-bottom: 50px;
 
     width: 100%;
     
@@ -163,5 +178,28 @@ export default class Visitor_Home_Chat_Page extends Vue {
 pre{ 
     white-space: pre-wrap; 
     word-break: break-word;
+}
+
+.right_floating_button {
+    position:fixed;
+    font-size: 150%;
+
+    ._rows();
+    ._center();
+
+    width:40px;
+    height:40px;
+
+    bottom:40px;
+    right:20px;
+
+    background-color:rgba(239, 83, 80);
+
+    color:#FFF;
+    font-weight: bold;
+
+    border-radius:50px;
+    text-align:center;
+    box-shadow: 2px 2px 3px #999;
 }
 </style>

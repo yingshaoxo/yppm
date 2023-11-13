@@ -7,6 +7,7 @@ import multiprocessing
 import os
 import re
 import json
+import random
 
 from auto_everything.terminal import Terminal, Terminal_User_Interface
 from auto_everything.python import Python
@@ -101,30 +102,6 @@ class Question_And_Answer_Service(question_and_answer_pure_python_rpc.Service_qu
 
         return default_response
 
-    def visitor_get_json_web_token(self, headers: dict[str, str], item: question_and_answer_objects.Get_JSON_Web_Token_Request) -> question_and_answer_objects.Get_JSON_Web_Token_Response:
-        default_response = question_and_answer_objects.Get_JSON_Web_Token_Response()
-
-        try:
-            pass
-        except Exception as e:
-            print(f"Error: {e}")
-            #default_response.error = str(e)
-            #default_response.success = False
-
-        return default_response
-
-    def visitor_is_json_web_token_ok(self, headers: dict[str, str], item: question_and_answer_objects.Is_JSON_Web_Token_Ok_Request) -> question_and_answer_objects.Is_JSON_Web_Token_Ok_Response:
-        default_response = question_and_answer_objects.Is_JSON_Web_Token_Ok_Response()
-
-        try:
-            pass
-        except Exception as e:
-            print(f"Error: {e}")
-            #default_response.error = str(e)
-            #default_response.success = False
-
-        return default_response
-
     def visitor_search(self, headers: dict[str, str], item: question_and_answer_objects.Search_Request) -> question_and_answer_objects.Search_Response:
         default_response = question_and_answer_objects.Search_Response()
 
@@ -141,7 +118,7 @@ class Question_And_Answer_Service(question_and_answer_pure_python_rpc.Service_qu
                     return json_object
                 return None
             post_search_list = database_excutor_for_remote_service.A_Post.raw_search(one_row_json_string_handler=a_handler, page_number=item.page_number, page_size=item.page_size)
-            default_response.post_search_list = []
+            default_response.post_list = post_search_list
 
             def a_comment_handler(raw_json_text: str) -> dict[str, Any] | None:
                 search_text = item.search_input
@@ -164,10 +141,14 @@ class Question_And_Answer_Service(question_and_answer_pure_python_rpc.Service_qu
         default_response = question_and_answer_objects.Get_A_Post_Response()
 
         try:
-            pass
+            result_list = database_excutor_for_remote_service.A_Post.search(item_filter=question_and_answer_objects.A_Post(
+                id=item.id
+            ))
+            if len(result_list) > 0:
+                default_response.post = result_list[0]
         except Exception as e:
             print(f"Error: {e}")
-            #default_response.error = str(e)
+            default_response.error = str(e)
             #default_response.success = False
 
         return default_response
@@ -188,76 +169,54 @@ class Question_And_Answer_Service(question_and_answer_pure_python_rpc.Service_qu
         default_response = question_and_answer_objects.Add_Post_Response()
 
         try:
-            pass
+            if item.username == None:
+                item.username = ""
+            if item.a_post.title == None:
+                default_response.error = "You should give me a title for your question."
+                return default_response
+            if item.a_post.description == None:
+                default_response.error = "You should give me a description for your question."
+                return default_response
+
+            item.a_post.title = item.a_post.title.strip()
+            item.a_post.description = item.a_post.description.strip()
+
+            if len(item.a_post.title) > 300:
+                default_response.error = "You should not publish a title that greater than 300 characters."
+                return default_response
+            if len(item.a_post.description) > 10000:
+                default_response.error = "You should not publish a description that greater than 10000 characters."
+                return default_response
+
+            result_list = database_excutor_for_remote_service.A_Post.search(item_filter=question_and_answer_objects.A_Post(
+                title=item.a_post.title
+            ))
+            if len(result_list) > 0:
+                default_response.error = "You should change a title for your question. It is already been taken."
+                return default_response
+
+            random_numbers = "".join([str(random.randint(0, 9)) for i in range(6)])
+            new_id = item.a_post.title[:30].replace(" ", "_").replace("-", "_") + random_numbers
+            database_excutor_for_remote_service.A_Post.add(question_and_answer_objects.A_Post(
+                owner_id=item.username,
+                id=new_id,
+                title=item.a_post.title,
+                description=item.a_post.description,
+                comment_id_list=[],
+                create_time_in_10_numbers_timestamp_format=time_.get_current_timestamp_in_10_digits_format(),
+                tag=[], # for example, [ad, spam, adult]
+            ))
+            default_response.post_id = new_id
+            default_response.success = True
         except Exception as e:
             print(f"Error: {e}")
-            #default_response.error = str(e)
-            #default_response.success = False
-
-        return default_response
-
-    def user_update_post(self, headers: dict[str, str], item: question_and_answer_objects.Update_Post_Request) -> question_and_answer_objects.Update_Post_Response:
-        default_response = question_and_answer_objects.Update_Post_Response()
-
-        try:
-            pass
-        except Exception as e:
-            print(f"Error: {e}")
-            #default_response.error = str(e)
-            #default_response.success = False
-
-        return default_response
-
-    def user_delete_post(self, headers: dict[str, str], item: question_and_answer_objects.Delete_Post_Request) -> question_and_answer_objects.Delete_Post_Response:
-        default_response = question_and_answer_objects.Delete_Post_Response()
-
-        try:
-            pass
-        except Exception as e:
-            print(f"Error: {e}")
-            #default_response.error = str(e)
-            #default_response.success = False
+            default_response.error = str(e)
+            default_response.success = False
 
         return default_response
 
     def user_comment_post(self, headers: dict[str, str], item: question_and_answer_objects.Comment_Post_Request) -> question_and_answer_objects.Comment_Post_Response:
         default_response = question_and_answer_objects.Comment_Post_Response()
-
-        try:
-            pass
-        except Exception as e:
-            print(f"Error: {e}")
-            #default_response.error = str(e)
-            #default_response.success = False
-
-        return default_response
-
-    def user_modify_comment(self, headers: dict[str, str], item: question_and_answer_objects.Modify_Comment_Request) -> question_and_answer_objects.Modify_Comment_Response:
-        default_response = question_and_answer_objects.Modify_Comment_Response()
-
-        try:
-            pass
-        except Exception as e:
-            print(f"Error: {e}")
-            #default_response.error = str(e)
-            #default_response.success = False
-
-        return default_response
-
-    def user_delete_comment(self, headers: dict[str, str], item: question_and_answer_objects.Delete_Comment_Request) -> question_and_answer_objects.Delete_Comment_Response:
-        default_response = question_and_answer_objects.Delete_Comment_Response()
-
-        try:
-            pass
-        except Exception as e:
-            print(f"Error: {e}")
-            #default_response.error = str(e)
-            #default_response.success = False
-
-        return default_response
-
-    def user_like_or_dislike_a_post_or_comment(self, headers: dict[str, str], item: question_and_answer_objects.Like_Or_Dislike_Request) -> question_and_answer_objects.Like_Or_Dislike_Response:
-        default_response = question_and_answer_objects.Like_Or_Dislike_Response()
 
         try:
             pass
@@ -280,8 +239,8 @@ class Question_And_Answer_Service(question_and_answer_pure_python_rpc.Service_qu
 
         return default_response
 
-    def user_upload_backup_data(self, headers: dict[str, str], item: question_and_answer_objects.Upload_Backup_Data_Request) -> question_and_answer_objects.Upload_Backup_Data_Response:
-        default_response = question_and_answer_objects.Upload_Backup_Data_Response()
+    def admin_download_backup_data(self, headers: dict[str, str], item: question_and_answer_objects.Admin_Download_Backup_Data_Request) -> question_and_answer_objects.Admin_Download_Backup_Data_Response:
+        default_response = question_and_answer_objects.Admin_Download_Backup_Data_Response()
 
         try:
             pass
@@ -292,20 +251,8 @@ class Question_And_Answer_Service(question_and_answer_pure_python_rpc.Service_qu
 
         return default_response
 
-    def admin_download_backup_data(self, headers: dict[str, str], item: question_and_answer_objects.Download_Backup_Data_Request) -> question_and_answer_objects.Download_Backup_Data_Response:
-        default_response = question_and_answer_objects.Download_Backup_Data_Response()
-
-        try:
-            pass
-        except Exception as e:
-            print(f"Error: {e}")
-            #default_response.error = str(e)
-            #default_response.success = False
-
-        return default_response
-
-    def admin_upload_backup_data(self, headers: dict[str, str], item: question_and_answer_objects.Upload_Backup_Data_Request) -> question_and_answer_objects.Upload_Backup_Data_Response:
-        default_response = question_and_answer_objects.Upload_Backup_Data_Response()
+    def admin_upload_backup_data(self, headers: dict[str, str], item: question_and_answer_objects.Admin_Upload_Backup_Data_Request) -> question_and_answer_objects.Admin_Upload_Backup_Data_Response:
+        default_response = question_and_answer_objects.Admin_Upload_Backup_Data_Response()
 
         try:
             pass

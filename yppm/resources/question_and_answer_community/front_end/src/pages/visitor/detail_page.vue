@@ -7,14 +7,18 @@ import { global_dict, global_functions } from '../../store';
 import type * as question_and_answer_object_types from '../../generated_yrpc/question_and_answer_objects'
 import * as question_and_answer_objects from '../../generated_yrpc/question_and_answer_objects'
 
+import PopUpPage from '../pop_up_page.vue';
+
 @Component({
-    /*
     components: {
-        HomeChatPage,
+        PopUpPage,
     },
-    */
     setup() {
         const dict = reactive({
+            create_new_post_mode: false,
+            a_new_post: new question_and_answer_objects.A_Post(),
+            create_new_comment_mode: false,
+            a_new_comment: new question_and_answer_objects.A_Comment(),
             a_post: {
                 owner_id: "",
                 id: "",
@@ -50,12 +54,25 @@ import * as question_and_answer_objects from '../../generated_yrpc/question_and_
                         }
                     }
                 }
-            }
+            },
+            create_a_post: async () => {
+                let request = new question_and_answer_objects.Add_Post_Request()
+                request.username = global_functions.get_username()
+                request.a_post = dict?.a_new_post
+                let response = await global_dict.client.user_add_post(request)
+                if (response?.post_id != null) {
+                    // do a reloading with that post id
+                    global_functions.go_to_page("detail_page", {id: response?.post_id})
+                }
+            },
         })
 
-        onMounted(() => {
+        onMounted(async () => {
             if (global_dict?.current_page_data?.id != null) {
                 dict.a_post.id = global_dict?.current_page_data?.id
+                await functions.get_a_post()
+            } else {
+                dict.create_new_post_mode = true
             }
         });
 
@@ -70,14 +87,12 @@ import * as question_and_answer_objects from '../../generated_yrpc/question_and_
 
 export default class Visitor_Home_Chat_Page extends Vue {
     auto_adjust_input_height(height_limit: any) {
-        const input = document.querySelector('.the_input') as HTMLInputElement;
-        const input_container = document.querySelector('.input_container') as HTMLInputElement;
+        const input = document.querySelector('.the_textarea') as HTMLInputElement;
 
         input.style.height = 'auto';
         let new_height = input.scrollHeight;
         if (new_height <= height_limit) {
             input.style.height = new_height + 'px';
-            input_container.style.marginBottom = Math.min(new_height, 80) + 'px';
         } else {
             input.style.height = height_limit + 'px';
         }
@@ -95,7 +110,8 @@ export default class Visitor_Home_Chat_Page extends Vue {
                 {{dict.a_post.description}}
             </div>
             <div class="author">
-                @{{dict.a_post.owner_id}}
+                <span v-if="dict?.a_post?.owner_id == ''">@anonymous</span>
+                <span v-if="dict?.a_post?.owner_id != ''">@{{dict.a_post.owner_id}}</span>
             </div>
 
             <div class="post_seperator">
@@ -105,17 +121,29 @@ export default class Visitor_Home_Chat_Page extends Vue {
                 <div class="left_old_list">
                     <div v-for="item in dict.left_old_list">
                         <span>{{ item?.owner_id }}:</span>
-                        <span>{{item?.description}}</span>
+                        <span>{{ item?.description }}</span>
                     </div>
                 </div>
                 <div class="right_new_list">
                     <div v-for="item in dict.right_new_list">
                         <span>{{ item?.owner_id }}:</span>
-                        <span>{{item?.description}}</span>
+                        <span>{{ item?.description }}</span>
                     </div>
                 </div>
             </div>
         </div>
+
+        <PopUpPage :display="dict.create_new_post_mode">
+            <div class="create_new_post_mode">
+                <div class="new_post_container">
+                    <p>What is your question title?</p>
+                    <input v-model="dict.a_new_post.title" placeholder="Please Input Your Question Title Here...">
+                    <p>What is your question description?</p>
+                    <textarea class="the_textarea" v-model="dict.a_new_post.description" placeholder="Please Input Your Question Description Here..." @input="()=>{ auto_adjust_input_height(400) }"></textarea>
+                    <button @click="functions.create_a_post">Confirm</button>
+                </div>
+            </div>
+        </PopUpPage>
     </div>
 </template>
 
@@ -124,7 +152,7 @@ export default class Visitor_Home_Chat_Page extends Vue {
 @import "../../assets/css/css_for_human.less";
 
 .full_screen {
-    width: 98vw;
+    width: 100vw;
     min-height: 100vh;
 
     ._rows;
@@ -188,41 +216,42 @@ export default class Visitor_Home_Chat_Page extends Vue {
         background-color: #BBDEFB;
         width: 50%;
     }
-
-    .message_row {
-        width: 100%;
-        margin-bottom: 25px;
-        ._columns;
-    }
-
-    .message_other {
-        justify-content: flex-start;
-        text-align: left;
-    }
-
-    .message_me {
-        justify-content: flex-end;
-        text-align: right;
-    }
-
-    .message_other_color {
-        background-color: rgba(255, 255, 255, 1);
-    }
-
-    .message_me_color {
-        background-color: rgba(203, 242, 207, 1);
-    }
-
-    .message {
-        width: 80%;
-        min-height: 30px;
-        padding: 16px;
-        border-radius: 8px;
-    }
 }
 
 pre{ 
     white-space: pre-wrap; 
     word-break: break-word;
+}
+
+.create_new_post_mode {
+    background-color: rgba(255,255,255);
+
+    ._rows();
+    ._horizontal_center();
+
+    width: 100vw;
+    height: 100vh;
+    text-align: left;
+
+    .new_post_container {
+        margin-top: 35px;
+        width: 88%;
+
+        ._rows();
+        padding-left: 8px;
+        padding-right: 8px;
+        >* {
+            margin-bottom: 20px;
+        }
+
+        .the_textarea {
+            min-height: 100px;
+        }
+
+        button {
+            margin-top: 15px;
+            padding: 4px;
+        }
+    }
 }
 </style>
