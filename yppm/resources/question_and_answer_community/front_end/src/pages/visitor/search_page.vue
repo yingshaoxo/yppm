@@ -149,7 +149,7 @@ export default class Visitor_Home_Chat_Page extends Vue {
 @import "../../assets/css/css_for_human.less";
 
 .full_screen {
-    width: 95vw;
+    width: 100vw;
     height: 100vh;
 
     ._rows;
