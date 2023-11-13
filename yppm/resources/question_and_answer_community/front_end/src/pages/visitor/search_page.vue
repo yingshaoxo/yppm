@@ -125,6 +125,10 @@ export default class Visitor_Home_Chat_Page extends Vue {
             <button class="button" @click="()=>{dict.page_number -= 1; functions.search();}">Previous Page</button>
         </div>
 
+        <div class="backup"
+            @click="global_functions.download_user_data()"
+        >Backup Data</div>
+
         <div class="right_floating_button"
             @click="()=>{
                 global_functions.go_to_page('detail_page', {})
@@ -223,6 +227,14 @@ export default class Visitor_Home_Chat_Page extends Vue {
 pre{ 
     white-space: pre-wrap; 
     word-break: break-word;
+}
+
+.backup {
+    position: absolute;
+    bottom: 5px;
+
+    ._less_obvious_text;
+    font-size: 70%;
 }
 
 .right_floating_button {

@@ -291,10 +291,30 @@ class Question_And_Answer_Service(question_and_answer_pure_python_rpc.Service_qu
         default_response = question_and_answer_objects.Download_Backup_Data_Response()
 
         try:
-            pass
+            if item.username == None:
+                default_response.error = "You should give me a username to download its data."
+                return default_response
+
+            all_data = {}
+
+            question_list = database_excutor_for_remote_service.A_Post.search(item_filter=question_and_answer_objects.A_Post(
+                owner_id=item.username
+            ))
+            all_data["questions"] = [one.to_dict() for one in question_list]
+
+            comment_list = database_excutor_for_remote_service.A_Comment.search(item_filter=question_and_answer_objects.A_Comment(
+                owner_id=item.username
+            ))
+            all_data["comments"] = [one.to_dict() for one in comment_list]
+
+            all_data_json_text = json.dumps(all_data, indent=4)
+
+            temp_json_file = disk.get_a_temp_file_path("user_data_backup.json")
+            default_response.file_bytes_in_base64_format = disk.bytes_to_base64(all_data_json_text.encode("utf-8"))
+            default_response.file_name = "user_data_backup.json"
         except Exception as e:
             print(f"Error: {e}")
-            #default_response.error = str(e)
+            default_response.error = str(e)
             #default_response.success = False
 
         return default_response
@@ -304,6 +324,13 @@ class Question_And_Answer_Service(question_and_answer_pure_python_rpc.Service_qu
 
         try:
             pass
+            """
+            temp_zip_file = disk.get_a_temp_file_path("backup.zip")
+            disk.compress(input_folder_path=the_database_path, output_zip_path=temp_zip_file)
+            bytes_io_data = disk.get_bytesio_from_a_file(temp_zip_file)
+            default_response.file_bytes_in_base64_format = disk.bytesio_to_base64(bytes_io_data)
+            default_response.file_name = "app_store_backup.zip"
+            """
         except Exception as e:
             print(f"Error: {e}")
             #default_response.error = str(e)

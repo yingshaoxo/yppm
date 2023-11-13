@@ -224,7 +224,59 @@ export var global_functions = {
             username = ""
         }
         return username
-    }
+    },
+    download_base64_file: (base64Data: string, fileName: string) => {
+        const linkSource = `data:application/octet-stream;base64,${base64Data}`;
+        const downloadLink = document.createElement("a");
+        downloadLink.href = linkSource;
+        downloadLink.download = fileName;
+        downloadLink.click();
+    },
+    download_user_data: async () => {
+        let export_data_request = new question_and_answer_objects.Download_Backup_Data_Request()
+        export_data_request.username = global_functions.get_username()
+
+        let response = await global_dict.client.user_download_backup_data(export_data_request)
+        if (response?.file_bytes_in_base64_format != null) {
+            if (response?.file_name != null) {
+                global_functions.download_base64_file(response?.file_bytes_in_base64_format, response?.file_name)
+            }
+        }
+    }, 
+    download_whole_side_data: async (token: any) => {
+        let export_data_request = new question_and_answer_objects.Admin_Download_Backup_Data_Request()
+        export_data_request.token = token
+
+        let response = await global_dict.client.admin_download_backup_data(export_data_request)
+        if (response?.file_bytes_in_base64_format != null) {
+            if (response?.file_name != null) {
+                global_functions.download_base64_file(response?.file_bytes_in_base64_format, response?.file_name)
+            }
+        }
+    }, 
+    file_to_base64: async (a_file: File) => {
+        let a_function = 
+          (file: File) => new Promise((resolve, reject) => {
+              const reader = new FileReader();
+              reader.readAsDataURL(file);
+              reader.onload = () => {
+                  let base64_string = String(reader.result).split(",")[1]
+                  resolve(base64_string)
+              };
+              reader.onerror = error => reject(error);
+          })
+          return (await a_function(a_file) as string)
+    },
+    upload_whole_side_data: async (token: any, base64_data_string: any) => {
+        let request = new question_and_answer_objects.Admin_Upload_Backup_Data_Request()
+        request.token = token
+        request.file_bytes_in_base64_format = base64_data_string
+
+        let response = await global_dict.client.admin_upload_backup_data(request)
+        if (response?.success != null) {
+            global_functions.print("Website data upload successfully.")
+        }
+    }, 
 }
 
 export default {
