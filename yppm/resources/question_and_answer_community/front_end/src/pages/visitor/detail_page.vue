@@ -9,6 +9,8 @@ import * as question_and_answer_objects from '../../generated_yrpc/question_and_
 
 import PopUpPage from '../pop_up_page.vue';
 
+import snarkdown from 'snarkdown'
+
 @Component({
     components: {
         PopUpPage,
@@ -17,7 +19,6 @@ import PopUpPage from '../pop_up_page.vue';
         const dict = reactive({
             create_new_post_mode: false,
             a_new_post: new question_and_answer_objects.A_Post(),
-            create_new_comment_mode: false,
             a_new_comment: new question_and_answer_objects.A_Comment(),
             a_post: {
                 owner_id: "",
@@ -31,6 +32,8 @@ import PopUpPage from '../pop_up_page.vue';
             comment_list: [] as any,
             left_old_list: [] as any,
             right_new_list: [] as any,
+            special_comment: new question_and_answer_objects.A_Comment(),
+            show_special_comment: false,
         });
 
         const functions = reactive({
@@ -46,6 +49,14 @@ import PopUpPage from '../pop_up_page.vue';
                         let response2 = await global_dict.client.visitor_get_comment_list_by_id_list(request2)
                         if (response2?.comment_list != null) {
                             dict.comment_list = response2?.comment_list
+                            for (let i = 0; i < dict.comment_list.length; i++) {
+                                if (dict.comment_list[i].owner_id == "") {
+                                    dict.comment_list[i].owner_id = "anonymous"
+                                }
+                                if (dict.comment_list[i].description != null) {
+                                    dict.comment_list[i].description = snarkdown(dict?.comment_list[i]?.description??'')
+                                } 
+                            }
                             let length = dict?.comment_list?.length
                             let half_length = Math.round(length / 2)
                             dict.left_old_list = dict?.comment_list.slice(0, half_length)
@@ -65,6 +76,24 @@ import PopUpPage from '../pop_up_page.vue';
                     global_functions.go_to_page("detail_page", {id: response?.post_id})
                 }
             },
+            create_a_comment: async () => {
+                let request = new question_and_answer_objects.Comment_Post_Request()
+
+                dict.a_new_comment.parent_post_id = dict.a_post.id;
+                dict.a_new_comment.parent_post_owner_id = dict.a_post.owner_id;
+                request.a_comment = dict?.a_new_comment
+                request.username = global_functions.get_username()
+
+                let response = await global_dict.client.user_comment_post(request)
+                if (response?.comment_id != null) {
+                    // do a reloading with that post id
+                    global_functions.refresh()
+                }
+            },
+            set_and_show_a_special_comment: (item: any) => {
+                dict.special_comment = item
+                dict.show_special_comment = true
+            }
         })
 
         onMounted(async () => {
@@ -86,8 +115,8 @@ import PopUpPage from '../pop_up_page.vue';
 })
 
 export default class Visitor_Home_Chat_Page extends Vue {
-    auto_adjust_input_height(height_limit: any) {
-        const input = document.querySelector('.the_textarea') as HTMLInputElement;
+    auto_adjust_input_height(class_name: any, height_limit: any) {
+        const input = document.querySelector(`.${class_name}`) as HTMLInputElement;
 
         input.style.height = 'auto';
         let new_height = input.scrollHeight;
@@ -117,17 +146,25 @@ export default class Visitor_Home_Chat_Page extends Vue {
             <div class="post_seperator">
             </div>
 
+            <div class="new_comment_container">
+                <textarea class="the_textarea_2" v-model="dict.a_new_comment.description" placeholder="Say Something Here..." @input="()=>{ auto_adjust_input_height('the_textarea_2', 200) }"></textarea>
+                <button @click="functions.create_a_comment">Answer</button>
+            </div>
+
+            <div class="post_seperator">
+            </div>
+
             <div class="comment_list">
                 <div class="left_old_list">
-                    <div v-for="item in dict.left_old_list">
-                        <span>{{ item?.owner_id }}:</span>
-                        <span>{{ item?.description }}</span>
+                    <div v-for="item in dict.left_old_list" class="one_comment" @click="functions.set_and_show_a_special_comment(item)">
+                        <div class="owner_id">{{ item?.owner_id }}: </div>
+                        <div class="description" v-html="item?.description"></div>
                     </div>
                 </div>
                 <div class="right_new_list">
-                    <div v-for="item in dict.right_new_list">
-                        <span>{{ item?.owner_id }}:</span>
-                        <span>{{ item?.description }}</span>
+                    <div v-for="item in dict.right_new_list" class="one_comment" @click="functions.set_and_show_a_special_comment(item)">
+                        <div class="owner_id">{{ item?.owner_id }}: </div>
+                        <div class="description" v-html="item?.description"></div>
                     </div>
                 </div>
             </div>
@@ -139,8 +176,20 @@ export default class Visitor_Home_Chat_Page extends Vue {
                     <p>What is your question title?</p>
                     <input v-model="dict.a_new_post.title" placeholder="Please Input Your Question Title Here...">
                     <p>What is your question description?</p>
-                    <textarea class="the_textarea" v-model="dict.a_new_post.description" placeholder="Please Input Your Question Description Here..." @input="()=>{ auto_adjust_input_height(400) }"></textarea>
+                    <textarea class="the_textarea" v-model="dict.a_new_post.description" placeholder="Please Input Your Question Description Here..." @input="()=>{ auto_adjust_input_height('the_textarea', 400) }"></textarea>
                     <button @click="functions.create_a_post">Confirm</button>
+                </div>
+            </div>
+        </PopUpPage>
+
+        <PopUpPage :display="dict.show_special_comment">
+            <div class="create_new_post_mode">
+                <div class="new_post_container">
+                    <div class="special_owner_id">{{ dict?.special_comment?.owner_id }}: </div>
+                    <div v-html="dict?.special_comment?.description"></div>
+                    <button @click="()=>{
+                        dict.show_special_comment = false
+                    }">Return</button>
                 </div>
             </div>
         </PopUpPage>
@@ -192,6 +241,27 @@ export default class Visitor_Home_Chat_Page extends Vue {
         margin-top: 16px;
         margin-bottom: 16px;
     }
+
+    .new_comment_container {
+        margin-top: 35px;
+        margin-bottom: 35px;
+        width: 100%;
+
+        ._columns();
+        ._horizontal_center();
+
+        .the_textarea_2 {
+            margin-left: 8px;
+            width: 100%;
+            min-height: 25px;
+        }
+
+        button {
+            margin-right: 8px;
+            height: 35px;
+            padding: 4px;
+        }
+    }
 }
 
 .comment_list {
@@ -202,19 +272,36 @@ export default class Visitor_Home_Chat_Page extends Vue {
     overflow: auto;
 
     ._columns;
+    ._center;
 
     .left_old_list {
         padding: 4px;
 
-        background-color: #FF8A80;
+        background-color: rgba(241, 248, 233, 0.2);
         width: 50%;
+        height: 100vh;
     }
 
     .right_new_list {
         padding: 4px;
 
-        background-color: #BBDEFB;
+        background-color: rgba(187, 222, 251, 0.2);
         width: 50%;
+        height: 100vh;
+    }
+
+    .one_comment {
+        margin-top: 8px;
+        margin-bottom: 8px;
+    }
+
+    .owner_id {
+        font-weight: bold;
+        margin-bottom: 8px;
+    }
+
+    .description {
+        margin-bottom: 32px;
     }
 }
 
@@ -253,5 +340,10 @@ pre{
             padding: 4px;
         }
     }
+}
+
+.special_owner_id {
+    font-weight: bold;
+    margin-bottom: 48px;
 }
 </style>

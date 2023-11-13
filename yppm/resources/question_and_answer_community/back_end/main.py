@@ -157,10 +157,16 @@ class Question_And_Answer_Service(question_and_answer_pure_python_rpc.Service_qu
         default_response = question_and_answer_objects.Get_Comment_List_By_Id_List_Response()
 
         try:
-            pass
+            def a_handler(raw_json_text: str) -> dict[str, Any] | None:
+                json_object = json.loads(raw_json_text)
+                if json_object["id"] in item.comment_id_list:
+                    return json_object
+                return None
+            comment_list = database_excutor_for_remote_service.A_Comment.raw_search(one_row_json_string_handler=a_handler)
+            default_response.comment_list = comment_list
         except Exception as e:
             print(f"Error: {e}")
-            #default_response.error = str(e)
+            default_response.error = str(e)
             #default_response.success = False
 
         return default_response
@@ -219,10 +225,64 @@ class Question_And_Answer_Service(question_and_answer_pure_python_rpc.Service_qu
         default_response = question_and_answer_objects.Comment_Post_Response()
 
         try:
-            pass
+            if item.username == None:
+                item.username = ""
+            if item.a_comment.description == None:
+                default_response.error = "You should give me a description for your comment."
+                return default_response
+
+            item.a_comment.description = item.a_comment.description.strip()
+            if len(item.a_comment.description) > 1000:
+                default_response.error = "You should not publish a comment that greater than 1000 characters."
+                return default_response
+
+            if item.a_comment.parent_post_id == None or item.a_comment.parent_post_owner_id == None:
+                default_response.error = "You should give me the parent_post_id and parent_post_owner_id for your comment."
+                return default_response
+            post_list = database_excutor_for_remote_service.A_Post.search(item_filter=question_and_answer_objects.A_Post(
+                id=item.a_comment.id,
+                owner_id=item.a_comment.owner_id
+            ))
+            if len(post_list) == 0:
+                default_response.error = "The question you want to add comment to, is not exists."
+                return default_response
+
+            result_list = database_excutor_for_remote_service.A_Comment.search(item_filter=question_and_answer_objects.A_Comment(
+                description=item.a_comment.description
+            ))
+            if len(result_list) > 0:
+                default_response.error = "The comment you want to add is used by someone maybe at some other question/post."
+                return default_response
+
+            # add comment
+            random_numbers = "".join([str(random.randint(0, 9)) for i in range(6)])
+            new_id = item.a_comment.description[:30].replace(" ", "_").replace("-", "_") + random_numbers
+            database_excutor_for_remote_service.A_Comment.add(question_and_answer_objects.A_Comment(
+                owner_id=item.username,
+                id=new_id,
+                parent_post_id=item.a_comment.parent_post_id,
+                parent_post_owner_id=item.a_comment.parent_post_owner_id,
+                description=item.a_comment.description,
+                create_time_in_10_numbers_timestamp_format=time_.get_current_timestamp_in_10_digits_format(),
+                tag=[], # for example, [ad, spam, adult]
+            ))
+
+            # add comment id to the old post comment_list
+            that_post = post_list[0]
+            if that_post.comment_id_list == None:
+                that_post.comment_id_list = [new_id]
+            else:
+                that_post.comment_id_list += [new_id]
+            post_list = database_excutor_for_remote_service.A_Post.update(old_item_filter=question_and_answer_objects.A_Post(
+                id=item.a_comment.id,
+                owner_id=item.a_comment.owner_id
+            ), new_item=that_post)
+
+            default_response.comment_id = new_id
+            default_response.success = True
         except Exception as e:
             print(f"Error: {e}")
-            #default_response.error = str(e)
+            default_response.error = str(e)
             #default_response.success = False
 
         return default_response

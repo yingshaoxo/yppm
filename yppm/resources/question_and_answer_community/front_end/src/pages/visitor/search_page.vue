@@ -44,14 +44,17 @@ import * as question_and_answer_objects from '../../generated_yrpc/question_and_
             },
             jump_to_detail_page: async (item: any) => {
                 global_functions.go_to_page("detail_page", {id: item?.id})
-            } 
+            },
+            jump_to_detail_page_with_comment_object: async (item: any) => {
+                global_functions.go_to_page("detail_page", {id: item?.parent_post_id})
+            }
         })
 
         onMounted(async () => {
             if (global_dict?.current_page_data?.search_text != null) {
                 dict.input_value = global_dict?.current_page_data?.search_text
-                await functions.search()
             }
+            await functions.search()
         });
 
         return {
@@ -91,16 +94,18 @@ export default class Visitor_Home_Chat_Page extends Vue {
                 @click="functions.jump_to_detail_page(item)"
             >
                 <div class="text">
-                    {{ item?.title }}
+                    <span class="question_indicator">Question</span>: {{ item?.title }}
                 </div>
             </div>
-            <div class="post_row" v-for="item in dict.comment_list">
+            <div class="post_row" v-for="item in dict.comment_list"
+                @click="functions.jump_to_detail_page_with_comment_object(item)"
+            >
                 <div class="text">
-                    {{ item?.description??''.substring(0, 25) }}
+                    <span class="comment_indicator">Answer</span>: {{ item?.description??''.substring(0, 25) }}
                 </div>
             </div>
         </div>
-        <div class="button_group" v-if="(dict?.post_list?.length != 0) || (dict?.comment_list?.length != 0)">
+        <div class="button_group">
             <button class="button" @click="()=>{dict.page_number += 1; functions.search();}">Next Page</button>
             <button class="button" @click="()=>{dict.page_number -= 1; functions.search();}">Previous Page</button>
         </div>
@@ -171,6 +176,16 @@ export default class Visitor_Home_Chat_Page extends Vue {
             padding-left: 15px;
             padding-right: 15px;
         }
+    }
+
+    .question_indicator {
+        font-weight: bold;
+        color: #D32F2F;
+    }
+
+    .comment_indicator {
+        font-weight: bold;
+        color: #757575;
     }
 }
 
