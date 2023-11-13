@@ -22,6 +22,7 @@ import { global_dict, global_functions } from './store';
         const dict = reactive({
             need_to_input_username: false,
             username: "",
+            admin_token: ""
         })
 
         const functions = reactive({
@@ -29,7 +30,20 @@ import { global_dict, global_functions } from './store';
                 global_functions.set_value('username', dict.username.trim())
                 dict.need_to_input_username=false
                 global_functions.refresh()
-            }
+            },
+            onFileChange(e: any) {
+                var files = e.target.files || e.dataTransfer.files;
+                if (!files.length) {
+                    return;
+                }
+                let file = files[0];
+
+                let do_it = async () => {
+                    let base64_file = await global_functions.file_to_base64(file)
+                    await global_functions.upload_whole_site_data(dict.admin_token, base64_file)
+                }
+                do_it();
+            },
         })
 
         onBeforeMount(()=>{
@@ -77,6 +91,20 @@ export default class App extends Vue {}
         <PopUpPage :display="global_dict.show_global_message" :z_index="8888">
             <div class="global_message_window">
                 {{global_dict.global_message}}
+            </div>
+        </PopUpPage>
+
+        <PopUpPage :display="global_dict.show_admin_page" :z_index="7777">
+            <div class="admin_window">
+                <input v-model="dict.admin_token" placeholder="Input Admin Token Here...">
+                <br/>
+                <br/>
+                <br/>
+                <button @click="global_functions.download_whole_site_data(dict.admin_token)">Download</button>
+                <br/>
+                <br/>
+                <p>Upload:</p>
+                <input type="file" id="myFile" name="filename" @change="functions.onFileChange">
             </div>
         </PopUpPage>
 
@@ -162,5 +190,17 @@ export default class App extends Vue {}
 
     padding: 32px;
     font-size: 120%;
+}
+
+.admin_window {
+    background-color: rgba(255,255,255,1);
+
+    ._rows();
+    ._center();
+
+    width: 100vw;
+    height: 100vh;
+
+    padding: 32px;
 }
 </style>

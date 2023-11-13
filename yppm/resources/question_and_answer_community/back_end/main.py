@@ -22,6 +22,7 @@ disk = Disk()
 python = Python()
 io_ = IO()
 time_ = Time()
+store = Store("the_question_and_answer_community_config")
 
 import generated_yrpc.question_and_answer_objects as question_and_answer_objects
 import generated_yrpc.question_and_answer_pure_python_rpc as question_and_answer_pure_python_rpc
@@ -76,6 +77,22 @@ disk.create_a_folder(the_database_path)
 #multiprocess_manager_socket_service = multiprocessing.Manager()
 #global_shared_dict = multiprocess_manager_socket_service.dict()
 database_excutor_for_remote_service = Yingshaoxo_Database_Excutor_question_and_answer(database_base_folder=the_database_path, use_sqlite=False, global_multiprocessing_shared_dict=None)
+
+
+def verify_if_it_is_admin(the_token: str) -> bool:
+    admin_token = store.get("admin_token", None)
+
+    admin_token = str(admin_token)
+    the_token = str(the_token)
+
+    if admin_token == None:
+        store.set("admin_token", the_token)
+        return True
+
+    if admin_token == the_token:
+        return True
+    else:
+        return False
 
 
 class Question_And_Answer_Service(question_and_answer_pure_python_rpc.Service_question_and_answer):
@@ -323,17 +340,23 @@ class Question_And_Answer_Service(question_and_answer_pure_python_rpc.Service_qu
         default_response = question_and_answer_objects.Admin_Download_Backup_Data_Response()
 
         try:
-            pass
-            """
-            temp_zip_file = disk.get_a_temp_file_path("backup.zip")
+            if item.token == None:
+                default_response.error = "You should give me the token."
+                return default_response
+
+            if verify_if_it_is_admin(item.token) == False:
+                default_response.error = "The admin token is wrong."
+                return default_response
+
+            target_file_name = f"question_and_answer_backup_{str(datetime.now()).split('.')[0]}.zip"
+            temp_zip_file = disk.get_a_temp_file_path(target_file_name)
             disk.compress(input_folder_path=the_database_path, output_zip_path=temp_zip_file)
             bytes_io_data = disk.get_bytesio_from_a_file(temp_zip_file)
             default_response.file_bytes_in_base64_format = disk.bytesio_to_base64(bytes_io_data)
-            default_response.file_name = "app_store_backup.zip"
-            """
+            default_response.file_name = target_file_name
         except Exception as e:
             print(f"Error: {e}")
-            #default_response.error = str(e)
+            default_response.error = str(e)
             #default_response.success = False
 
         return default_response
@@ -342,10 +365,34 @@ class Question_And_Answer_Service(question_and_answer_pure_python_rpc.Service_qu
         default_response = question_and_answer_objects.Admin_Upload_Backup_Data_Response()
 
         try:
-            pass
+            if item.token == None:
+                default_response.error = "You should give me the token."
+                return default_response
+
+            if verify_if_it_is_admin(item.token) == False:
+                default_response.error = "The admin token is wrong."
+                return default_response
+
+            base64_string = item.file_bytes_in_base64_format
+            if base64_string == None:
+                default_response.error = "the 'file_bytes_in_base64_format' shoudn't be None"
+                return default_response
+
+            the_backup_zip_file_bytes_io = disk.base64_to_bytesio(base64_string=base64_string)
+            backup_zip_file = disk.get_a_temp_file_path('backup.zip')
+            disk.save_bytesio_to_file(bytes_io=the_backup_zip_file_bytes_io, file_path=backup_zip_file)
+
+            temp_saving_folder: str = disk.join_paths(disk.get_the_temp_dir(), "question_and_answer_community_backup")
+            if disk.exists(temp_saving_folder):
+                disk.delete_a_folder(temp_saving_folder)
+            disk.uncompress(backup_zip_file, temp_saving_folder)
+
+            disk.copy_a_folder(source_folder_path=temp_saving_folder, target_folder_path=database_excutor_for_remote_service._database_base_folder)
+
+            default_response.success = True
         except Exception as e:
             print(f"Error: {e}")
-            #default_response.error = str(e)
+            default_response.error = str(e)
             #default_response.success = False
 
         return default_response

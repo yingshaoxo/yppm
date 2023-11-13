@@ -38,6 +38,7 @@ if ((!window.location.host.startsWith("127.")) && (!window.location.host.startsW
 }
 
 export var global_dict = reactive({
+    show_admin_page: false,
     show_global_loading: false,
     show_global_message: false,
     global_message: "Welcome to yingshaoxo's question and answer community!",
@@ -47,7 +48,6 @@ export var global_dict = reactive({
         search_page: "search_page",
         chat_page: "chat_page",
         detail_page: "detail_page",
-        //user_detail_page: "user_detail_page",
     },
     client: new question_and_answer_rpc.Client_question_and_answer(
             get_host_url(""),
@@ -62,22 +62,6 @@ export var global_dict = reactive({
             before_request_function,
             after_request_function,
     ),
-    /*
-    public_client: new question_and_answer_rpc.Client_question_and_answer(
-            get_host_url(""),
-            {
-                jwt: "Fuck censorship! Build our own stuff, including platforms. Let freedom ring in our kingdom!"
-            }, 
-            (error_string: string)=>{
-                global_functions.print(error_string)
-            },
-            (data: any)=>{
-                interceptor_function(data)
-            },
-            before_request_function,
-            after_request_function,
-    )
-    */
 })
 
 export var global_functions = {
@@ -243,7 +227,7 @@ export var global_functions = {
             }
         }
     }, 
-    download_whole_side_data: async (token: any) => {
+    download_whole_site_data: async (token: any) => {
         let export_data_request = new question_and_answer_objects.Admin_Download_Backup_Data_Request()
         export_data_request.token = token
 
@@ -267,7 +251,7 @@ export var global_functions = {
           })
           return (await a_function(a_file) as string)
     },
-    upload_whole_side_data: async (token: any, base64_data_string: any) => {
+    upload_whole_site_data: async (token: any, base64_data_string: any) => {
         let request = new question_and_answer_objects.Admin_Upload_Backup_Data_Request()
         request.token = token
         request.file_bytes_in_base64_format = base64_data_string
@@ -277,6 +261,17 @@ export var global_functions = {
             global_functions.print("Website data upload successfully.")
         }
     }, 
+}
+
+declare global {
+  interface Window {
+    admin: () => void;
+  }
+}
+window.admin = () => {
+    console.log("yingshaoxo is the best.")
+    console.log("Welcome, admin.")
+    global_dict.show_admin_page = true
 }
 
 export default {
