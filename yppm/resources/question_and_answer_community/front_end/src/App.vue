@@ -68,7 +68,19 @@ export default class App extends Vue {}
             </div>
         </PopUpPage>
 
-        <template v-if="!dict.need_to_input_username">
+        <PopUpPage :display="global_dict.show_global_loading" :z_index="9999">
+            <div class="loading_window">
+                Loading...
+            </div>
+        </PopUpPage>
+
+        <PopUpPage :display="global_dict.show_global_message" :z_index="8888">
+            <div class="global_message_window">
+                {{global_dict.global_message}}
+            </div>
+        </PopUpPage>
+
+        <div v-if="!dict.need_to_input_username">
             <div v-if="global_dict.current_page_name == 'search_page'">
                 <Visitor_HomeSearchPage />
             </div>
@@ -80,13 +92,7 @@ export default class App extends Vue {}
             <div v-if="global_dict.current_page_name == 'detail_page'">
                 <Visitor_DetailPage />
             </div>
-        </template>
-        <!--img alt="Vue logo" src="./assets/logo.png"-->
-        <!--
-        <h1>{{ global_dict.hi }}</h1>
-        <h1>The count is: {{ dict.count }}</h1>
-        <button @click="increment()">Increment</button>
-        -->
+        </div>
     </div>
 </template>
 
@@ -104,9 +110,6 @@ export default class App extends Vue {}
     width: 100%;
 
     background-color: rgba(224, 224, 224, 1);
-
-    ._columns;
-    ._center;
 }
 
 .input_username_window {
@@ -133,5 +136,31 @@ export default class App extends Vue {}
     button {
         padding: 4px;
     }
+}
+
+.loading_window {
+    background-color: rgba(0,0,0,0.5);
+    color: rgba(255,255,255);
+
+    width: 100vw;
+    height: 100vh;
+
+    ._rows;
+    ._center;
+
+    font-size: 120%;
+}
+
+.global_message_window {
+    background-color: rgba(255,255,255,1);
+
+    ._rows();
+    ._center();
+
+    width: 100vw;
+    height: 100vh;
+
+    padding: 32px;
+    font-size: 120%;
 }
 </style>

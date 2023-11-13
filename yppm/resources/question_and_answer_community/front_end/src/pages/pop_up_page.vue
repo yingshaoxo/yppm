@@ -46,7 +46,7 @@ export default class Pop_Up_Page extends Vue {
     */
 
     width: 100vw;
-    min-height: 100vh;
+    height: 100vh;
 
     display: flex;
     flex-direction: row;

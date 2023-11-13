@@ -38,9 +38,9 @@ if ((!window.location.host.startsWith("127.")) && (!window.location.host.startsW
 }
 
 export var global_dict = reactive({
-    show_dialog_window: false,
     show_global_loading: false,
-    dialog_message: "Welcome to yingshaoxo's question and answer community!",
+    show_global_message: false,
+    global_message: "Welcome to yingshaoxo's question and answer community!",
     current_page_name: "",
     current_page_data: {} as any,
     page_name_dict: {
@@ -88,14 +88,14 @@ export var global_functions = {
         console.log(message)
     },
     print: async (message: string) => {
-        global_dict.dialog_message = message
-        global_dict.show_dialog_window = true
+        global_dict.global_message = message
+        global_dict.show_global_message = true
 
         global_functions.log(message)
 
-        while (global_dict.show_dialog_window == true) {
-            await (new Promise(resolve => setTimeout(resolve, 1000)))
-        }
+        setTimeout(()=>{
+            global_dict.show_global_message = false
+        }, 5000)
     },
     go_to_page_based_on_current_url: () => {
         let splits = document.location.href.split("//")

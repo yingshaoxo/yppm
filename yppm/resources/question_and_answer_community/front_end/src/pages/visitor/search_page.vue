@@ -54,6 +54,7 @@ import * as question_and_answer_objects from '../../generated_yrpc/question_and_
             if (global_dict?.current_page_data?.search_text != null) {
                 dict.input_value = global_dict?.current_page_data?.search_text
             }
+            
             await functions.search()
         });
 
@@ -162,6 +163,8 @@ export default class Visitor_Home_Chat_Page extends Vue {
     width: 95%;
     height: 100%;
     text-align: left;
+
+    overflow-y: auto;
 
     ._rows;
 
