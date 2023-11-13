@@ -3,6 +3,8 @@ syntax = "proto3";
 // "Anyone can ask and comment in this website", since that is the goal, I decided to cut the account system, anyone can simply use a username to do operations
 
 service question_and_answer_service {
+    rpc about (About_Request) returns (About_Response); 
+
     //No JWT
     rpc ask_yingshaoxo_ai (Ask_Yingshaoxo_Ai_Request) returns (Ask_Yingshaoxo_Ai_Response); 
 
@@ -90,6 +92,13 @@ message A_Comment {
     string description = 5;
     int64 create_time_in_10_numbers_timestamp_format = 999;
     string tag = 9; // for example, [ad, spam, adult]
+}
+
+message About_Request {
+}
+
+message About_Response {
+    string about = 2;
 }
 
 message Ask_Yingshaoxo_Ai_Request {

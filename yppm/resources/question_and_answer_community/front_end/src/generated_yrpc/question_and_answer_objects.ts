@@ -343,6 +343,100 @@ export class A_Comment {
 }
 
 
+export interface _About_Request {
+
+}
+
+export class About_Request {
+
+
+    _property_name_to_its_type_dict = {
+
+    };
+
+    _key_string_dict = {
+
+    };
+
+    /*
+    constructor() {
+
+    }
+    */
+
+    to_dict(): _About_Request {
+        return _general_to_dict_function(this);
+    }
+
+    _clone(): About_Request {
+        let clone = Object.assign(Object.create(Object.getPrototypeOf(this)), this)
+        return clone
+    }
+
+    from_dict(item: _About_Request): About_Request {
+        let an_item = new About_Request()
+        let new_dict = _general_from_dict_function(an_item, item)
+
+        for (const key of Object.keys(new_dict)) {
+            let value = new_dict[key]
+            //@ts-ignore
+            this[key] = value
+            //@ts-ignore
+            an_item[key] = value
+        }
+
+        return an_item
+    }
+}
+
+
+export interface _About_Response {
+    about: string | null;
+}
+
+export class About_Response {
+    about: string | null = null;
+
+    _property_name_to_its_type_dict = {
+            about: "string",
+    };
+
+    _key_string_dict = {
+        about: "about",
+    };
+
+    /*
+    constructor(about: string | null = null) {
+            this.about = about
+    }
+    */
+
+    to_dict(): _About_Response {
+        return _general_to_dict_function(this);
+    }
+
+    _clone(): About_Response {
+        let clone = Object.assign(Object.create(Object.getPrototypeOf(this)), this)
+        return clone
+    }
+
+    from_dict(item: _About_Response): About_Response {
+        let an_item = new About_Response()
+        let new_dict = _general_from_dict_function(an_item, item)
+
+        for (const key of Object.keys(new_dict)) {
+            let value = new_dict[key]
+            //@ts-ignore
+            this[key] = value
+            //@ts-ignore
+            an_item[key] = value
+        }
+
+        return an_item
+    }
+}
+
+
 export interface _Ask_Yingshaoxo_Ai_Request {
     input: string | null;
 }

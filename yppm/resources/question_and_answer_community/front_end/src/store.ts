@@ -37,6 +37,12 @@ if ((!window.location.host.startsWith("127.")) && (!window.location.host.startsW
     }
 }
 
+let url_list = [
+    "https://ask.ai-tools-online.xyz/",
+    `${window.location.protocol}//${window.location.host}/`,
+    "http://127.0.0.1:54321/"
+]
+
 export var global_dict = reactive({
     show_admin_page: false,
     show_global_loading: false,
@@ -67,6 +73,27 @@ export var global_dict = reactive({
 export var global_functions = {
     init: async () => {
         global_functions.go_to_page_based_on_current_url()
+    },
+    set_reachable_client: async() => {
+        for (let i = 0; i < url_list.length; i++) {
+            let url = url_list[i]
+            let a_client = new question_and_answer_rpc.Client_question_and_answer(
+                url,
+                {
+                }, 
+                (error_string: string)=>{
+                },
+                (data: any)=>{
+                },
+                before_request_function,
+                after_request_function,
+            )
+            let response = await a_client.about(new question_and_answer_objects.About_Request())
+            if (response?.about != null && response?.about?.includes("yingshaoxo")) {
+                global_dict.client = a_client
+                return
+            }
+        }
     },
     log: (message: any) => {
         console.log(message)
@@ -261,6 +288,7 @@ export var global_functions = {
             global_functions.print("Website data upload successfully.")
         }
     }, 
+
 }
 
 declare global {

@@ -10,6 +10,18 @@ import os
 
 
 class Service_question_and_answer:
+    async def about(self, headers: dict[str, str], item: About_Request) -> About_Response:
+        default_response = About_Response()
+
+        try:
+            pass
+        except Exception as e:
+            print(f"Error: {e}")
+            #default_response.error = str(e)
+            #default_response.success = False
+
+        return default_response
+
     async def ask_yingshaoxo_ai(self, headers: dict[str, str], item: Ask_Yingshaoxo_Ai_Request) -> Ask_Yingshaoxo_Ai_Response:
         default_response = Ask_Yingshaoxo_Ai_Response()
 
@@ -120,6 +132,12 @@ class Service_question_and_answer:
 
 
 def init(service_instance: Any, router: Any):
+    @router.post("/about/", tags=["question_and_answer"])
+    async def about(request: Request, item: About_Request) -> About_Response:
+        item = About_Request().from_dict(item.to_dict())
+        headers = dict(request.headers.items())
+        return (await service_instance.about(headers, item)).to_dict()
+
     @router.post("/ask_yingshaoxo_ai/", tags=["question_and_answer"])
     async def ask_yingshaoxo_ai(request: Request, item: Ask_Yingshaoxo_Ai_Request) -> Ask_Yingshaoxo_Ai_Response:
         item = Ask_Yingshaoxo_Ai_Request().from_dict(item.to_dict())

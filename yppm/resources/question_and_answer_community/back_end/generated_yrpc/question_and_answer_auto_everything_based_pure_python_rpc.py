@@ -7,6 +7,18 @@ from auto_everything.http_ import Yingshaoxo_Http_Server, Yingshaoxo_Http_Reques
 
 
 class Service_question_and_answer:
+    def about(self, headers: dict[str, str], item: About_Request) -> About_Response:
+        default_response = About_Response()
+
+        try:
+            pass
+        except Exception as e:
+            print(f"Error: {e}")
+            #default_response.error = str(e)
+            #default_response.success = False
+
+        return default_response
+
     def ask_yingshaoxo_ai(self, headers: dict[str, str], item: Ask_Yingshaoxo_Ai_Request) -> Ask_Yingshaoxo_Ai_Response:
         default_response = Ask_Yingshaoxo_Ai_Response()
 
@@ -128,6 +140,10 @@ def run(service_instance: Service_question_and_answer, port: str, html_folder_pa
 
         if (request_url == ""):
             return f"Request url '{request_url}' is empty"
+        elif (request_url == "about"):
+            correct_item = About_Request().from_dict(item)
+            return json.dumps((service_instance.about(headers, correct_item)).to_dict())
+
         elif (request_url == "ask_yingshaoxo_ai"):
             correct_item = Ask_Yingshaoxo_Ai_Request().from_dict(item)
             return json.dumps((service_instance.ask_yingshaoxo_ai(headers, correct_item)).to_dict())

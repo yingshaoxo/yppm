@@ -79,6 +79,18 @@ export class Client_question_and_answer {
         }
     }
 
+    async about(item: question_and_answer_objects.About_Request, ignore_error?: boolean): Promise<question_and_answer_objects.About_Response | null> {
+        let result = await this._get_reponse_or_error_by_url_path_and_input("about", item.to_dict())
+        if (Object.keys(result).includes(this._special_error_key)) {
+            if ((ignore_error == null) || ((ignore_error != null) && (!ignore_error))) {
+                this._error_handle_function(result[this._special_error_key])
+            }
+            return null
+        } else {
+            return new question_and_answer_objects.About_Response().from_dict(result)
+        }
+    }
+
     async ask_yingshaoxo_ai(item: question_and_answer_objects.Ask_Yingshaoxo_Ai_Request, ignore_error?: boolean): Promise<question_and_answer_objects.Ask_Yingshaoxo_Ai_Response | null> {
         let result = await this._get_reponse_or_error_by_url_path_and_input("ask_yingshaoxo_ai", item.to_dict())
         if (Object.keys(result).includes(this._special_error_key)) {

@@ -96,6 +96,18 @@ def verify_if_it_is_admin(the_token: str) -> bool:
 
 
 class Question_And_Answer_Service(question_and_answer_pure_python_rpc.Service_question_and_answer):
+    def about(self, headers: dict[str, str], item: question_and_answer_objects.About_Request) -> question_and_answer_objects.About_Response:
+        default_response = question_and_answer_objects.About_Response()
+
+        try:
+            default_response.about = "The yppm question and answer community was created by yingshaoxo."
+        except Exception as e:
+            print(f"Error: {e}")
+            #default_response.error = str(e)
+            #default_response.success = False
+
+        return default_response
+
     def ask_yingshaoxo_ai(self, headers: dict[str, str], item: question_and_answer_objects.Ask_Yingshaoxo_Ai_Request) -> question_and_answer_objects.Ask_Yingshaoxo_Ai_Response:
         default_response = question_and_answer_objects.Ask_Yingshaoxo_Ai_Response()
 

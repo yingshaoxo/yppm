@@ -46,7 +46,9 @@ import { global_dict, global_functions } from './store';
             },
         })
 
-        onBeforeMount(()=>{
+        onBeforeMount(async ()=>{
+            await global_functions.set_reachable_client()
+
             if (global_functions.get_value('username') == null) {
                 dict.need_to_input_username = true;
             } else {

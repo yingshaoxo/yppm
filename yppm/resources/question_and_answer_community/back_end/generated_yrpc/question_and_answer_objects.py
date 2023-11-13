@@ -164,6 +164,40 @@ class A_Comment(YRPC_OBJECT_BASE_CLASS):
 
 
 @dataclass()
+class About_Request(YRPC_OBJECT_BASE_CLASS):
+
+
+    _property_name_to_its_type_dict = {
+
+    }
+
+    @dataclass()
+    class _key_string_dict:
+        pass
+
+    def from_dict(self, dict: dict[str, Any]):
+        new_variable: About_Request = super().from_dict(dict)
+        return new_variable
+
+
+@dataclass()
+class About_Response(YRPC_OBJECT_BASE_CLASS):
+    about: str | None = None
+
+    _property_name_to_its_type_dict = {
+        "about": str,
+    }
+
+    @dataclass()
+    class _key_string_dict:
+        about: str = "about"
+
+    def from_dict(self, dict: dict[str, Any]):
+        new_variable: About_Response = super().from_dict(dict)
+        return new_variable
+
+
+@dataclass()
 class Ask_Yingshaoxo_Ai_Request(YRPC_OBJECT_BASE_CLASS):
     input: str | None = None
 
