@@ -43,6 +43,7 @@ import snarkdown from 'snarkdown'
                 let response = await global_dict.client.visitor_get_a_post(request)
                 if (response?.post != null) {
                     dict.a_post = response?.post
+                    dict.a_post.description = snarkdown(dict?.a_post?.description??'')??''
                     if (dict?.a_post?.comment_id_list != null) {
                         let request2 = new question_and_answer_objects.Get_Comment_List_By_Id_List_Request()
                         request2.comment_id_list = dict?.a_post?.comment_id_list
@@ -136,7 +137,7 @@ export default class Visitor_Home_Chat_Page extends Vue {
                 {{dict.a_post.title}}
             </h2>
             <div class="description">
-                {{dict.a_post.description}}
+                <div v-html="dict.a_post.description"></div>
             </div>
             <div class="author">
                 <span v-if="dict?.a_post?.owner_id == ''">@anonymous</span>

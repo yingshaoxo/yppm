@@ -240,8 +240,8 @@ class Question_And_Answer_Service(question_and_answer_pure_python_rpc.Service_qu
                 default_response.error = "You should give me the parent_post_id and parent_post_owner_id for your comment."
                 return default_response
             post_list = database_excutor_for_remote_service.A_Post.search(item_filter=question_and_answer_objects.A_Post(
-                id=item.a_comment.id,
-                owner_id=item.a_comment.owner_id
+                id=item.a_comment.parent_post_id,
+                owner_id=item.a_comment.parent_post_owner_id
             ))
             if len(post_list) == 0:
                 default_response.error = "The question you want to add comment to, is not exists."
@@ -274,8 +274,8 @@ class Question_And_Answer_Service(question_and_answer_pure_python_rpc.Service_qu
             else:
                 that_post.comment_id_list += [new_id]
             post_list = database_excutor_for_remote_service.A_Post.update(old_item_filter=question_and_answer_objects.A_Post(
-                id=item.a_comment.id,
-                owner_id=item.a_comment.owner_id
+                id=that_post.id,
+                owner_id=that_post.owner_id
             ), new_item=that_post)
 
             default_response.comment_id = new_id
