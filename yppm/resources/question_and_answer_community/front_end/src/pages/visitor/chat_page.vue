@@ -128,7 +128,7 @@ export default class Visitor_Home_Chat_Page extends Vue {
     margin-top: 25px;
 
     max-height: 100px;
-    width: 100%;
+    width: 95%;
     justify-content: space-between;
     
     .the_input {
