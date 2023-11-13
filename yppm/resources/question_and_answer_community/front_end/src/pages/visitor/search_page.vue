@@ -21,6 +21,7 @@ import * as question_and_answer_objects from '../../generated_yrpc/question_and_
             page_number: 0,
             post_list: [] as any[],
             comment_list: [] as any[],
+            ai_answer: "",
         });
 
         const functions = reactive({
@@ -40,6 +41,15 @@ import * as question_and_answer_objects from '../../generated_yrpc/question_and_
                 }
                 if (response?.comment_list != null) {
                     dict.comment_list = response?.comment_list
+                }
+
+                if (dict.input_value.length != 0 && dict.post_list.length == 0 && dict.comment_list.length == 0) {
+                    let request = new question_and_answer_objects.Ask_Yingshaoxo_Ai_Request()
+                    request.input = dict.input_value
+                    let response = await global_dict.client.ask_yingshaoxo_ai(request)
+                    if (response?.answers != null) {
+                        dict.ai_answer = response?.answers
+                    }
                 }
             },
             jump_to_detail_page: async (item: any) => {
@@ -104,6 +114,10 @@ export default class Visitor_Home_Chat_Page extends Vue {
                 <div class="text">
                     <span class="comment_indicator">Answer</span>: {{ item?.description??''.substring(0, 25) }}
                 </div>
+            </div>
+            <div v-if="dict.post_list.length == 0 && dict.comment_list.length == 0 && dict.ai_answer.length != 0">
+                <div style="margin-bottom: 32px;">AI generated answer (click left_bottom question button to ask more): </div>
+                <pre>{{ dict.ai_answer }}</pre>
             </div>
         </div>
         <div class="button_group">
