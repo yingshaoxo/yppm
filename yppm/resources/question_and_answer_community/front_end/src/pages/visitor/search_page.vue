@@ -27,6 +27,7 @@ import * as question_and_answer_objects from '../../generated_yrpc/question_and_
             search: async () => {
                 let input = dict?.input_value.trim()
                 dict.input_value = input
+                window.history.pushState({}, dict.input_value, `./?search_text=${dict.input_value}`)
 
                 let request = new question_and_answer_objects.Search_Request()
                 request.search_input = input
@@ -46,7 +47,11 @@ import * as question_and_answer_objects from '../../generated_yrpc/question_and_
             } 
         })
 
-        onMounted(() => {
+        onMounted(async () => {
+            if (global_dict?.current_page_data?.search_text != null) {
+                dict.input_value = global_dict?.current_page_data?.search_text
+                await functions.search()
+            }
         });
 
         return {
@@ -82,10 +87,10 @@ export default class Visitor_Home_Chat_Page extends Vue {
             <button class="the_search_button" @click="functions.search()">Search</button>
         </div>
         <div class="history_post_list">
-            <div class="post_row" v-for="item in dict.post_list">
-                <div class="text"
-                    @click="()=>{functions.jump_to_detail_page(item)}"
-                >
+            <div class="post_row" v-for="item in dict.post_list"
+                @click="functions.jump_to_detail_page(item)"
+            >
+                <div class="text">
                     {{ item?.title }}
                 </div>
             </div>
