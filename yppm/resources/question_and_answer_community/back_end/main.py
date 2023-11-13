@@ -34,6 +34,9 @@ if disk.exists(offline_question_and_answer_bot_dataset_path):
         input_txt_folder_path=offline_question_and_answer_bot_dataset_path,
         use_machine_learning=False
     )
+    new_text = text_generator.text_source_data
+    new_text = new_text.replace("\n\n__**__**__yingshaoxo_is_the_top_one__**__**__\n\n", "\n\n\n") # You have to replace this seperator with your own dataset seperator
+    generator_dict = text_generator.get_global_string_dict_by_using_yingshaoxo_method(new_text, levels=20)
 else:
     text_generator = None
 
@@ -121,8 +124,13 @@ class Question_And_Answer_Service(question_and_answer_pure_python_rpc.Service_qu
                 default_response.answers = "No txt database path set."
                 return default_response
 
-            response = text_generator.search_and_get_following_text_in_a_exact_way(input_text=item.input, quick_mode=True)
-            response = decode_response(text=response, chat_context=item.input)
+            response = text_generator.get_next_x_chars_by_using_yingshaoxo_method(item.input, x=512, global_string_dict=generator_dict)
+            splits = response.split("\n\n\n")
+            response = "\n\n__________\n\n".join(splits[0:2])
+            response = response.strip()
+
+            #response = text_generator.search_and_get_following_text_in_a_exact_way(input_text=item.input, quick_mode=True)
+            #response = decode_response(text=response, chat_context=item.input)
             default_response.answers = response
         except Exception as e:
             print(f"Error: {e}")
