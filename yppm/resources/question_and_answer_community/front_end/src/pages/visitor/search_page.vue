@@ -112,6 +112,14 @@ export default class Visitor_Home_Chat_Page extends Vue {
         >
             <span>+</span>
         </div>
+
+        <div class="left_floating_button"
+            @click="()=>{
+                global_functions.go_to_page('chat_page', {})
+            }"
+        >
+            <span>?</span>
+        </div>
     </div>
 </template>
 
@@ -206,5 +214,16 @@ pre{
     border-radius:50px;
     text-align:center;
     box-shadow: 2px 2px 3px #999;
+}
+
+.left_floating_button {
+    .right_floating_button;
+
+    right: auto;
+    left: 20px;
+
+    background-color: rgba(245, 127, 23);
+
+    font-size: 150%;
 }
 </style>

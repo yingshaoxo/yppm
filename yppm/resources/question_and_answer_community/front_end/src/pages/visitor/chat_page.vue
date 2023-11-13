@@ -84,7 +84,9 @@ export default class Visitor_Home_Chat_Page extends Vue {
 <template>
     <div class="full_screen">
         <div class="input_container _columns">
-            <textarea class="the_input" @input="()=>{ auto_adjust_input_height(200) }" v-model="dict.input_value"></textarea>
+            <textarea class="the_input" @input="()=>{ auto_adjust_input_height(200) }" v-model="dict.input_value"
+                placeholder="What you want to know?"
+            ></textarea>
             <button class="the_send_button" @click="functions.send_question(dict.input_value)">Send</button>
         </div>
         <div class="history_message_list">
