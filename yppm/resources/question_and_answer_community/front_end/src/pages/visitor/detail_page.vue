@@ -133,9 +133,13 @@ export default class Visitor_Home_Chat_Page extends Vue {
 <template>
     <div class="full_screen">
         <div class="detail_view_container">
-            <h2 class="title">
+            <h1 class="title">
                 {{dict.a_post.title}}
-            </h2>
+            </h1>
+
+            <div class="post_seperator" v-if="dict.a_post.description.trim().startsWith('<h')">
+            </div>
+
             <div class="description">
                 <div v-html="dict.a_post.description"></div>
             </div>
@@ -210,7 +214,7 @@ export default class Visitor_Home_Chat_Page extends Vue {
 }
 
 .detail_view_container {
-    margin-top: 25px;
+    margin-top: 20px;
 
     width: 100%;
     text-align: left;
@@ -347,4 +351,68 @@ pre{
     font-weight: bold;
     margin-bottom: 48px;
 }
+
+</style>
+
+<style lang="less">
+    .description {
+        /* Reset default margin and padding */
+            body, h1, h2, h3, h4, h5, h6, p {
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Set the font and color */
+        body {
+            font-family: Arial, sans-serif;
+            color: #333;
+        }
+
+        /* Styling for heading tags */
+        h1, h2, h3, h4 {
+            margin: 16px 0;
+        }
+
+        h1 {
+            font-size: 2em;
+        }
+
+        h2 {
+            font-size: 1.5em;
+        }
+
+        h3 {
+            font-size: 1.17em;
+        }
+
+        h4 {
+            font-size: 1em;
+        }
+
+        /* Styling for paragraphs */
+        p {
+            margin: 12px 0;
+            line-height: 1.6;
+        }
+
+        /* Styling for code blocks */
+        pre {
+            background-color: #f4f4f4;
+            padding: 8px;
+            border-radius: 3px;
+            overflow-x: auto;
+        }
+
+        code {
+            font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+        }
+
+        /* Styling for blockquotes */
+        blockquote {
+            margin: 12px 0;
+            padding: 8px 16px;
+            background-color: #f7f7f7;
+            border-left: 4px solid #ddd;
+        }
+    }
 </style>
