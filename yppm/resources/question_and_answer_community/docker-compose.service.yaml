@@ -12,4 +12,5 @@ services:
     #  - ADMIN_EMAIL=yingshaoxo@gmail.com
     volumes:
       - "./database_data:/code/back_end/database_data"
+      - "./auto_everything_data:/root/.auto_everything"
     restart: unless-stopped

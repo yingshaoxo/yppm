@@ -106,13 +106,12 @@ database_excutor_for_remote_service = Yingshaoxo_Database_Excutor_question_and_a
 def verify_if_it_is_admin(the_token: str) -> bool:
     admin_token = store.get("admin_token", None)
 
-    admin_token = str(admin_token)
-    the_token = str(the_token)
-
     if admin_token == None:
+        the_token = str(the_token)
         store.set("admin_token", the_token)
         return True
 
+    admin_token = str(admin_token)
     if admin_token == the_token:
         return True
     else:

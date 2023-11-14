@@ -48,6 +48,7 @@ export var global_dict = reactive({
     show_global_loading: false,
     show_global_message: false,
     global_message: "Welcome to yingshaoxo's question and answer community!",
+    test_done: true,
     current_page_name: "",
     current_page_data: {} as any,
     page_name_dict: {
@@ -75,6 +76,7 @@ export var global_functions = {
         global_functions.go_to_page_based_on_current_url()
     },
     set_reachable_client: async() => {
+        global_dict.test_done = false
         for (let i = 0; i < url_list.length; i++) {
             let url = url_list[i]
             let a_client = new question_and_answer_rpc.Client_question_and_answer(
@@ -82,18 +84,26 @@ export var global_functions = {
                 {
                 }, 
                 (error_string: string)=>{
+                    if (global_dict.test_done) {
+                        global_functions.print(error_string)
+                    }
                 },
                 (data: any)=>{
+                    if (global_dict.test_done) {
+                        interceptor_function(data)
+                    }
                 },
                 before_request_function,
                 after_request_function,
             )
             let response = await a_client.about(new question_and_answer_objects.About_Request())
             if (response?.about != null && response?.about?.includes("yingshaoxo")) {
+                global_dict.test_done = true
                 global_dict.client = a_client
                 return
             }
         }
+        global_dict.test_done = true
     },
     log: (message: any) => {
         console.log(message)
