@@ -309,8 +309,8 @@ cd {self.project_root_folder} && {binary_version_of_yppm} run
         default_template_name = terminal_user_interface.selection_box(
             "Which project template you want to use? ", [
                 ("basic_python_project", None),
-                ("simple_backend_and_frontend_project", None)
-                # ("question_and_answer_community", None)
+                ("simple_backend_and_frontend_project", None),
+                ("question_and_answer_community", None),
             ]
         )
 
@@ -360,8 +360,18 @@ cd {self.project_root_folder} && {binary_version_of_yppm} run
             self.init(name=default_project_name)
 
             print(f"\n\nNow you could go to the new project by using: \ncd {default_project_name}")
-        elif default_template_name == "backend_and_frontend_project":
-            pass
+        elif default_template_name == "question_and_answer_community":
+            source_folder_path = disk.join_paths(self.resource_basic_folder_path, default_template_name)
+            disk.copy_a_folder(source_folder_path=source_folder_path, target_folder_path=project_path)
+
+            disk.copy_a_folder(source_folder_path=self.auto_everything_basic_folder_path, target_folder_path=disk.join_paths(project_path, "back_end", "auto_everything"))
+
+            os.chdir(project_path)
+            self.__init__()
+
+            self.init(name=default_project_name)
+
+            print(f"\n\nNow you could go to the new project by using: \ncd {default_project_name}")
 
     def init(self, name: str = ""):
         # create package.json file in current folder if there does not have one
