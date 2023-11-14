@@ -23,9 +23,9 @@ import snarkdown from 'snarkdown'
             a_post: {
                 owner_id: "",
                 id: "",
-                title: "Hi",
-                description: "You are died.",
-                comment_id_list: ["1", "2"],
+                title: "",
+                description: "",
+                comment_id_list: [] as string[],
                 create_time_in_10_numbers_timestamp_format: null,
                 tag: null, // for example, [ad, spam, adult]
             } as question_and_answer_object_types.A_Post,

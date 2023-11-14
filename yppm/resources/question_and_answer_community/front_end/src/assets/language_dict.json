@@ -1,0 +1,218 @@
+{
+    "": {
+        "cn": "",
+        "en": ""
+    },
+    "what is your name?": {
+        "cn": "你的名字是？",
+        "en": "What is your name?"
+    },
+    "what is your question title?": {
+        "cn": "您的问题是什么？",
+        "en": "What is your question title?"
+    },
+    "what is your question description?": {
+        "cn": "详细描述一下:",
+        "en": "What is your question description?"
+    },
+    "question": {
+        "cn": "问题",
+        "en": "Question"
+    },
+    "answer": {
+        "cn": "答",
+        "en": "Answer"
+    },
+    "loading...": {
+        "cn": "加载中...",
+        "en": "Loading..."
+    },
+    "search": {
+        "cn": "搜",
+        "en": "Search"
+    },
+    "next page": {
+        "cn": "下一页",
+        "en": "Next Page"
+    },
+    "previous page": {
+        "cn": "上一页",
+        "en": "Previous Page"
+    },
+    "send": {
+        "cn": "问",
+        "en": "Send"
+    },
+    "username": {
+        "cn": "用户名",
+        "en": "Username"
+    },
+    "ok": {
+        "cn": "\u8fd8\u884c",
+        "en": "Ok"
+    },
+    "confirm": {
+        "cn": "\u786e\u8ba4",
+        "en": "Confirm"
+    },
+    "hi": {
+        "cn": "\u4f60\u597d",
+        "en": "Hi"
+    },
+    "hi there, this website is using yrpc": {
+        "cn": "\u60a8\u597d\uff0c\u8fd9\u4e2a\u7f51\u7ad9\u6b63\u5728\u4f7f\u7528 YRPC",
+        "en": "Hi There, This Website Is Using Yrpc"
+    },
+    "hi, stranger.": {
+        "cn": "\u55e8\uff0c\u964c\u751f\u4eba\u3002",
+        "en": "Hi, Stranger."
+    },
+    "hi, there!": {
+        "cn": "\u563f\uff0c\u4f60\u597d!",
+        "en": "Hi, There!"
+    },
+    "ai generated answer (click left_bottom question button to ask more):": {
+        "cn": "由 人工智能 自动生成的 答案 (点击左下方按钮开始聊天)：",
+        "en": "AI generated answer (click left_bottom question button to ask more):"
+    },
+    "hi, yingshaoxo!": {
+        "cn": "\u55e8\uff0c\u5e94\u7ecd",
+        "en": "Hi, Yingshaoxo"
+    },
+    "name": {
+        "cn": "\u540d\u5b57",
+        "en": "Name"
+    },
+    "no txt database path set.": {
+        "cn": "\u672a\u8bbe\u7f6e TXT \u6570\u636e\u5e93\u8def\u5f84\u3002",
+        "en": "No Txt Database Path Set."
+    },
+    "no txt list data.": {
+        "cn": "\u6ca1\u6709 TXT \u5217\u8868\u6570\u636e\u3002",
+        "en": "No Txt List Data."
+    },
+    "the 'file_bytes_in_base64_format' shoudn't be none": {
+        "cn": "\u201cBase64 \u683c\u5f0f\u7684\u6587\u4ef6\u5b57\u8282\u201d\u4e0d\u5e94\u4e3a\u201c\u65e0\u201d",
+        "en": "The 'File Bytes In Base64 Format' Shoudn'T Be None"
+    },
+    "the admin token is wrong.": {
+        "cn": "\u7ba1\u7406\u5458\u4ee4\u724c\u9519\u8bef\u3002",
+        "en": "The Admin Token Is Wrong."
+    },
+    "the comment you want to add is used by someone maybe at some other question": {
+        "cn": "\u60a8\u8981\u6dfb\u52a0\u7684\u8bc4\u8bba\u53ef\u80fd\u88ab\u67d0\u4eba\u53ef\u80fd\u5728\u5176\u4ed6\u95ee\u9898\u4e0a\u4f7f\u7528",
+        "en": "The Comment You Want To Add Is Used By Someone Maybe At Some Other Question"
+    },
+    "the question you want to add comment to, is not exists.": {
+        "cn": "\u60a8\u8981\u6dfb\u52a0\u8bc4\u8bba\u7684\u95ee\u9898\u4e0d\u5b58\u5728\u3002",
+        "en": "The Question You Want To Add Comment To, Is Not Exists."
+    },
+    "the website is running at": {
+        "cn": "\u8be5\u7f51\u7ad9\u5728",
+        "en": "The Website Is Running At"
+    },
+    "the yppm question and answer community was created by yingshaoxo.": {
+        "cn": "YPPM \u95ee\u7b54\u793e\u533a\u7531 Yingshaoxo \u521b\u5efa\u3002",
+        "en": "The Yppm Question And Answer Community Was Created By Yingshaoxo."
+    },
+    "website data upload successfully.": {
+        "cn": "\u7f51\u7ad9\u6570\u636e\u4e0a\u4f20\u6210\u529f\u3002",
+        "en": "Website Data Upload Successfully."
+    },
+    "welcome to yingshaoxo's question and answer community": {
+        "cn": "\u6b22\u8fce\u6765\u5230\u82f1\u7ecd\u7d22\u7684\u95ee\u7b54\u793e\u533a",
+        "en": "Welcome To Yingshaoxo'S Question And Answer Community"
+    },
+    "welcome, admin.": {
+        "cn": "\u6b22\u8fce\uff0c\u7ba1\u7406\u5458\u3002",
+        "en": "Welcome, Admin."
+    },
+    "what is your name": {
+        "cn": "\u4f60\u53eb\u4ec0\u4e48\u540d\u5b57",
+        "en": "What Is Your Name"
+    },
+    "what is your question description": {
+        "cn": "\u4f60\u7684\u95ee\u9898\u63cf\u8ff0\u662f\u4ec0\u4e48",
+        "en": "What Is Your Question Description"
+    },
+    "what is your question title": {
+        "cn": "\u4f60\u7684\u95ee\u9898\u6807\u9898\u662f\u4ec0\u4e48",
+        "en": "What Is Your Question Title"
+    },
+    "what you send is not json": {
+        "cn": "\u60a8\u53d1\u9001\u7684\u4e0d\u662f JSON",
+        "en": "What You Send Is Not Json"
+    },
+    "what you want to know": {
+        "cn": "\u4f60\u60f3\u77e5\u9053\u4ec0\u4e48",
+        "en": "What You Want To Know"
+    },
+    "yingshaoxo is the best.": {
+        "cn": "\u5e94\u5c11\u66d9\u662f\u6700\u597d\u7684\u3002",
+        "en": "Yingshaoxo Is The Best."
+    },
+    "yingshaoxo remote procedure call": {
+        "cn": "Yingshaoxo \u8fdc\u7a0b\u8fc7\u7a0b\u8c03\u7528",
+        "en": "Yingshaoxo Remote Procedure Call"
+    },
+    "yingshaoxo remote procedure control module": {
+        "cn": "\u82f1\u7ecd\u514b\u7d22\u8fdc\u7a0b\u7a0b\u5e8f\u63a7\u5236\u6a21\u5757",
+        "en": "Yingshaoxo Remote Procedure Control Module"
+    },
+    "you are died.": {
+        "cn": "\u4f60\u6b7b\u4e86\u3002",
+        "en": "You Are Died."
+    },
+    "you should change a title for your question. it is already been taken.": {
+        "cn": "\u60a8\u5e94\u8be5\u66f4\u6539\u95ee\u9898\u7684\u6807\u9898\u3002 \u5b83\u5df2\u7ecf\u88ab\u91c7\u53d6\u4e86\u3002",
+        "en": "You Should Change A Title For Your Question. It Is Already Been Taken."
+    },
+    "you should give me a description for your comment.": {
+        "cn": "\u4f60\u5e94\u8be5\u7ed9\u6211\u4e00\u4e2a\u63cf\u8ff0\u4f60\u7684\u8bc4\u8bba\u3002",
+        "en": "You Should Give Me A Description For Your Comment."
+    },
+    "you should give me a description for your question.": {
+        "cn": "\u4f60\u5e94\u8be5\u7ed9\u6211\u4e00\u4e2a\u5173\u4e8e\u4f60\u7684\u95ee\u9898\u7684\u63cf\u8ff0\u3002",
+        "en": "You Should Give Me A Description For Your Question."
+    },
+    "you should give me a title for your question.": {
+        "cn": "\u4f60\u5e94\u8be5\u7ed9\u4f60\u7684\u95ee\u9898\u7ed9\u6211\u4e00\u4e2a\u6807\u9898\u3002",
+        "en": "You Should Give Me A Title For Your Question."
+    },
+    "you should give me a username to download its data.": {
+        "cn": "\u4f60\u5e94\u8be5\u7ed9\u6211\u4e00\u4e2a\u7528\u6237\u540d\u6765\u4e0b\u8f7d\u5b83\u7684\u6570\u636e\u3002",
+        "en": "You Should Give Me A Username To Download Its Data."
+    },
+    "you should give me an absolute html_folder_path than": {
+        "cn": "\u4f60\u5e94\u8be5\u7ed9\u6211\u4e00\u4e2a\u7edd\u5bf9\u7684html\u6587\u4ef6\u5939\u8def\u5f84\uff0c\u800c\u4e0d\u662f",
+        "en": "You Should Give Me An Absolute Html Folder Path Than"
+    },
+    "you should give me input": {
+        "cn": "\u4f60\u5e94\u8be5\u7ed9\u6211\u610f\u89c1",
+        "en": "You Should Give Me Input"
+    },
+    "you should give me the parent_post_id and parent_post_owner_id for your comment.": {
+        "cn": "\u60a8\u5e94\u8be5\u5411\u6211\u63d0\u4f9b\u7236\u5e16\u5b50 ID \u548c\u7236\u5e16\u5b50\u6240\u6709\u8005 ID \u4ee5\u4f9b\u60a8\u53d1\u8868\u8bc4\u8bba\u3002",
+        "en": "You Should Give Me The Parent Post Id And Parent Post Owner Id For Your Comment."
+    },
+    "you should give me the token.": {
+        "cn": "\u4f60\u5e94\u8be5\u7ed9\u6211\u4ee4\u724c\u3002",
+        "en": "You Should Give Me The Token."
+    },
+    "you should not publish a comment that greater than 1000 characters.": {
+        "cn": "\u4e0d\u5e94\u53d1\u5e03\u8d85\u8fc7 1000 \u4e2a\u5b57\u7b26\u7684\u8bc4\u8bba\u3002",
+        "en": "You Should Not Publish A Comment That Greater Than 1000 Characters."
+    },
+    "you should not publish a description that greater than 10000 characters.": {
+        "cn": "\u4e0d\u5e94\u53d1\u5e03\u8d85\u8fc7 10000 \u4e2a\u5b57\u7b26\u7684\u63cf\u8ff0\u3002",
+        "en": "You Should Not Publish A Description That Greater Than 10000 Characters."
+    },
+    "you should not publish a title that greater than 300 characters.": {
+        "cn": "\u4e0d\u5e94\u53d1\u5e03\u8d85\u8fc7 300 \u4e2a\u5b57\u7b26\u7684\u6807\u9898\u3002",
+        "en": "You Should Not Publish A Title That Greater Than 300 Characters."
+    },
+    "yppm community service starts at": {
+        "cn": "YPPM \u793e\u533a\u670d\u52a1\u5f00\u59cb\u4e8e",
+        "en": "Yppm Community Service Starts At"
+    }
+}

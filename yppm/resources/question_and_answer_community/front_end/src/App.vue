@@ -10,6 +10,8 @@ import PopUpPage from './pages/pop_up_page.vue';
 
 import { global_dict, global_functions } from './store';
 
+import { start_the_translation } from './auto_translation';
+
 @Component({
     components: {
         Visitor_HomeSearchPage,
@@ -57,7 +59,7 @@ import { global_dict, global_functions } from './store';
         })
 
         onMounted(async () => {
-            //console.log("hi");
+            start_the_translation();
         });
 
         return {
