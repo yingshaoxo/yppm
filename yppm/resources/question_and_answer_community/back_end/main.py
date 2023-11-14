@@ -30,12 +30,32 @@ import generated_yrpc.question_and_answer_objects as question_and_answer_objects
 import generated_yrpc.question_and_answer_pure_python_rpc as question_and_answer_pure_python_rpc
 from generated_yrpc.question_and_answer_yingshaoxo_database_rpc import Yingshaoxo_Database_Excutor_question_and_answer
 
-offline_question_and_answer_bot_dataset_path = "/home/yingshaoxo/CS/ML/18.fake_ai_asistant/input_txt_files"
+
+if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
+    #print('running in a PyInstaller bundle')
+    def resource_path(relative_path: str) -> str:
+        if hasattr(sys, '_MEIPASS'):
+            return os.path.join(sys._MEIPASS, relative_path) #type: ignore
+        return os.path.join(os.path.abspath("."), relative_path)
+    resource_basic_folder_path = resource_path(".")
+    the_database_path = disk.join_paths(disk.get_parent_directory_path(disk.get_parent_directory_path(resource_basic_folder_path)), './database_data')
+else:
+    #print('running in a normal Python process')
+    resource_basic_folder_path = disk.get_directory_path(__file__)
+    the_database_path = disk.join_paths(resource_basic_folder_path, './database_data')
+
+print(f"resource_basic_folder_path: {resource_basic_folder_path}")
+print(f"database_path: {the_database_path}")
+print()
+disk.create_a_folder(the_database_path)
+
+
+offline_question_and_answer_bot_dataset_path = disk.join_paths(resource_basic_folder_path, "./yingshaoxo_chat_data")
 if disk.exists(offline_question_and_answer_bot_dataset_path):
     text_generator = ml.Yingshaoxo_Text_Generator(
         input_txt_folder_path=offline_question_and_answer_bot_dataset_path,
         use_machine_learning=False,
-        type_limiter=[".txt", ".backup"]
+        type_limiter=[".txt", ".backup", ".md"]
     )
     new_text = text_generator.text_source_data
     #new_text = new_text.replace("\n\n__**__**__yingshaoxo_is_the_top_one__**__**__\n\n", "\n\n\n") # You have to replace this seperator with your own dataset seperator
@@ -77,23 +97,7 @@ chat_context = '''{chat_context}'''
     final_response = "\n".join([one for one in final_response.split("\n") if not one.strip().startswith("__**")])
     return final_response
 
-if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
-    #print('running in a PyInstaller bundle')
-    def resource_path(relative_path: str) -> str:
-        if hasattr(sys, '_MEIPASS'):
-            return os.path.join(sys._MEIPASS, relative_path) #type: ignore
-        return os.path.join(os.path.abspath("."), relative_path)
-    resource_basic_folder_path = resource_path(".")
-    the_database_path = disk.join_paths(disk.get_parent_directory_path(disk.get_parent_directory_path(resource_basic_folder_path)), './database_data')
-else:
-    #print('running in a normal Python process')
-    resource_basic_folder_path = disk.get_directory_path(__file__)
-    the_database_path = disk.join_paths(resource_basic_folder_path, './database_data')
 
-print(f"resource_basic_folder_path: {resource_basic_folder_path}")
-print(f"database_path: {the_database_path}")
-print()
-disk.create_a_folder(the_database_path)
 #multiprocess_manager_socket_service = multiprocessing.Manager()
 #global_shared_dict = multiprocess_manager_socket_service.dict()
 database_excutor_for_remote_service = Yingshaoxo_Database_Excutor_question_and_answer(database_base_folder=the_database_path, use_sqlite=False, global_multiprocessing_shared_dict=None)
@@ -494,4 +498,5 @@ def run_service(port: str):
     question_and_answer_pure_python_rpc.run(service_instance, port=port, html_folder_path=html_folder_path)
 
 
+print("YPPM community Service starts at: http://0.0.0.0:54321")
 run_service("54321")

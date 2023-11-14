@@ -1,4 +1,13 @@
+from auto_everything import Terminal
+terminal = Terminal()
+
+import os
+os.chdir("./back_end")
+
 print("This is a community that could get running in your terminal!")
+
+print("Service started!")
+terminal.run_py("""./main.py""", wait=True)
 
 """
 Hi, there!

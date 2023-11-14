@@ -4,3 +4,6 @@
 
 .venv/
 .python_modules/
+
+database_data/
+yingshaoxo_chat_data/
