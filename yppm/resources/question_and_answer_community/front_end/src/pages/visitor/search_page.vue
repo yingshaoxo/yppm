@@ -233,7 +233,7 @@ pre{
 }
 
 .backup {
-    position: absolute;
+    position:fixed;
     bottom: 5px;
 
     ._less_obvious_text;
