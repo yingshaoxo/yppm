@@ -35,10 +35,11 @@ import * as question_and_answer_objects from '../../generated_yrpc/question_and_
                 })
 
                 dict.history_context += input + "\n"
-                let real_input = dict.history_context.substring(dict.history_context.length-800, dict.history_context.length).trim()
+                //let real_input = dict.history_context.substring(dict.history_context.length-800, dict.history_context.length).trim()
 
                 let request = new question_and_answer_objects.Ask_Yingshaoxo_Ai_Request()
-                request.input = real_input.substring(0, real_input.length-1)
+                //request.input = real_input.substring(0, real_input.length-1)
+                request.input = input
                 let response = await global_dict.client.ask_yingshaoxo_ai(request)
                 if (response?.answers != null) {
                     // add answers to list view

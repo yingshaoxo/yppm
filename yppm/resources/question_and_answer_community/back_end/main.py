@@ -15,6 +15,7 @@ from auto_everything.disk import Disk, Store
 from auto_everything.io import IO
 from auto_everything.time import Time
 from auto_everything.ml import ML
+from auto_everything.string_ import String
 ml = ML()
 terminal = Terminal()
 terminal_user_interface = Terminal_User_Interface()
@@ -23,6 +24,7 @@ python = Python()
 io_ = IO()
 time_ = Time()
 store = Store("the_question_and_answer_community_config")
+string_ = String()
 
 import generated_yrpc.question_and_answer_objects as question_and_answer_objects
 import generated_yrpc.question_and_answer_pure_python_rpc as question_and_answer_pure_python_rpc
@@ -35,8 +37,15 @@ if disk.exists(offline_question_and_answer_bot_dataset_path):
         use_machine_learning=False
     )
     new_text = text_generator.text_source_data
-    new_text = new_text.replace("\n\n__**__**__yingshaoxo_is_the_top_one__**__**__\n\n", "\n\n\n") # You have to replace this seperator with your own dataset seperator
-    generator_dict = text_generator.get_global_string_dict_by_using_yingshaoxo_method(new_text, levels=20)
+    #new_text = new_text.replace("\n\n__**__**__yingshaoxo_is_the_top_one__**__**__\n\n", "\n\n\n") # You have to replace this seperator with your own dataset seperator
+    #generator_dict = text_generator.get_global_string_dict_by_using_yingshaoxo_method(new_text, levels=20)
+
+    the_text_list = [one.strip() for one in new_text.split("\n\n__**__**__yingshaoxo_is_the_top_one__**__**__\n\n") if one.strip() != ""]
+
+    new_text_list = []
+    for one in the_text_list:
+        new_text_list += one.split("\n#")
+    the_text_list = new_text_list
 else:
     text_generator = None
 
@@ -124,13 +133,20 @@ class Question_And_Answer_Service(question_and_answer_pure_python_rpc.Service_qu
                 default_response.answers = "No txt database path set."
                 return default_response
 
-            response = text_generator.get_next_x_chars_by_using_yingshaoxo_method(item.input, x=512, global_string_dict=generator_dict)
-            splits = response.split("\n\n\n")
-            response = "\n\n__________\n\n".join(splits[0:2])
-            response = response.strip()
+            response1, response, response2 = text_generator.do_text_search(item.input, the_text_list, quick_mode=False)
+            if response2 != "":
+                if string_.get_string_match_rating_level(item.input, response) >= 0.5:
+                    response = response2
 
-            #response = text_generator.search_and_get_following_text_in_a_exact_way(input_text=item.input, quick_mode=True)
-            #response = decode_response(text=response, chat_context=item.input)
+            if response == "":
+                response = text_generator.search_and_get_following_text_in_a_exact_way(input_text=item.input, quick_mode=True)
+                response = decode_response(text=response, chat_context=item.input)
+
+            #response = text_generator.get_next_x_chars_by_using_yingshaoxo_method(item.input, x=512, global_string_dict=generator_dict)
+            #splits = response.split("\n\n\n")
+            #response = "\n\n__________\n\n".join(splits[0:2])
+            #response = response.strip()
+
             default_response.answers = response
         except Exception as e:
             print(f"Error: {e}")
