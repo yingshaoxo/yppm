@@ -34,7 +34,8 @@ offline_question_and_answer_bot_dataset_path = "/home/yingshaoxo/CS/ML/18.fake_a
 if disk.exists(offline_question_and_answer_bot_dataset_path):
     text_generator = ml.Yingshaoxo_Text_Generator(
         input_txt_folder_path=offline_question_and_answer_bot_dataset_path,
-        use_machine_learning=False
+        use_machine_learning=False,
+        type_limiter=[".txt", ".backup"]
     )
     new_text = text_generator.text_source_data
     #new_text = new_text.replace("\n\n__**__**__yingshaoxo_is_the_top_one__**__**__\n\n", "\n\n\n") # You have to replace this seperator with your own dataset seperator
@@ -46,6 +47,13 @@ if disk.exists(offline_question_and_answer_bot_dataset_path):
     for one in the_text_list:
         new_text_list += one.split("\n#")
     the_text_list = new_text_list
+
+    """
+    new_text_list = []
+    for one in the_text_list:
+        new_text_list += one.split("\n\n\n")
+    the_text_list = new_text_list
+    """
 else:
     text_generator = None
 
@@ -135,7 +143,7 @@ class Question_And_Answer_Service(question_and_answer_pure_python_rpc.Service_qu
 
             response1, response, response2 = text_generator.do_text_search(item.input, the_text_list, quick_mode=False)
             if response2 != "":
-                if string_.get_string_match_rating_level(item.input, response) >= 0.5:
+                if string_.compare_two_sentences(item.input, response) >= 0.5:
                     response = response2
 
             if response == "":
