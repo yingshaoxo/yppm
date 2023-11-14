@@ -145,6 +145,10 @@ class Question_And_Answer_Service(question_and_answer_pure_python_rpc.Service_qu
                 default_response.answers = "No txt database path set."
                 return default_response
 
+            if len(the_text_list) == 0:
+                default_response.answers = "No txt list data."
+                return default_response
+
             response1, response, response2 = text_generator.do_text_search(item.input, the_text_list, quick_mode=False)
             if response2 != "":
                 if string_.compare_two_sentences(item.input, response) >= 0.5:

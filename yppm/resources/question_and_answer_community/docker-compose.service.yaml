@@ -12,5 +12,4 @@ services:
     #  - ADMIN_EMAIL=yingshaoxo@gmail.com
     volumes:
       - "./database_data:/code/back_end/database_data"
-      - "./yingshaoxo_chat_data:/code/back_end/yingshaoxo_chat_data"
     restart: unless-stopped
