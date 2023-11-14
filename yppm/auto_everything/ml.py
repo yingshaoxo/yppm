@@ -7,119 +7,160 @@ from auto_everything.disk import Disk, Store
 from auto_everything.io import IO
 from auto_everything.language import Language
 from auto_everything.time import Time
+from auto_everything.string_ import String
 disk = Disk()
 io_ = IO()
 language = Language()
 terminal = Terminal()
 time_ = Time()
 store = Store('auto_everything_ml_module')
+string_ = String()
 
 
 #####
 #Some basic functions
 #####
-def split_string_into_list_by_symbols(input_text, special_symbols = "\n ,.!?()[]{}<>;:’‘“”\"'`’‘「」『』【】〖〗《》《 》〈 〉〔 〕（ ）﹙ ﹚【 】［ ］｛ ｝〖 〗「 」『 』《 》〈 〉《》〔 〕【 】（ ）﹙﹚｛ ｝‘ ’“ ”‘ ’“ ”〞 〝— -—— ……~·•※☆★●○■□▲△▼▽⊙⊕⊖⊘⊚⊛⊜⊝◆◇◊⊿◣◢◥◤@#$%^&*+=_|\\/:;"):
-    """
-    return list like: [
-        { "language": "symbol", "text": },
-        { "language": "not_symbol", "text": },
-    ]
-    it should be a mixed result list, the order of symbol and not_symbol should follow orginal text
-    """
-    result_list = []
-    index = 0
-    temp_string = ""
-    last_symbol_flag =True
-    if len(input_text) > 0:
-        if input_text[-1] in special_symbols:
-            last_symbol_flag = True
-        else:
-            last_symbol_flag = False
-    is_symbol = True
-    while True:
-        current_char = input_text[index]
+class Yingshaoxo_Text_Preprocessor():
+    def split_string_into_list_by_punctuations(self, input_text, special_punctuations = "\n ，。；！@#￥%……&*（）-——+=『【』】|、：；“‘～`《》，。？/~`!@#$%^&*()_+-={}[]|\:;\"'<,>.?/,.!?()[]{}<>;:’‘“”\"'`’‘「」『』【】〖〗《》《 》〈 〉〔 〕（ ）﹙ ﹚【 】［ ］｛ ｝〖 〗「 」『 』《 》〈 〉《》〔 〕【 】（ ）﹙﹚｛ ｝‘ ’“ ”‘ ’“ ”〞 〝— -—— ……~·•※☆★●○■□▲△▼▽⊙⊕⊖⊘⊚⊛⊜⊝◆◇◊⊿◣◢◥◤@#$%^&*+=_|\\/:;", not_include_punctuations: str = ""):
+        """
+        return list like: [
+            { "language": "punctuation", "text": },
+            { "language": "not_punctuation", "text": },
+        ]
+        it should be a mixed result list, the order of punctuation and not_punctuation should follow orginal text
+        """
+        if input_text.strip() == "":
+            return []
 
-        if current_char in special_symbols:
-            is_symbol = True
-        else:
-            is_symbol = False
+        if not_include_punctuations != "":
+            for char in not_include_punctuations:
+                special_punctuations = special_punctuations.replace(char, "")
 
-        if last_symbol_flag != is_symbol:
-            if last_symbol_flag == True:
+        result_list = []
+        index = 0
+        temp_string = ""
+        last_punctuation_flag =True
+        if len(input_text) > 0:
+            if input_text[-1] in special_punctuations:
+                last_punctuation_flag = True
+            else:
+                last_punctuation_flag = False
+        is_punctuation = True
+        while True:
+            current_char = input_text[index]
+
+            if current_char in special_punctuations:
+                is_punctuation = True
+            else:
+                is_punctuation = False
+
+            if last_punctuation_flag != is_punctuation:
+                if last_punctuation_flag == True:
+                    result_list.append({
+                        "language": "punctuation",
+                        "text": temp_string
+                    })
+                else:
+                    result_list.append({
+                        "language": "not_punctuation",
+                        "text": temp_string
+                    })
+                temp_string = ""
+
+            last_punctuation_flag = is_punctuation
+            temp_string += current_char
+
+            index += 1
+            if index >= len(input_text):
+                break
+
+        if len(result_list) > 0:
+            if result_list[0]["text"] == "":
+                result_list = result_list[1:]
+        if temp_string != "":
+            is_punctuation = True
+            if temp_string[-1] in special_punctuations:
+                is_punctuation = True
+            else:
+                is_punctuation = False
+
+            if is_punctuation == True:
                 result_list.append({
-                    "language": "symbol",
+                    "language": "punctuation",
                     "text": temp_string
                 })
             else:
                 result_list.append({
-                    "language": "not_symbol",
+                    "language": "language",
                     "text": temp_string
                 })
-            temp_string = ""
 
-        last_symbol_flag = is_symbol
-        temp_string += current_char
+        return result_list
 
-        index += 1
-        if index >= len(input_text):
-            break
+    def split_string_into_english_and_not_english_list(self, input_text):
+        """
+        Split a string into a list of language segments based on Chinese and English characters.
 
-    if len(result_list) > 0:
-        if result_list[0]["text"] == "":
-            result_list = result_list[1:]
-    if temp_string != "":
-        is_symbol = True
-        if temp_string[-1] in special_symbols:
-            is_symbol = True
-        else:
-            is_symbol = False
+        :param input_text: The input string to split.
+        :return: A list of language segments with Chinese and English text.
+        """
+        """
+        return list like: [
+            { "language": "en", "text": },
+            { "language": "not_en", "text": },
+        ]
+        """
+        if input_text.strip() == "":
+            return []
 
-        if is_symbol == True:
-            result_list.append({
-                "language": "symbol",
-                "text": temp_string
-            })
-        else:
-            result_list.append({
-                "language": "language",
-                "text": temp_string
-            })
+        result_list = []
+        index = 0
+        temp_string = ""
+        last_punctuation_flag = False
+        if len(input_text) > 0:
+            if input_text[-1].isascii():
+                last_punctuation_flag = True
+            else:
+                last_punctuation_flag = False
+        is_en = True
+        while True:
+            current_char = input_text[index]
 
-    return result_list
+            if current_char.isascii():
+                is_en = True
+            else:
+                is_en = False
 
-def split_string_into_english_and_not_english_list(input_text):
-    """
-    Split a string into a list of language segments based on Chinese and English characters.
+            if last_punctuation_flag != is_en:
+                if last_punctuation_flag == False:
+                    result_list.append({
+                        "language": "not_en",
+                        "text": temp_string
+                    })
+                else:
+                    result_list.append({
+                        "language": "en",
+                        "text": temp_string
+                    })
+                temp_string = ""
 
-    :param input_text: The input string to split.
-    :return: A list of language segments with Chinese and English text.
-    """
-    """
-    return list like: [
-        { "language": "en", "text": },
-        { "language": "not_en", "text": },
-    ]
-    """
-    result_list = []
-    index = 0
-    temp_string = ""
-    last_symbol_flag = False
-    if len(input_text) > 0:
-        if input_text[-1].isascii():
-            last_symbol_flag = True
-        else:
-            last_symbol_flag = False
-    is_en = True
-    while True:
-        current_char = input_text[index]
+            last_punctuation_flag = is_en
+            temp_string += current_char
 
-        if current_char.isascii():
-            is_en = True
-        else:
-            is_en = False
+            index += 1
+            if index >= len(input_text):
+                break
 
-        if last_symbol_flag != is_en:
-            if last_symbol_flag == False:
+        if len(result_list) > 0:
+            if result_list[0]["text"] == "":
+                result_list = result_list[1:]
+        if temp_string != "":
+            if temp_string[-1].isascii():
+                is_en = True
+            else:
+                is_en = False
+
+            if is_en == False:
                 result_list.append({
                     "language": "not_en",
                     "text": temp_string
@@ -129,77 +170,82 @@ def split_string_into_english_and_not_english_list(input_text):
                     "language": "en",
                     "text": temp_string
                 })
-            temp_string = ""
 
-        last_symbol_flag = is_en
-        temp_string += current_char
+        return result_list
 
-        index += 1
-        if index >= len(input_text):
-            break
+    def string_split_by_using_yingshaoxo_method(self, input_text, without_punctuation: bool = False):
+        """
+        Split a string into language segments based on punctuations, English and not_English text.
 
-    if len(result_list) > 0:
-        if result_list[0]["text"] == "":
-            result_list = result_list[1:]
-    if temp_string != "":
-        if temp_string[-1].isascii():
-            is_en = True
-        else:
-            is_en = False
+        return list like: [
+            { "language": "en", "text": },
+            { "language": "not_en", "text": },
+            { "language": "punctuation", "text": },
+        ]
+        """
+        if input_text.strip() == "":
+            return []
 
-        if is_en == False:
-            result_list.append({
-                "language": "not_en",
-                "text": temp_string
-            })
-        else:
-            result_list.append({
-                "language": "en",
-                "text": temp_string
-            })
-
-    return result_list
-
-def string_split_by_using_yingshaoxo_method(input_text, without_punctuation: bool = False):
-    """
-    Split a string into language segments based on symbols, English and not_English text.
-
-    return list like: [
-        { "language": "en", "text": },
-        { "language": "not_en", "text": },
-        { "language": "symbol", "text": },
-    ]
-    """
-    final_list = []
-    symbol_list = split_string_into_list_by_symbols(input_text)
-    for one in symbol_list:
-        if one["language"] == "symbol":
-            if without_punctuation == False:
-                final_list.append({
-                    "language": "symbol",
-                    "text": one["text"]
-                })
+        final_list = []
+        punctuation_list = self.split_string_into_list_by_punctuations(input_text)
+        for one in punctuation_list:
+            if one["language"] == "punctuation":
+                if without_punctuation == False:
+                    final_list.append({
+                        "language": "punctuation",
+                        "text": one["text"]
+                    })
+                else:
+                    pass
             else:
-                pass
-        else:
-            language_list = split_string_into_english_and_not_english_list(one["text"])
-            final_list += language_list
-    return final_list
+                language_list = self.split_string_into_english_and_not_english_list(one["text"])
+                final_list += language_list
+        return final_list
 
-def string_split_to_pure_segment_list_by_using_yingshaoxo_method(input_text, without_punctuation: bool = False):
-    """
-    Split a string into language segments based on symbols, English and not_English text.
+    def string_split_to_pure_segment_list_by_using_yingshaoxo_method(self, input_text, without_punctuation: bool = False) -> list[str]:
+        """
+        Split a string into language segments based on punctuations, English and not_English text.
 
-    return list like: ["how", "are", "you", "?"]
-    """
-    final_list = []
-    a_list = string_split_by_using_yingshaoxo_method(input_text, without_punctuation=without_punctuation)
-    for one in a_list:
-        if one["language"] == "not_en":
-            final_list += list(one["text"])
-        else:
-            final_list += [one["text"]]
-    return final_list
+        return list like: ["how", "are", "you", "?"]
+        """
+        if input_text.strip() == "":
+            return []
+
+        final_list = []
+        a_list = self.string_split_by_using_yingshaoxo_method(input_text, without_punctuation=without_punctuation)
+        for one in a_list:
+            if one["language"] == "not_en":
+                final_list += list(one["text"])
+            else:
+                final_list += [one["text"]]
+        return final_list
+
+
+    def string_split_to_pure_sub_sentence_segment_list(self, input_text, without_punctuation: bool = True, without_number: bool = True, not_include_punctuations: str="' _*->#") -> list[str]:
+        sentence_segment_list = self.split_string_into_list_by_punctuations(input_text, not_include_punctuations=not_include_punctuations)
+        new_list = []
+        for segment in sentence_segment_list:
+            if segment["language"] == "punctuation":
+                if without_punctuation == True:
+                    continue
+                else:
+                    if len(new_list) == 0:
+                        new_list = [segment["text"]]
+                    else:
+                        new_list[-1] += segment["text"]
+            else:
+                if without_number == True:
+                    if segment["text"].isdigit():
+                        continue
+                else:
+                    if segment["text"].isdigit():
+                        new_list += list(segment["text"])
+                    else:
+                        new_list.append(segment["text"])
+        return new_list
+
+    def is_english_string(self, text: str) -> bool:
+        return text.isascii()
 
 
 class DataProcessor():
@@ -244,7 +290,9 @@ class Yingshaoxo_Text_Generator():
     # dict based next word generator
 
     ```
-    One word Predict next word
+    One character predict next character
+    two character predict next character
+    ...
     One word predict next word
     Two words predict next word
     Three words predict next word
@@ -308,6 +356,8 @@ class Yingshaoxo_Text_Generator():
             self.sentence_transformers_model = SentenceTransformer('all-MiniLM-L6-v2')
             self.sentence_transformers_utility = util
 
+        self.text_preprocessor = Yingshaoxo_Text_Preprocessor()
+
     def get_source_text_data_by_using_yingshaoxo_method(self, input_txt_folder_path: str, type_limiter: list[str] = [".txt", ".md"]) -> str:
         text_source_data = ""
         if disk.exists(input_txt_folder_path):
@@ -360,6 +410,10 @@ class Yingshaoxo_Text_Generator():
     def get_next_x_chars_by_using_yingshaoxo_method(self, input_text: str, x: int, levels: int = 10, source_text_data: str|None = None, global_string_dict: dict|None = None) -> Any:
         """
         This will generate text based on hash map or hash dict. If you use it in memory, the speed would be super quick.
+
+        ChatGPT4 uses levels of 8049.
+
+        Normally you just have to set levels to 50 for small dataset.
         """
         if source_text_data == None:
             source_text_data = self.text_source_data
@@ -389,7 +443,7 @@ class Yingshaoxo_Text_Generator():
         final_text = predict_next_x_chars(input_text=input_text, x=x)
         return final_text[len(input_text):]
 
-    def get_global_string_corrector_dict_by_using_yingshaoxo_method(self, source_text_data: str, levels: int = 10):
+    def get_global_string_corrector_dict_by_using_yingshaoxo_method(self, source_text_data: str, levels: int = 10, for_minus_character: bool = False):
         global_string_dict = {
         }
 
@@ -402,8 +456,12 @@ class Yingshaoxo_Text_Generator():
                     continue
                 if index == len(source_text) - x:
                     break
-                current_chars = source_text[index-x: index] + seperator + source_text[index+1: index+x+1]
-                center_char = source_text[index]
+                if for_minus_character == True:
+                    current_chars = source_text[index-x: index] + seperator + source_text[index: index+x]
+                    center_char = ""
+                else:
+                    current_chars = source_text[index-x: index] + seperator + source_text[index+1: index+x+1]
+                    center_char = source_text[index]
                 if current_chars in level_dict:
                     if center_char in level_dict[current_chars]:
                         level_dict[current_chars][center_char] += 1
@@ -431,7 +489,7 @@ class Yingshaoxo_Text_Generator():
 
         return global_string_dict
 
-    def correct_sentence_by_using_yingshaoxo_method(self, input_text: str, levels: int = 6, source_text_data: str|None = None, global_string_corrector_dict: dict|None = None) -> any:
+    def correct_sentence_by_using_yingshaoxo_method(self, input_text: str, levels: int = 6, source_text_data: str|None = None, global_string_corrector_dict: dict|None = None, plus_character: bool = False, minus_character: bool = False) -> any:
         """
         This will correct text based on pure text or hash map or hash dict. if you use it in memory, the speed would be super quick.
         If you can modify this function from char level to word level, the accuracy could be 100%.
@@ -456,21 +514,37 @@ class Yingshaoxo_Text_Generator():
                 if index >= len(input_text) - level:
                     new_text += input_text[index]
                     continue
-                current_chars = input_text[index-level: index] + seperator + input_text[index+1: index+1+level]
-                if current_chars in global_string_corrector_dict[level].keys():
-                    new_text += global_string_corrector_dict[level][current_chars]
+                if plus_character == True:
+                    current_chars = input_text[index-level: index] + seperator + input_text[index: index+level]
+                    if current_chars in global_string_corrector_dict[level].keys():
+                        new_text += global_string_corrector_dict[level][current_chars] + input_text[index]
+                    else:
+                        new_text += input_text[index]
+                elif minus_character == True:
+                    current_chars = input_text[index-level: index] + seperator + input_text[index+1: index+1+level]
+                    if current_chars in global_string_corrector_dict[level].keys():
+                        new_text += ""
+                    else:
+                        new_text += input_text[index]
                 else:
-                    new_text += input_text[index]
+                    current_chars = input_text[index-level: index] + seperator + input_text[index+1: index+1+level]
+                    if current_chars in global_string_corrector_dict[level].keys():
+                        new_text += global_string_corrector_dict[level][current_chars]
+                    else:
+                        new_text += input_text[index]
             break
         return new_text
 
     def correct_sentence_by_using_yingshaoxo_regex_method(self, input_text: str, source_data_text: str, level: int=3) -> str:
         import re
 
-        def find_match_string_in_source_data(before_chars: str, after_chars: str):
+        def find_match_string_in_source_data(before_chars: str, after_chars: str, for_minus_character: bool = False):
             before_chars = re.escape(before_chars)
             after_chars = re.escape(after_chars)
-            result_list = re.findall(pattern=f"{before_chars}(.){after_chars}", string=source_data_text)
+            if for_minus_character == True:
+                result_list = re.findall(pattern=f"{before_chars}{after_chars}", string=source_data_text)
+            else:
+                result_list = re.findall(pattern=f"{before_chars}(.){after_chars}", string=source_data_text, flags=re.DOTALL)
             counting_dict = {}
             for one in result_list:
                 if one in counting_dict.keys():
@@ -484,24 +558,87 @@ class Yingshaoxo_Text_Generator():
             else:
                 return None
 
-        new_text = ""
-        for index, _ in enumerate(input_text):
-            if index < (level-1):
-                new_text += input_text[index]
-                continue
-            if index >= len(input_text) - level:
-                new_text += input_text[index]
-                continue
-            before_chars = input_text[index-level: index]
-            after_chars = input_text[index+1: index+1+level]
-            #print(before_chars, input_text[index], after_chars)
-            new_chars = find_match_string_in_source_data(before_chars, after_chars)
-            if new_chars != None:
-                new_text += new_chars
-            else:
-                new_text += input_text[index]
+        def do_the_process(input_text: str, plus_character: bool = False, minus_character: bool = False) -> str:
+            new_text = ""
+            for index, _ in enumerate(input_text):
+                if index < (level-1):
+                    new_text += input_text[index]
+                    continue
+                if index >= len(input_text) - level:
+                    new_text += input_text[index]
+                    continue
 
-        return new_text
+                if plus_character == True:
+                    before_chars = input_text[index-level: index]
+                    after_chars = input_text[index: index+level]
+                    new_chars = find_match_string_in_source_data(before_chars, after_chars)
+                    if new_chars != None:
+                        new_text += new_chars + input_text[index]
+                    else:
+                        new_text += input_text[index]
+                elif minus_character == True:
+                    before_chars = input_text[index-level: index]
+                    after_chars = input_text[index+1: index+1+level]
+                    new_chars = find_match_string_in_source_data(before_chars, after_chars, for_minus_character=True)
+                    if new_chars != None:
+                        new_text += ""
+                    else:
+                        new_text += input_text[index]
+                else:
+                    before_chars = input_text[index-level: index]
+                    after_chars = input_text[index+1: index+1+level]
+                    new_chars = find_match_string_in_source_data(before_chars, after_chars)
+                    if new_chars != None:
+                        new_text += new_chars
+                    else:
+                        new_text += input_text[index]
+            return new_text
+
+        # minus acb to ab
+        input_text = do_the_process(input_text, minus_character=True)
+
+        # correct a*c to abc
+        input_text = do_the_process(input_text)
+
+        # plus ac to abc
+        input_text = do_the_process(input_text, plus_character=True)
+
+        return input_text
+
+    def sort_sub_sentence_in_text(self, input_text: str, source_text: str) -> list[str]:
+        """
+        If you have input_text "Thank you. I'm fine."
+        If you have source_text "I'm fine. Thank you."
+        You will get ["I'm fine", "Thank you."]
+        """
+        sub_sentence_sort_list =  self.text_preprocessor.string_split_to_pure_sub_sentence_segment_list(source_text, without_punctuation=True)
+        input_text_sub_sentence_list = self.text_preprocessor.string_split_to_pure_sub_sentence_segment_list(input_text, without_punctuation=True)
+
+        def _sort_by_source_order_unknown(input_list, source_order_list):
+            """Sorts the input_list by the source_order_list order, and keep unknown elements in input_list order untouched."""
+
+            # Create a dictionary mapping each element in source_order_list to its index.
+            element_to_index = {element: i for i, element in enumerate(source_order_list)}
+
+            # Create a list of known elements and a list of unknown elements.
+            known_elements = []
+            unknown_elements = []
+            for element in input_list:
+                if element in element_to_index:
+                    known_elements.append(element)
+                else:
+                    unknown_elements.append(element)
+
+            # Sort the known elements using the dictionary as a key.
+            sorted_known_elements = sorted(known_elements, key=lambda element: element_to_index[element])
+
+            # Combine the sorted known elements and the unknown elements.
+            sorted_list = sorted_known_elements + unknown_elements
+            return sorted_list
+
+        input_text_sub_sentence_list = _sort_by_source_order_unknown(input_text_sub_sentence_list, sub_sentence_sort_list)
+
+        return input_text_sub_sentence_list
 
     def get_global_string_word_based_corrector_dict_by_using_yingshaoxo_method(self, source_text_data: str, levels: int = 10):
         global_string_dict = {}
@@ -510,7 +647,7 @@ class Yingshaoxo_Text_Generator():
 
         def get_x_level_dict(source_text: str, x: int):
             level_dict = {}
-            tokens = string_split_to_pure_segment_list_by_using_yingshaoxo_method(source_text)
+            tokens = self.text_preprocessor.string_split_to_pure_segment_list_by_using_yingshaoxo_method(source_text)
             for index in range(len(tokens)):
                 if index < x:
                     continue
@@ -559,7 +696,7 @@ class Yingshaoxo_Text_Generator():
         seperator = "☺"
         new_text = ""
         for level in global_string_corrector_dict.keys():
-            tokens = string_split_to_pure_segment_list_by_using_yingshaoxo_method(input_text)
+            tokens = self.text_preprocessor.string_split_to_pure_segment_list_by_using_yingshaoxo_method(input_text)
             for index in range(len(tokens)):
                 if index < level or index >= len(tokens) - level:
                     new_text += tokens[index]
@@ -845,7 +982,7 @@ class Yingshaoxo_Text_Generator():
         1. Just think the whole transforming process as doing the search in a Q table.
         2. You use a patten filter to check the input_text, "I love you", 3 elements as a window, then you use this patten to do a search in the Q table, you found ["I hate you", "I trust you", "I hate you"], it seems like 'hate' has higher chance to be in the middle of that sentence.
         3. Or, you can simply think this: For a list of "I * you" patten in dataset, what word has more frequency in the position of *?, Choose the one has higher frequency.
-        4. tip 3 is still in [MASK] level. If you want to handle the sentence segment sorting problem, you have to predict the 'move farwrd x characters' and 'move backword x chracter' information. Which can also be treated like a mask.
+        4. tip 3 is still in [MASK] level. If you want to handle the sentence segment sorting problem, you have to predict the 'move farwrd x characters' and 'move backword x character' information. Which can also be treated like a mask.
 
         speak of the process speed, use cache.
 
@@ -876,6 +1013,12 @@ class Yingshaoxo_Text_Generator():
         #         if sub_string in new_source_text:
         #             counting += len(sub_string)
         #     return counting
+
+    def do_text_search(self, input_text: str, text_list: list[str], quick_mode: bool = False) -> tuple[str, str, str]:
+        """
+        This function returns [previous_text, matched_text, next_text]
+        """
+        return string_.get_fuzz_match_text_from_text_list(input_text, text_list, quick_mode=quick_mode)
 
 
 class Yingshaoxo_Computer_Vision():
@@ -1172,7 +1315,66 @@ class Yingshaoxo_Text_to_Speech():
 class ML():
     def __init__(self):
         self.Yingshaoxo_Text_Generator = Yingshaoxo_Text_Generator
+        self.Yingshaoxo_Text_Preprocessor = Yingshaoxo_Text_Preprocessor
 
 
 if __name__ == "__main__":
     pass
+
+
+'''
+# Yingshaoxo machine learning ideas
+
+## For natual language process
+We treat every char as an id or tensor element
+
+In GPU based machine learning algorithm, you will often do things with [23, 32, 34, 54]
+
+But now, it becomes ['a', 'b', 'c', 'd']
+
+
+### For text summary
+For the self attention mechanism, it is using word apperance counting dict. You could think it as a dict, multiple key link to one same value, for all those multiple key string, if a word show up a lot time, it is likely it is important word.
+(You can think this as a TV show, for the same envirnoment, if a person only show once, it is not the main character, it is not important. But if a character show a lot times, you can almost see it at any eposide, then it is a important character)
+
+For one sequence or list, If its importance number less than average(half of 'its sequence importance sum'), you remove it
+
+
+### For translation
+long sequence (meaning group) -> long sequence (meaning group)
+
+what you do -> 你干什么
+It depends on -> 这取决于
+
+(It depends on) (what you do) -> 这取决于 你干什么
+
+meaning group can be get automatically, all you have to do is count continues_words appearance time. the more time a continuse_words appear, the more likely it is a meaning group
+
+It all can be summaryed as "divide and conquer"
+
+
+### For question and answer
+For context information extraction, you have to use the question. If one sentence of the context should at the bottom of the question, you keep it, otherwise, you remove it
+
+Then, for the other context, you do a simple sort
+
+### For text generation
+```
+one char predict next char
+two char predict next char
+...
+one word predict next word
+two words predict next word
+three words predict next word
+...
+```
+
+when you use it, use it from bottom to top, use longest sequence to predict the next word first.
+
+> the more level you make, the more accurate it would be.
+
+> It is dict based next word generator, so the speed is super quick
+
+> This method was created by yingshaoxo. it only need cpu than gpu. it can beat gpt4 with an old computer if you have big dataset (30GB) and big memory to hold the dict.
+
+'''
