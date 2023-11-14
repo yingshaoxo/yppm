@@ -28,7 +28,10 @@ import * as question_and_answer_objects from '../../generated_yrpc/question_and_
             search: async () => {
                 let input = dict?.input_value.trim()
                 dict.input_value = input
-                window.history.pushState({}, dict.input_value, `./?search_text=${dict.input_value}`)
+
+                if (input != "") {
+                    window.history.pushState({}, dict.input_value, `./?search_text=${dict.input_value}`)
+                }
 
                 let request = new question_and_answer_objects.Search_Request()
                 request.search_input = input
