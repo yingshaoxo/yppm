@@ -838,6 +838,7 @@ cd {self.project_root_folder} && {binary_version_of_yppm} run
             print(response)
             print("\n\n----------\n\n")
 
+    '''
     def start_community_service(self):
         the_service_script_folder = disk.join_paths(self.resource_basic_folder_path, "question_and_answer_community/back_end")
         os.chdir(the_service_script_folder)
@@ -848,6 +849,7 @@ cd {self.project_root_folder} && {binary_version_of_yppm} run
         cd {the_service_script_folder}
         {self.host_python_executable_path} {the_service_script_file}
         """)
+    '''
 
     def start_community_webpage(self):
         import webbrowser

@@ -9,6 +9,7 @@ curl -sSL https://bootstrap.pypa.io/get-pip.py | python3
 
 # Use github on care, you may get banned(404) by saying the 'fuck' word: https://yingshaoxo.xyz/pictures/github/index.html
 ```
+<!--
 
 or
 
@@ -18,11 +19,14 @@ alias yppm="python3 -m yppm" && echo "alias yppm='python3 -m yppm'" >> ~/.bashrc
 
 yppm about
 ```
+-->
 
 or
 
 ```bash
-python3.10 ./yppm/main.py
+git clone https://gitlab.com/yingshaoxo/yppm.git
+cd yppm/yppm
+python3 ./main.py
 ```
 
 ## Usage
