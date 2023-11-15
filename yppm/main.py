@@ -711,6 +711,83 @@ YPPM: Yingshaoxo Python Package Manager.
 (yingshaoxo is my name)
         """.strip())
 
+    def download_never_upgrade_python_and_yppm(self):
+        """
+        This will download a amd64 static python in /bin/static_python folder
+        Then do a link of /bin/python3 and /bin/python to /bin/static_python/data/Python-3.10.4/python
+        Then download yppm to /bin/yppm_folder
+        Then do a link of /bin/yppm to "/bin/python3 /bin/yppm_folder/yppm/main.py"
+        Then ask user to delete old ~/.bashrc yppm entry
+        """
+        if not os.environ.get("SUDO_UID") and os.geteuid() != 0:
+            print("Sudo permission is needed for this operation.\n")
+            print(f"You can run this:\n\nsudo yppm download_never_upgrade_python_and_yppm")
+            return
+
+        if "version" not in terminal.run_command("git --version").lower():
+            print("git is needed for this operation.\nYou can install it with 'sudo apt install git'")
+            return
+
+        # download static python
+        static_python_folder = "/bin/static_python"
+        disk.delete_a_folder(static_python_folder)
+        the_static_python_git_url = "https://gitlab.com/yingshaoxo/use_docker_to_build_static_python3_binary_executable.git"
+        terminal.run(f"""
+        git clone {the_static_python_git_url} {static_python_folder}
+        """)
+
+        # check if python binary exists
+        the_real_python_path = f"{static_python_folder}/data/Python-3.10.4/python"
+        if not disk.exists(the_real_python_path):
+            print(f"The python binary file is not in '{the_real_python_path}'")
+            print(f"You can download one, and put it into: {the_real_python_path}")
+            print(f"You may found it here: {the_static_python_git_url}")
+            return
+
+        # install that python binary file
+        terminal.run(f"""
+        mv /bin/python /bin/python_backup
+        mv /bin/python3 /bin/python3_backup
+
+        rm /bin/python
+        rm /bin/python3
+
+        chmod 777 {the_real_python_path}
+        ln -s {the_real_python_path} /bin/python
+        ln -s {the_real_python_path} /bin/python3
+        """)
+
+        # download yppm
+        yppm_folder = "/bin/yppm_folder"
+        disk.delete_a_folder(yppm_folder)
+        yppm_git_url = "https://gitlab.com/yingshaoxo/yppm.git"
+        terminal.run(f"""
+        git clone {yppm_git_url} {yppm_folder}
+        """)
+        the_real_yppm_path = f"{yppm_folder}/yppm/main.py"
+        if not disk.exists(the_real_yppm_path):
+            print(f"The yppm file is not in '{the_real_yppm_path}'")
+            print(f"You can download one, and put it into: {the_real_yppm_path}")
+            print(f"You may found it here: {yppm_git_url}")
+            return
+
+        # install that yppm file
+        yppm_entry_bash = "/bin/yppm"
+        terminal.run(f"""
+        rm /bin/yppm
+        """)
+        io_.write(yppm_entry_bash, f"""
+#!/bin/sh
+{the_real_python_path} {the_real_yppm_path}
+""")
+        terminal.run(f"""
+        chmod 777 /bin/yppm
+        """)
+
+        # notify the user to delete some old file
+        print("Great! Now you got the never upgrade python3.10 and yppm installed.")
+        print("""Try to use 'vim ~/.bashrc' to delete "alias yppm='python3 -m yppm'" to start use the new yppm software.""")
+
 
 try:
     py.fire2(Tools)
