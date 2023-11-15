@@ -19,6 +19,12 @@ alias yppm="python3 -m yppm" && echo "alias yppm='python3 -m yppm'" >> ~/.bashrc
 yppm about
 ```
 
+or
+
+```bash
+python3.10 ./yppm/main.py
+```
+
 ## Usage
 ### Init a project
 ```bash

@@ -274,33 +274,6 @@ except Exception as e:
         new_code = modify_this_python_code(code_file_path=python_file_path, code=code)
         io_.write(python_file_path, new_code)
 
-    def create_a_global_entry_for_this_project(self):
-        if not os.environ.get("SUDO_UID") and os.geteuid() != 0:
-            print("Sudo permission is needed for this operation.\n")
-            print(f"If you do not have root permission but still want to run this project, do this:\ncd {self.project_root_folder} && yppm run")
-            return
-
-        binary_version_of_yppm = "/usr/bin/yppm"
-        if not disk.exists(binary_version_of_yppm):
-            binary_version_of_yppm = f"{self.host_python_executable_path} -m yppm"
-
-        entry_point_bash_code = f"""
-#!/bin/sh
-cd {self.project_root_folder} && {binary_version_of_yppm} run
-        """
-
-        json_object = self._get_package_json_object()
-        if "name" not in json_object:
-            print("There should have a name in package.json")
-            return
-
-        name = json_object.get("name").strip().replace(" ", "_").replace("-", "_")
-        io_.write(f"/usr/bin/{name}", entry_point_bash_code)
-        terminal.run(f"chmod 777 /usr/bin/{name}")
-
-        print(f"Now you could run this project by using `{name}`\n")
-        print(f"If you want to delete this entry, just try `sudo rm /usr/bin/{name}`")
-
     def create_a_new_project(self):
         global default_template_name, default_project_name
 
@@ -710,6 +683,33 @@ YPPM: Yingshaoxo Python Package Manager.
 
 (yingshaoxo is my name)
         """.strip())
+
+    def create_a_global_entry_for_this_project(self):
+        if not os.environ.get("SUDO_UID") and os.geteuid() != 0:
+            print("Sudo permission is needed for this operation.\n")
+            print(f"If you do not have root permission but still want to run this project, do this:\ncd {self.project_root_folder} && yppm run")
+            return
+
+        binary_version_of_yppm = "/usr/bin/yppm"
+        if not disk.exists(binary_version_of_yppm):
+            binary_version_of_yppm = f"{self.host_python_executable_path} -m yppm"
+
+        entry_point_bash_code = f"""
+#!/bin/sh
+cd {self.project_root_folder} && {binary_version_of_yppm} run
+        """
+
+        json_object = self._get_package_json_object()
+        if "name" not in json_object:
+            print("There should have a name in package.json")
+            return
+
+        name = json_object.get("name").strip().replace(" ", "_").replace("-", "_")
+        io_.write(f"/usr/bin/{name}", entry_point_bash_code)
+        terminal.run(f"chmod 777 /usr/bin/{name}")
+
+        print(f"Now you could run this project by using `{name}`\n")
+        print(f"If you want to delete this entry, just try `sudo rm /usr/bin/{name}`")
 
     def download_never_upgrade_python_and_yppm(self):
         """
