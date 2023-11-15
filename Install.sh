@@ -33,13 +33,14 @@ fi
 #    #$the_real_py_command -m pip install "git+https://github.com/yingshaoxo/yppm.git@main"
 #fi
 
+#echo "alias yppm='python3 -m yppm'" >> ~/.bashrc
+#source ~/.bashrc
+
 if yppm about > /dev/null; then
     echo "global yppm already installed."
     exit 0
 else
     echo "No yppm installed, installing now..."
-    #echo "alias yppm='python3 -m yppm'" >> ~/.bashrc
-    #source ~/.bashrc
 fi
 
 
