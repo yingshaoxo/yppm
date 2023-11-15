@@ -31,7 +31,7 @@ try:
     from auto_everything.string_ import String
 except Exception as e:
     from auto_everything.string import String
-
+from auto_everything.ml import ML
 
 py = Python()
 io_ = IO()
@@ -39,7 +39,8 @@ terminal = Terminal()
 disk = Disk()
 python_ = Python()
 terminal_user_interface = Terminal_User_Interface()
-string_tool = String()
+string_ = String()
+ml = ML()
 
 
 class Tools():
@@ -70,7 +71,7 @@ class Tools():
         self.git_user_name = terminal.run_command("git config user.name").strip().split('\n')[0].lower()
         if self.git_user_name == "":
             try:
-                self.git_user_name = string_tool.remove_all_special_characters_from_a_string(os.getlogin(), white_list_characters='_').strip().lower()
+                self.git_user_name = string_.remove_all_special_characters_from_a_string(os.getlogin(), white_list_characters='_').strip().lower()
             except Exception as e:
                 print(e)
                 self.git_user_name = ""
@@ -273,6 +274,11 @@ except Exception as e:
         code = io_.read(python_file_path)
         new_code = modify_this_python_code(code_file_path=python_file_path, code=code)
         io_.write(python_file_path, new_code)
+
+    def _make_sure_git_exists(self):
+        if "version" not in terminal.run_command("git --version").lower():
+            print("git is needed for this operation.\nYou can install it with 'sudo apt install git'")
+            exit()
 
     def create_a_new_project(self):
         global default_template_name, default_project_name
@@ -787,6 +793,47 @@ cd {self.project_root_folder} && {binary_version_of_yppm} run
         # notify the user to delete some old file
         print("Great! Now you got the never upgrade python3.10 and yppm installed.")
         print("""Try to use 'vim ~/.bashrc' to delete "alias yppm='python3 -m yppm'" to start use the new yppm software.""")
+
+    def ask_ai(self):
+        # check if the data txt folder exists
+        # download yingshaoxo data
+        # make the ask loop
+        offline_question_and_answer_bot_dataset_path = "~/.yppm/offline_yingshaoxo_bot/dataset_txt_files"
+        offline_question_and_answer_bot_dataset_path = disk._expand_user(offline_question_and_answer_bot_dataset_path)
+
+        self._make_sure_git_exists()
+
+        if not disk.exists(offline_question_and_answer_bot_dataset_path):
+            terminal.run(f"""
+            git clone https://gitlab.com/yingshaoxo/yingshaoxo_txt_data.git {offline_question_and_answer_bot_dataset_path}
+            """)
+
+        if not disk.exists(offline_question_and_answer_bot_dataset_path):
+            print(f"You have to download 'https://gitlab.com/yingshaoxo/yingshaoxo_txt_data' into {offline_question_and_answer_bot_dataset_path}")
+            return
+
+        text_generator = ml.Yingshaoxo_Text_Generator()
+
+        new_text = text_generator.get_source_text_data_by_using_yingshaoxo_method(offline_question_and_answer_bot_dataset_path, type_limiter=[".txt", ".md"])
+        the_text_list = [one.strip() for one in new_text.split("\n\n__**__**__yingshaoxo_is_the_top_one__**__**__\n\n") if one.strip() != ""]
+
+        new_text_list = []
+        for one in the_text_list:
+            new_text_list += one.split("\n#")
+        the_text_list = new_text_list
+
+        os.system("clear")
+        while True:
+            input_text = input("What you want to say?    ")
+            response1, response, response2 = text_generator.do_text_search(input_text, the_text_list, quick_mode=False)
+            if response2 != "":
+                if string_.compare_two_sentences(input_text, response) >= 0.5:
+                    response = response2
+            os.system("clear")
+            print(f"What you want to say?    {input_text}")
+            print("\n\n----------\n\n")
+            print(response)
+            print("\n\n----------\n\n")
 
 
 try:
