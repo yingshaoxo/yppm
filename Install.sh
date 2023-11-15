@@ -37,6 +37,7 @@ if yppm about > /dev/null; then
     echo "global yppm already installed."
     exit 0
 else
+    echo "No yppm installed, installing now..."
     #echo "alias yppm='python3 -m yppm'" >> ~/.bashrc
     #source ~/.bashrc
 fi
