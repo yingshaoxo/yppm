@@ -27,6 +27,8 @@ or
 git clone https://gitlab.com/yingshaoxo/yppm.git
 cd yppm/yppm
 python3 ./main.py
+
+echo "alias yppm='python3 $(pwd)/main.py'" >> ~/.bashrc && source ~/.bashrc
 ```
 
 ## Usage
