@@ -1,39 +1,57 @@
-if which curl >/dev/null; then
-    echo "curl is installed."
+#if which curl >/dev/null; then
+#    echo "curl is installed."
+#else
+#    echo "curl is not installed. Installation Failed."
+#    exit 0
+#fi
+
+if which git >/dev/null; then
+    echo "git is installed."
 else
-    echo "curl is not installed. Installation Failed."
+    echo "git is not installed. Installation Failed."
     exit 0
 fi
 
 if which python3 >/dev/null; then
-    the_real_py_command="python3"
+    #the_real_py_command="python3"
     echo "python3 is installed."
 else
     echo "python3 is not installed. Installation Failed."
     exit 0
 fi
 
-if $the_real_py_command -m pip >/dev/null; then
-    echo "pip is installed."
-else
-    curl -sSL https://bootstrap.pypa.io/get-pip.py | $the_real_py_command
-fi
+#if $the_real_py_command -m pip >/dev/null; then
+#    echo "pip is installed."
+#else
+#    curl -sSL https://bootstrap.pypa.io/get-pip.py | $the_real_py_command
+#fi
 
-if $the_real_py_command -m pip show yppm > /dev/null; then
-    echo "python package yppm installed."
-else
-    $the_real_py_command -m pip install yppm --break-system-packages
-    #$the_real_py_command -m pip install "git+https://github.com/yingshaoxo/yppm.git@main"
-fi
+#if $the_real_py_command -m pip show yppm > /dev/null; then
+#    echo "python package yppm installed."
+#else
+#    $the_real_py_command -m pip install yppm --break-system-packages
+#    #$the_real_py_command -m pip install "git+https://github.com/yingshaoxo/yppm.git@main"
+#fi
 
 if yppm about > /dev/null; then
-    echo "global yppm installed."
+    echo "global yppm already installed."
+    exit 0
 else
-    echo "alias yppm='python3 -m yppm'" >> ~/.bashrc
-    source ~/.bashrc
+    #echo "alias yppm='python3 -m yppm'" >> ~/.bashrc
+    #source ~/.bashrc
 fi
 
+
+rm -fr /bin/yppm_folder
+git clone https://gitlab.com/yingshaoxo/yppm.git /bin/yppm_folder
+
+rm /bin/yppm
+echo "python3 /bin/yppm_folder/yppm/main.py $@" >> /bin/yppm
+chmod 777 /bin/yppm
+
+
 echo -e "\nYPPM Installation Finished."
+echo -e "You can try it by using: yppm"
 
 
 # Method 1

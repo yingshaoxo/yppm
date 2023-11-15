@@ -3,6 +3,7 @@ Yingshaoxo Python Package Manager
 
 ## Install
 ```bash
+sudo su
 curl -sSL https://raw.githubusercontent.com/yingshaoxo/yppm/main/Install.sh | bash
 
 # Use github on care, you may get banned(404) by saying the 'fuck' word: https://yingshaoxo.xyz/pictures/github/index.html
