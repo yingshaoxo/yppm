@@ -280,6 +280,9 @@ except Exception as e:
             print("git is needed for this operation.\nYou can install it with 'sudo apt install git'")
             exit()
 
+    def todo(self):
+        import _todo
+
     def create_a_new_project(self):
         global default_template_name, default_project_name
 
@@ -834,6 +837,27 @@ cd {self.project_root_folder} && {binary_version_of_yppm} run
             print("\n\n----------\n\n")
             print(response)
             print("\n\n----------\n\n")
+
+    def start_community_service(self):
+        the_service_script_folder = disk.join_paths(self.resource_basic_folder_path, "question_and_answer_community/back_end")
+        os.chdir(the_service_script_folder)
+
+        the_service_script_file = disk.join_paths(the_service_script_folder, "main.py")
+        print("The yppm community service is running at: http://0.0.0.0:54321")
+        terminal.run(f"""
+        cd {the_service_script_folder}
+        {self.host_python_executable_path} {the_service_script_file}
+        """)
+
+    def start_community_webpage(self):
+        import webbrowser
+        webbrowser.open('https://ask.ai-tools-online.xyz')
+
+    #def start_community(self):
+    #    """
+    #    This should start the console/shell version of community.
+    #    """
+    #    pass
 
 
 try:

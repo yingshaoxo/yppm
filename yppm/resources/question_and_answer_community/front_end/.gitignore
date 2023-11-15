@@ -1,6 +1,9 @@
+*.txt
+*.xml
+#dist/
+
 .DS_Store
 node_modules
-/dist
 
 yarn.lock
 npm.lock

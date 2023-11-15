@@ -9,6 +9,9 @@ import re
 import json
 import random
 
+if os.path.exists("../../../auto_everything"):
+    sys.path.insert(1, "../../../")
+
 from auto_everything.terminal import Terminal, Terminal_User_Interface
 from auto_everything.python import Python
 from auto_everything.disk import Disk, Store
@@ -51,31 +54,32 @@ disk.create_a_folder(the_database_path)
 
 
 offline_question_and_answer_bot_dataset_path = disk.join_paths(resource_basic_folder_path, "./yingshaoxo_chat_data")
-if disk.exists(offline_question_and_answer_bot_dataset_path):
-    text_generator = ml.Yingshaoxo_Text_Generator(
-        input_txt_folder_path=offline_question_and_answer_bot_dataset_path,
-        use_machine_learning=False,
-        type_limiter=[".txt", ".backup", ".md"]
-    )
-    new_text = text_generator.text_source_data
-    #new_text = new_text.replace("\n\n__**__**__yingshaoxo_is_the_top_one__**__**__\n\n", "\n\n\n") # You have to replace this seperator with your own dataset seperator
-    #generator_dict = text_generator.get_global_string_dict_by_using_yingshaoxo_method(new_text, levels=20)
+if not disk.exists(offline_question_and_answer_bot_dataset_path):
+    terminal.run(f"""
+    git clone https://gitlab.com/yingshaoxo/yingshaoxo_txt_data.git "{offline_question_and_answer_bot_dataset_path}"
+    """)
+text_generator = ml.Yingshaoxo_Text_Generator(
+    input_txt_folder_path=offline_question_and_answer_bot_dataset_path,
+    use_machine_learning=False,
+    type_limiter=[".txt", ".backup", ".md"]
+)
+new_text = text_generator.text_source_data
+#new_text = new_text.replace("\n\n__**__**__yingshaoxo_is_the_top_one__**__**__\n\n", "\n\n\n") # You have to replace this seperator with your own dataset seperator
+#generator_dict = text_generator.get_global_string_dict_by_using_yingshaoxo_method(new_text, levels=20)
 
-    the_text_list = [one.strip() for one in new_text.split("\n\n__**__**__yingshaoxo_is_the_top_one__**__**__\n\n") if one.strip() != ""]
+the_text_list = [one.strip() for one in new_text.split("\n\n__**__**__yingshaoxo_is_the_top_one__**__**__\n\n") if one.strip() != ""]
 
-    new_text_list = []
-    for one in the_text_list:
-        new_text_list += one.split("\n#")
-    the_text_list = new_text_list
+new_text_list = []
+for one in the_text_list:
+    new_text_list += one.split("\n#")
+the_text_list = new_text_list
 
-    """
-    new_text_list = []
-    for one in the_text_list:
-        new_text_list += one.split("\n\n\n")
-    the_text_list = new_text_list
-    """
-else:
-    text_generator = None
+"""
+new_text_list = []
+for one in the_text_list:
+    new_text_list += one.split("\n\n\n")
+the_text_list = new_text_list
+"""
 
 def decode_response(text: str, chat_context: str):
     #print("`"+text+"`")
@@ -463,13 +467,13 @@ Sitemap: {domain}/sitemaps.xml
     sitemap_part = """
 """
     sitemap_part_list = []
-    search_list = database_excutor_for_remote_service.An_App.search(item_filter=app_store_objects.An_App())
+    search_list = database_excutor_for_remote_service.A_Post.search(item_filter=question_and_answer_objects.A_Post())
     for one in search_list:
         last_modify_time = time_.get_datetime_object_from_timestamp(one.create_time_in_10_numbers_timestamp_format).strftime("%y-%m-%d")
-        safe_name = urllib.parse.quote_plus(one.name)
+        safe_name = urllib.parse.quote_plus(one.id)
         sitemap_part_list.append(f"""
    <url>
-      <loc>{domain}/app_page?name={safe_name}</loc>
+      <loc>{domain}/detail_page?id={safe_name}</loc>
       <lastmod>{last_modify_time}</lastmod>
       <changefreq>weekly</changefreq>
       <priority>0.8</priority>
@@ -487,7 +491,7 @@ Sitemap: {domain}/sitemaps.xml
     robot_txt_path = disk.join_paths(output_folder, "robots.txt")
     io_.write(robot_txt_path, robots)
 
-    sitemap_xml_path = disk.join_paths(output_folder, "sitemap.xml")
+    sitemap_xml_path = disk.join_paths(output_folder, "sitemaps.xml")
     io_.write(sitemap_xml_path, sitemap)
 
 
@@ -497,7 +501,7 @@ def run_service(port: str):
     service_instance = Question_And_Answer_Service()
 
     html_folder_path = "../front_end/dist"
-    #generate_robots_txt_and_sitemap_xml(domain="http://127.0.0.1:3333", output_folder=html_folder_path)
+    generate_robots_txt_and_sitemap_xml(domain="https://ask.ai-tools-online.xyz", output_folder=html_folder_path)
     question_and_answer_pure_python_rpc.run(service_instance, port=port, html_folder_path=html_folder_path)
 
 

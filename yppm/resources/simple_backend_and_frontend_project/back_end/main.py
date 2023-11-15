@@ -157,7 +157,7 @@ Sitemap: {domain}/sitemaps.xml
     robot_txt_path = disk.join_paths(output_folder, "robots.txt")
     io_.write(robot_txt_path, robots)
 
-    sitemap_xml_path = disk.join_paths(output_folder, "sitemap.xml")
+    sitemap_xml_path = disk.join_paths(output_folder, "sitemaps.xml")
     io_.write(sitemap_xml_path, sitemap)
 
 
