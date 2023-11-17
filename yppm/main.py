@@ -793,7 +793,7 @@ cd {self.project_root_folder} && {binary_version_of_yppm} run
         """)
         io_.write(yppm_entry_bash, f"""
 #!/bin/sh
-{the_real_python_path} {the_real_yppm_path}
+{the_real_python_path} {the_real_yppm_path} $@
 """)
         terminal.run(f"""
         chmod 777 /bin/yppm
