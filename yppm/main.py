@@ -877,10 +877,13 @@ cd {self.project_root_folder} && {binary_version_of_yppm} run
         the_service_script_folder = disk.join_paths(self.resource_basic_folder_path, "magic_magnet")
         the_service_script_file = disk.join_paths(the_service_script_folder, "app.py")
         os.chdir(the_service_script_folder)
-        return the_service_script_file
+        return the_service_script_folder, the_service_script_file
 
-    def start_magic_magnet_service(self):
-        the_service_script_file = self._get_into_magic_magnet_folder()
+    def start_magic_magnet_service(self, tracker_url: str | None = None):
+        if tracker_url != None:
+            os.environ["tracker_ip_or_url_list"] = tracker_url
+
+        the_service_script_folder, the_service_script_file = self._get_into_magic_magnet_folder()
 
         print("The magic_magnet service is running at: http://0.0.0.0:1111")
         terminal.run(f"""
@@ -889,7 +892,7 @@ cd {self.project_root_folder} && {binary_version_of_yppm} run
         """)
 
     def stop_magic_magnet_service(self):
-        the_service_script_file = self._get_into_magic_magnet_folder()
+        the_service_script_folder, the_service_script_file = self._get_into_magic_magnet_folder()
 
         print("The magic_magnet service will get stopped.")
         terminal.run(f"""
@@ -898,7 +901,7 @@ cd {self.project_root_folder} && {binary_version_of_yppm} run
         """)
 
     def upload(self, file_path: str):
-        the_service_script_file = self._get_into_magic_magnet_folder()
+        the_service_script_folder, the_service_script_file = self._get_into_magic_magnet_folder()
 
         terminal.run(f"""
         cd {the_service_script_folder}
@@ -906,7 +909,7 @@ cd {self.project_root_folder} && {binary_version_of_yppm} run
         """)
 
     def search(self, keywords: str):
-        the_service_script_file = self._get_into_magic_magnet_folder()
+        the_service_script_folder, the_service_script_file = self._get_into_magic_magnet_folder()
 
         terminal.run(f"""
         cd {the_service_script_folder}
@@ -914,7 +917,7 @@ cd {self.project_root_folder} && {binary_version_of_yppm} run
         """)
 
     def download(self, magic_magnet_link: str):
-        the_service_script_file = self._get_into_magic_magnet_folder()
+        the_service_script_folder, the_service_script_file = self._get_into_magic_magnet_folder()
 
         terminal.run(f"""
         cd {the_service_script_folder}
