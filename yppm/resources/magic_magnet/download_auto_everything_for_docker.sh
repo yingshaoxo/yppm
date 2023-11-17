@@ -1,3 +1,8 @@
+if test -d ../../auto_everything; then
+    cp -fr ../../auto_everything ./
+    exit 0
+fi
+
 rm -fr ~/.auto_everything/source_code
 git clone https://gitlab.com/yingshaoxo/auto_everything.git ~/.auto_everything/source_code
 mv ~/.auto_everything/source_code/auto_everything ./
