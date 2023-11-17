@@ -830,6 +830,7 @@ class Ytorrent_Client():
             print("\n\n_______________\n\n")
             print(f"We'll launch a tracker service at {self.remote_service_address}")
             print(f"We'll launch a user interface service at {self.local_service_address}")
+            print(f"> You have to disable some DNS service 'Browser Integrity Check' to allow python http client to access your API service.")
             print("\n\n_______________\n\n")
             print(f"Please open another shell/bash tab to execute your command again.")
             print()
@@ -984,7 +985,7 @@ class Ytorrent_Client():
                     ))
                     self.download(magic_magnet_link)
                 else:
-                    raise Exception(f"The file/folder you want to download is already complete: {magic_magnet_link}\nYou can found it at {one.root_folder}")
+                    raise Exception(f"The file/folder you want to download is already complete: {magic_magnet_link}\nYou can found it at {target_path}")
             else:
                 raise Exception(f"The file/folder you want to download is already in downloading: {magic_magnet_link}\nYou can found it at {one.root_folder}")
 
