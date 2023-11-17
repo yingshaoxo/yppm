@@ -5,10 +5,11 @@ from pprint import pprint
 from datetime import datetime
 import json
 
-from auto_everything.disk import Store
+from auto_everything.disk import Store, Disk
 from auto_everything.io import IO
 store = Store("todo_list_app")
 io_ = IO()
+disk = Disk()
 # store.reset()
 # exit()
 
@@ -20,9 +21,10 @@ todo_dict = {
 }
 
 
+todo_backup_file = disk._expand_user("~/.yppm/todo.txt")
 if store.has_key("todo_dict"):
     todo_dict = store.get("todo_dict", todo_dict)
-    io_.write("todo.txt", content=json.dumps(todo_dict, indent=4, sort_keys=True))
+    io_.write(todo_backup_file, content=json.dumps(todo_dict, indent=4, sort_keys=True))
 
 
 def save():
