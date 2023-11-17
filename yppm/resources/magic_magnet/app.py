@@ -138,6 +138,8 @@ YTORRENT_CONFIG.download_folder_path = terminal.fix_path(YTORRENT_CONFIG.downloa
 disk.create_a_folder(disk.get_directory_path(YTORRENT_CONFIG.download_folder_path))
 
 YTORRENT_CONFIG.tracker_ip_or_url_list = [one for one in YTORRENT_CONFIG.tracker_ip_or_url_list if one.strip()!=""]
+YTORRENT_CONFIG.tracker_ip_or_url_list = list(set(YTORRENT_CONFIG.tracker_ip_or_url_list))
+print(YTORRENT_CONFIG.tracker_ip_or_url_list)
 
 
 def refactor_database():
