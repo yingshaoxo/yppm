@@ -1,0 +1,12 @@
+{
+    "name": "magic_magnet",
+    "version": "0.0.1",
+    "author": "yingshaoxo@gmail.com",
+    "main": "app.py",
+    "scripts": {
+        "run": "python3 app.py"
+    },
+    "dependencies": [
+        //"auto_everything"
+    ]
+}
