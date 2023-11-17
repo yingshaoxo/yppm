@@ -8,6 +8,9 @@ import os
 import re
 import json
 
+if os.path.exists("../../../auto_everything"):
+    sys.path.insert(1, "../../../")
+
 from auto_everything.terminal import Terminal, Terminal_User_Interface
 from auto_everything.python import Python
 from auto_everything.disk import Disk, Store

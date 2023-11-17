@@ -1,0 +1,15 @@
+version: "3.9"
+
+services:
+  yppm_magic_magnet:
+    #0.0.0.0:1111
+    network_mode: "host"        
+    build: 
+      context: ./
+      dockerfile: ./Dockerfile_light
+    image: yingshaoxo/ytorrent
+    restart: unless-stopped
+
+# git clone https://gitlab.com/yingshaoxo/auto_everything.git ~/.auto_everything/source_code
+# mv ~/.auto_everything/source_code/auto_everything ./
+# rm -fr ~/.auto_everything/source_code

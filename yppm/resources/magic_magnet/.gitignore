@@ -1,3 +1,5 @@
+auto_everything/
+
 vue/
 *.dist/
 .yppm_dist/

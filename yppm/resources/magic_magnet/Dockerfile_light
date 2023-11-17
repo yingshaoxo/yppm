@@ -1,0 +1,12 @@
+# docker build --tag yingshaoxo/ytorrent . --no-cache
+
+
+FROM python:3.10-alpine as final_stage
+
+COPY . /code/magic_magnet
+
+EXPOSE 1111
+
+
+WORKDIR /code/magic_magnet
+CMD ["python", "app.py"]
