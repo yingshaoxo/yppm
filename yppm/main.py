@@ -283,6 +283,9 @@ except Exception as e:
     def todo(self):
         import _todo
 
+    def L____(self):
+        pass
+
     def create_a_new_project(self):
         global default_template_name, default_project_name
 
@@ -693,6 +696,9 @@ YPPM: Yingshaoxo Python Package Manager.
 (yingshaoxo is my name)
         """.strip())
 
+    def L_____(self):
+        pass
+
     def create_a_global_entry_for_this_project(self):
         if not os.environ.get("SUDO_UID") and os.geteuid() != 0:
             print("Sudo permission is needed for this operation.\n")
@@ -838,6 +844,9 @@ cd {self.project_root_folder} && {binary_version_of_yppm} run
             print(response)
             print("\n\n----------\n\n")
 
+    def L______(self):
+        pass
+
     '''
     def start_community_service(self):
         the_service_script_folder = disk.join_paths(self.resource_basic_folder_path, "question_and_answer_community/back_end")
@@ -860,6 +869,57 @@ cd {self.project_root_folder} && {binary_version_of_yppm} run
     #    This should start the console/shell version of community.
     #    """
     #    pass
+
+    def L_______(self):
+        pass
+
+    def _get_into_magic_magnet_folder(self) -> str:
+        the_service_script_folder = disk.join_paths(self.resource_basic_folder_path, "magic_magnet")
+        the_service_script_file = disk.join_paths(the_service_script_folder, "app.py")
+        os.chdir(the_service_script_folder)
+        return the_service_script_file
+
+    def start_magic_magnet_service(self):
+        the_service_script_file = self._get_into_magic_magnet_folder()
+
+        print("The magic_magnet service is running at: http://0.0.0.0:1111")
+        terminal.run(f"""
+        cd {the_service_script_folder}
+        {self.host_python_executable_path} {the_service_script_file} version
+        """)
+
+    def stop_magic_magnet_service(self):
+        the_service_script_file = self._get_into_magic_magnet_folder()
+
+        print("The magic_magnet service will get stopped.")
+        terminal.run(f"""
+        cd {the_service_script_folder}
+        {self.host_python_executable_path} {the_service_script_file} stop
+        """)
+
+    def upload(self, file_path: str):
+        the_service_script_file = self._get_into_magic_magnet_folder()
+
+        terminal.run(f"""
+        cd {the_service_script_folder}
+        {self.host_python_executable_path} {the_service_script_file} seed "{file_path}"
+        """)
+
+    def search(self, keywords: str):
+        the_service_script_file = self._get_into_magic_magnet_folder()
+
+        terminal.run(f"""
+        cd {the_service_script_folder}
+        {self.host_python_executable_path} {the_service_script_file} search "{keywords}"
+        """)
+
+    def download(self, magic_magnet_link: str):
+        the_service_script_file = self._get_into_magic_magnet_folder()
+
+        terminal.run(f"""
+        cd {the_service_script_folder}
+        {self.host_python_executable_path} {the_service_script_file} download "{magic_magnet_link}"
+        """)
 
 
 try:
