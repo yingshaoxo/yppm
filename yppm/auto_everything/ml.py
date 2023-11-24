@@ -1,6 +1,7 @@
 from typing import Any
 import random
 import os
+import re
 
 from auto_everything.terminal import Terminal
 from auto_everything.disk import Disk, Store
@@ -15,6 +16,43 @@ terminal = Terminal()
 time_ = Time()
 store = Store('auto_everything_ml_module')
 string_ = String()
+
+
+class DataProcessor():
+    """
+    To implement some functionality related to data
+    """
+
+    def __init__(self):
+        pass
+
+    def get_time_series_data_from_a_list(self, the_list, sequence_length):
+        """
+        Get sub sequences for LSTM network.
+
+        Parameters
+        ----------
+        the_list:
+        sequence_length: int
+            how long you want the subsequence to be.
+
+        Returns
+        -------
+        tuple
+            return ([features], [labels])
+        """
+        assert len(the_list) >= sequence_length + 1, "len(the_list) should >= sequence_length + 1"
+        array_1d = []
+        array_2d = []
+        array_target = []
+        for element in the_list:
+            array_1d.append(element)
+            if len(array_1d) == sequence_length + 1:
+                target = array_1d.pop()
+                array_target.append(target)
+                array_2d.append(array_1d.copy())
+                array_1d.clear()
+        return array_2d, array_target
 
 
 #####
@@ -248,41 +286,116 @@ class Yingshaoxo_Text_Preprocessor():
         return text.isascii()
 
 
-class DataProcessor():
+class Yingshaoxo_Text_Transformer():
     """
-    To implement some functionality related to data
+    We will use char level operation to get unknown keywords regex from "multiple key -> one value" data pairs
+
+    Hi AA -> Hi you.
+    Hi BB -> Hi you.
+    Hi CC -> Hi you.
+
+    We need to get "Hi (.*?) -> Hi you." from above data automatically.
+
+
+
+    Did you see AA? => I see AA.
+    Did you see BB? => I see BB.
+
+    We need to get "Did you see (?P<someone>.*?)? -> I see {someone}." from above data automatically.
+
+
+
+    That is steven, my uncle. => I see, steven is your uncle.
+    That is wind_god, my uncle. => I see, wind_god is your uncle.
+
+    We need to get "That is (?P<name>.*?), my uncle. => I see, {name} is your uncle." from above data automatically.
     """
 
-    def __init__(self):
-        pass
+    """
+    Or, you could think it as a very simple problem, if you got current_line of text, if some sub_string appears in the next_line of text, you can safely replace it with regex expression.
 
-    def get_time_series_data_from_a_list(self, the_list, sequence_length):
+    For example: what is the age of uncle? => uncle is 18 years old.
+
+    You can just do a search for every sub_string in the first sentence, if that substring appears 1 or more times in the second sentence, you get a general regex sentence.
+
+    For example: what is the age of (?P<name>.*?)? => {name} is 18 years old.
+
+    And later when you meet new input, if it full matchs any regex expression, you return following sentence with related content formated. In other words, you are returning a reactive answer than fixed answer.
+    """
+    def get_regex_expression_from_current_text_and_following_text(self, current_text: str, following_text: str) -> tuple[str, str]:
+        sub_string_list = string_.get_all_sub_string(text=current_text)
+        sub_string_list.sort(key=len, reverse=True)
+
+        fake_current_text = current_text
+        fake_following_text = following_text
+        new_current_text = current_text
+        new_following_text = following_text
+        counting = 0
+        for index, sub_string in enumerate(sub_string_list):
+            if (sub_string in fake_current_text) and (sub_string in fake_following_text):
+                fake_following_text = fake_following_text.replace(sub_string, "")
+                new_current_text_list = new_current_text.split(sub_string)
+                new_current_text_list = [re.escape(one)  for one in new_current_text_list]
+                new_current_text = f"(.*?)".join(new_current_text_list)
+                #new_current_text = new_current_text.replace(sub_string, f"(?P<y{counting}>.*?)") # You have to find a way to avoid new sub_string replace old regex expression
+                new_following_text = new_following_text.replace(sub_string, "{}")
+                counting += 1
+                break
+
+        return new_current_text, new_following_text
+
+    def get_regex_expression_version_string_dict(self, input_text: str, seporator: str = "\n") -> dict[str, str]:
+        final_dict = {}
+
+        text_list = input_text.split(seporator)
+        for index, text in enumerate(text_list):
+            if index + 1 > len(text_list) - 1:
+                break
+
+            text = text.strip()
+            next_text = text_list[index+1].strip()
+            if text != "" and next_text != "":
+                key, value = self.get_regex_expression_from_current_text_and_following_text(text, next_text)
+                #print(key, value)
+                final_dict[key] = value
+
+        return final_dict
+
+    def yingshaoxo_regex_expression_based_transformer(self, input_text: str, regex_expression_dict: dict[str, str]) -> str:
         """
-        Get sub sequences for LSTM network.
-
-        Parameters
-        ----------
-        the_list:
-        sequence_length: int
-            how long you want the subsequence to be.
-
-        Returns
-        -------
-        tuple
-            return ([features], [labels])
+        If you want to let it smarter or equal than google bard chat ai, you have to use recursive function
+        You have to recursively replace the context (the one inside of (.*?)) to a detailed information
+        For example, "How to make love?", the first template it meets is "How to (.*?)"
+        The answer is probabally "If you want to make love, you have to:\nmake love"
+        But it's not done yet, you have to use 'make love' as keyword, search regex_expression_dict to get a more detaild info/value
+        In the end, you'll get a detaild response: "If you want to make love, you have to:\n1.ask permission from the one you want to make love with..."
         """
-        assert len(the_list) >= sequence_length + 1, "len(the_list) should >= sequence_length + 1"
-        array_1d = []
-        array_2d = []
-        array_target = []
-        for element in the_list:
-            array_1d.append(element)
-            if len(array_1d) == sequence_length + 1:
-                target = array_1d.pop()
-                array_target.append(target)
-                array_2d.append(array_1d.copy())
-                array_1d.clear()
-        return array_2d, array_target
+        for key in sorted(list(regex_expression_dict.keys()), key=len, reverse=True):
+            result = re.search(key, input_text, flags=re.DOTALL)
+            if result != None:
+                return regex_expression_dict[key].format(*list(result.groups()))
+        return ""
+
+    def yingshaoxo_regex_expression_based_recursive_transformer(self, input_text: str, regex_expression_dict: dict[str, str]) -> str:
+        """
+        This is good for 1:1 transformer, for example, translation dataset, but should also doing fine in email replying dataset.
+        """
+        def the_transformer(input_text: str) -> str:
+            for key in sorted(list(regex_expression_dict.keys()), key=len, reverse=True):
+                result = re.search(key, input_text, flags=re.DOTALL)
+                if result != None:
+                    value = result.group(1)
+
+                    dict_value = regex_expression_dict[key]
+                    dict_value_splits = dict_value.split("{}")
+
+                    next_level_value = the_transformer(value)
+                    if next_level_value != "":
+                        return next_level_value.join(dict_value_splits)
+                    else:
+                        return value.join(dict_value_splits)
+            return ""
+        return the_transformer(input_text)
 
 
 class Yingshaoxo_Text_Generator():
@@ -454,8 +567,8 @@ class Yingshaoxo_Text_Generator():
             for index, _ in enumerate(source_text):
                 if index < x:
                     continue
-                if index == len(source_text) - x:
-                    break
+                #if index == len(source_text) - x:
+                #    break
                 if for_minus_character == True:
                     current_chars = source_text[index-x: index] + seperator + source_text[index: index+x]
                     center_char = ""
@@ -651,8 +764,8 @@ class Yingshaoxo_Text_Generator():
             for index in range(len(tokens)):
                 if index < x:
                     continue
-                if index == len(tokens) - x:
-                    break
+                #if index == len(tokens) - x:
+                #    break
                 current_words = ''.join(tokens[index-x: index]) + seperator + ''.join(tokens[index+1: index+x+1])
                 center_word = tokens[index]
                 if current_words in level_dict:
@@ -911,7 +1024,7 @@ class Yingshaoxo_Text_Generator():
         return "".join([one["text"] for one in context_splits[the_seperator_index:]])
 
     @staticmethod
-    def next_code_generation(input_text: str, type_limiter: list[str] = [".txt", ".py", ".md"], how_long_the_text_you_want_to_get: int = 1024, quck_mode: bool = True, data_source_text: str | None = None, data_source_folder_path: str | None = None, only_return_source_text: bool = False):
+    def next_code_generation(input_text: str, type_limiter: list[str] = [".txt", ".py", ".md"], how_long_the_text_you_want_to_get: int = 1024, quck_mode: bool = True, data_source_text: str | None = None, data_source_folder_path: str | None = None, only_return_source_text: bool = False) -> str:
         """
         1. take the previous text as input
         2. take sub_string of the input_text, from right to left, from long to short.
@@ -977,7 +1090,146 @@ class Yingshaoxo_Text_Generator():
 
         return real_next_code_generation(input_text=input_text, how_long_the_text_you_want_to_get=how_long_the_text_you_want_to_get)
 
-    def text_to_text_harding_coding_transforming(self, input_text_list: list[str], output_text_list: list[str], text_you_want_to_transform: str):
+    def next_fuzz_sentence_generation(self, input_text: str, how_long_the_text_you_want_to_get: int = 1024, text_source_data: str | None = None, compare_times: int=10, also_return_previous_text: bool = False) -> str | tuple[str, str]:
+        """
+        1. first, we do search based on input_text, if we could not found it, we search for input_text[len()//2:], we search half of the input_text, the second one.
+        2. If we found one, we save that input_text keyword and [index-sub_text_length//2, index+sub_text_length//2], we keep doing the search for compare_times times. Then we could use all sub_string from input_text to do a compare for those text windows, we will only return the one that has the highest similarity number.
+
+        if also_return_previous_text == True, we return (previous_text, following_text)
+        """
+        input_text = input_text.lower()
+        real_text_source_data = text_source_data
+        text_source_data = text_source_data.lower()
+
+        def normal_next_code_finding(input_text: str, start_index: int = 0) -> tuple[int, int]:
+            """
+            This will return the start and end index of the target_text
+            """
+            if (input_text.strip() == ""):
+                return 0, 0
+
+            found_start_index = text_source_data.find(input_text, start_index)
+            if found_start_index == -1:
+                # didn't found
+                input_text = input_text[len(input_text)//2+1:]
+                #input_text = input_text[1:]
+                return normal_next_code_finding(input_text=input_text)
+            else:
+                start = found_start_index
+                end = found_start_index + len(input_text)
+                return start, end
+
+        def fuzz_search(a_input_text: str, how_long_the_context_is: int, compare_times: int) -> str:
+            start_index, end_index = normal_next_code_finding(input_text=a_input_text, start_index=0)
+            if start_index == 0 and end_index == 0:
+                if also_return_previous_text == True:
+                    return "", ""
+                else:
+                    return ""
+
+            target_level = end_index - start_index
+            result_start_index_list = []
+            result_end_index_list = []
+            result_start_index_list.append(start_index)
+            result_end_index_list.append(end_index)
+            for _ in range(compare_times):
+                a_input_text = text_source_data[start_index: end_index]
+                start_index, end_index = normal_next_code_finding(input_text=a_input_text, start_index=end_index)
+                if start_index == 0 and end_index == 0:
+                    break
+
+                current_level = end_index - start_index
+                if current_level != target_level:
+                    break
+
+                result_start_index_list.append(start_index)
+                result_end_index_list.append(end_index)
+                if len(result_end_index_list) >= compare_times:
+                    break
+
+            global_input_sub_string_list = string_.get_all_sub_string(text=input_text) #it uses the global input_text
+            previous_context_text_list = []
+            for index, _ in enumerate(result_end_index_list):
+                previous_context_text_list.append(
+                    #text_source_data[result_start_index_list[index]-len(input_text)*2:result_start_index_list[index]]
+                    text_source_data[result_end_index_list[index]-how_long_the_context_is:result_end_index_list[index]]
+                )
+            #print(previous_context_text_list)
+            #print(input_text)
+            previous, current, next = string_.get_fuzz_match_text_from_text_list(input_text="", text_list=previous_context_text_list, input_sub_string_list=global_input_sub_string_list, quick_mode=False)
+            if current == "":
+                if also_return_previous_text == True:
+                    return "", ""
+                else:
+                    return ""
+            else:
+                the_target_index = previous_context_text_list.index(current)
+                #print(the_target_index)
+                real_index = result_end_index_list[the_target_index]
+                previous_text = real_text_source_data[real_index - how_long_the_context_is:real_index]
+                next_text = real_text_source_data[real_index: real_index + how_long_the_context_is]
+                if also_return_previous_text == True:
+                    return previous_text, next_text
+                else:
+                    return next_text
+
+        return fuzz_search(a_input_text=input_text, how_long_the_context_is=how_long_the_text_you_want_to_get, compare_times=compare_times)
+
+    def fuzz_text_to_text_transforming(self, input_text: str, example_input_text: str, example_output_text: str, levels: int = 3) -> str:
+        """
+        input_text: My name is god.
+        example_input_text: My name is yingshaoxo.
+        example_output_text: Hi, yingshaoxo.
+
+        It should return "Hi, god."
+
+        In context_based chat, the source text data before current input_text is the example_input_text (include current input), the data after current input_text is the example_output_text.
+        """
+        """
+        If no quick_mode, we should use regex + sub_string based text transformer, but if we use quick_mode, we simply have to split text by using space, then use regex transformer after that. (In the end, I use words_pattern_dict to find pattens)
+
+        If you want to do the transforming as much as possible, you should make a replace loop, do transforming for new sentence over and over again until you can't find any repeated word between input and output. (You have to make cache dict to make sure you do not do repeat replacement)
+
+        If you stand in a global level, you could even make a RLU cache to save all regex rule, so that you can skip this function to do a direct replacement.
+
+        yingshaoxo's words: text transforming is all about pattern/rule extracting and applying.
+        """
+        words_pattern_dict = self.get_global_string_word_based_corrector_dict_by_using_yingshaoxo_method(source_text_data = example_input_text, levels = levels)
+        words_pattern_dict = words_pattern_dict[levels]
+        #print(words_pattern_dict)
+        for key, value in words_pattern_dict.items():
+            if value not in example_output_text:
+                continue
+
+            key_list = key.split('☺')
+            key_list = [re.escape(one) for one in key_list]
+            new_key = f"(.*?)".join(key_list)
+
+            result = re.search(new_key, input_text, flags=re.DOTALL)
+            if result == None:
+                continue
+
+            a_input_variable = result.group(1)
+            #print(a_input_variable)
+            example_output_text = example_output_text.replace(value, a_input_variable)
+
+        return example_output_text.strip()
+
+    def get_text_to_text_hard_coding_transforming_dict(self, input_text_list: list[str], output_text_list: list[str]) -> dict[str, str]:
+        if len(input_text_list) != len(output_text_list):
+            raise Exception("The input_text_list should have the same length of output_text_list")
+
+        the_dict = {}
+        yingshaoxo_text_transformer = Yingshaoxo_Text_Transformer()
+        for index in range(len(input_text_list)):
+            source_text = input_text_list[index]
+            target_text = output_text_list[index]
+            key, value = yingshaoxo_text_transformer.get_regex_expression_from_current_text_and_following_text(source_text, target_text)
+            the_dict[key] = value
+
+        return the_dict
+
+    def text_to_text_hard_coding_transforming(self, input_text: str, the_string_dict: dict[str, str], recursive: bool = False):
         """
         1. Just think the whole transforming process as doing the search in a Q table.
         2. You use a patten filter to check the input_text, "I love you", 3 elements as a window, then you use this patten to do a search in the Q table, you found ["I hate you", "I trust you", "I hate you"], it seems like 'hate' has higher chance to be in the middle of that sentence.
@@ -994,7 +1246,18 @@ class Yingshaoxo_Text_Generator():
         for 'sorting task', get substrings from input_text, then try to use before_context and following_context to do a search in target dataset, get the percentage of start_index/the_whole_length_of_the_sentence.
             do a compare for the substring in the input_text, so you would get a percentage number of weather to move that substring farward or backward.
         """
-        print("Haven't get implemented yet.")
+        yingshaoxo_text_transformer = Yingshaoxo_Text_Transformer()
+        if recursive == False:
+            result = yingshaoxo_text_transformer.yingshaoxo_regex_expression_based_transformer(
+                input_text=input_text,
+                regex_expression_dict=the_string_dict
+            )
+        else:
+            result = yingshaoxo_text_transformer.yingshaoxo_regex_expression_based_recursive_transformer(
+                input_text=input_text,
+                regex_expression_dict=the_string_dict
+            )
+        return result
         # def _count_how_many_sub_string_in_previous_context(self, start_index: int, input_text: str, how_long_the_text_you_want_to_get: int = 1024):
         #     input_text = input_text.lower()
 
@@ -1314,8 +1577,9 @@ class Yingshaoxo_Text_to_Speech():
 
 class ML():
     def __init__(self):
-        self.Yingshaoxo_Text_Generator = Yingshaoxo_Text_Generator
         self.Yingshaoxo_Text_Preprocessor = Yingshaoxo_Text_Preprocessor
+        self.Yingshaoxo_Text_Transformer = Yingshaoxo_Text_Transformer
+        self.Yingshaoxo_Text_Generator = Yingshaoxo_Text_Generator
 
 
 if __name__ == "__main__":

@@ -155,7 +155,8 @@ class Question_And_Answer_Service(question_and_answer_pure_python_rpc.Service_qu
             response1, response, response2 = text_generator.do_text_search(item.input, the_text_list, quick_mode=False)
             if response2 != "":
                 if string_.compare_two_sentences(item.input, response) >= 0.5:
-                    response = response2
+                    response = text_generator.fuzz_text_to_text_transforming(item.input, example_input_text=response, example_output_text=response2, levels=4)
+                    #response = response2
 
             if response == "":
                 response = text_generator.search_and_get_following_text_in_a_exact_way(input_text=item.input, quick_mode=True)

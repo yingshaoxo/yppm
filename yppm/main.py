@@ -837,7 +837,8 @@ cd {self.project_root_folder} && {binary_version_of_yppm} run
             response1, response, response2 = text_generator.do_text_search(input_text, the_text_list, quick_mode=False)
             if response2 != "":
                 if string_.compare_two_sentences(input_text, response) >= 0.5:
-                    response = response2
+                    response = text_generator.fuzz_text_to_text_transforming(input_text, example_input_text=response, example_output_text=response2, levels=4)
+                    #response = response2
             os.system("clear")
             print(f"What you want to say?    {input_text}")
             print("\n\n----------\n\n")
