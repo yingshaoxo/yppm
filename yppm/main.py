@@ -7,6 +7,7 @@ import platform
 import json
 import re
 from time import sleep
+import random
 
 try:
     if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
@@ -834,15 +835,30 @@ cd {self.project_root_folder} && {binary_version_of_yppm} run
         os.system("clear")
         while True:
             input_text = input("What you want to say?    ")
-            response1, response, response2 = text_generator.do_text_search(input_text, the_text_list, quick_mode=False)
-            if response2 != "":
-                if string_.compare_two_sentences(input_text, response) >= 0.5:
-                    response = text_generator.fuzz_text_to_text_transforming(input_text, example_input_text=response, example_output_text=response2, levels=4)
-                    #response = response2
+            response = ""
+
+            previous_text, a_response = text_generator.next_fuzz_sentence_generation(text_source_data=new_text, input_text=input_text, how_long_the_text_you_want_to_get=800, compare_times=10, also_return_previous_text=True)
+            previous_splits = previous_text.split("\n\n__**__**__yingshaoxo_is_the_top_one__**__**__\n\n")
+            splits = a_response.split("\n\n__**__**__yingshaoxo_is_the_top_one__**__**__\n\n")
+            if (len(splits) > 1):
+                if string_.get_string_match_rating_level(input_text, splits[0]) > string_.get_string_match_rating_level(input_text, splits[1]):
+                    response = splits[0].strip()
+                    response = previous_splits[-1] + response
+                else:
+                    response = splits[1].strip()
+            elif (len(splits) == 1):
+                response = splits[0].strip()
+
+            if response.strip() == "":
+                response1, response, response2 = text_generator.do_text_search(input_text, the_text_list, quick_mode=False)
+                if response2 != "":
+                    if string_.compare_two_sentences(input_text, response) >= 0.5:
+                        response = text_generator.fuzz_text_to_text_transforming(input_text, example_input_text=response, example_output_text=response2, levels=4)
+
             os.system("clear")
             print(f"What you want to say?    {input_text}")
             print("\n\n----------\n\n")
-            print(response)
+            print(response.strip())
             print("\n\n----------\n\n")
 
     def L______(self):
