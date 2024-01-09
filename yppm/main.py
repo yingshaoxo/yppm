@@ -762,15 +762,22 @@ cd {self.project_root_folder} && {binary_version_of_yppm} run
 
         # install that python binary file
         terminal.run(f"""
+        chmod 777 {the_real_python_path}
+
         mv /bin/python /bin/python_backup
         mv /bin/python3 /bin/python3_backup
 
         rm /bin/python
         rm /bin/python3
 
-        chmod 777 {the_real_python_path}
         ln -s {the_real_python_path} /bin/python
         ln -s {the_real_python_path} /bin/python3
+
+        rm /usr/bin/python
+        rm /usr/bin/python3
+
+        ln -s {the_real_python_path} /usr/bin/python
+        ln -s {the_real_python_path} /usr/bin/python3
         """)
 
         # download yppm
