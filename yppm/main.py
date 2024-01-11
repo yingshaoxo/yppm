@@ -1,8 +1,20 @@
 #!/usr/bin/env /usr/bin/python3
+import sys
+let_user_install_static_python = False
+if sys.version_info[0] == 3 and sys.version_info[1] == 10:
+    pass
+else:
+    let_user_install_static_python = True
+if let_user_install_static_python == True:
+    print("Your python version is not 3.10, we suggest you to install one that do not depend on anything: A static compiled python.")
+    print("You can install it by running:")
+    print("sudo su")
+    print("curl -sSL https://gitlab.com/yingshaoxo/use_docker_to_build_static_python3_binary_executable/-/raw/master/install.sh?ref_type=heads | bash")
+    print()
+
 from typing import Any
 
 import os
-import sys
 import platform
 import json
 import re
