@@ -22,6 +22,7 @@ todo_dict = {
 
 
 todo_backup_file = disk._expand_user("~/.yppm/todo.txt")
+todo_log_file = disk._expand_user("~/.yppm/todo_log.txt")
 if store.has_key("todo_dict"):
     todo_dict = store.get("todo_dict", todo_dict)
     io_.write(todo_backup_file, content=json.dumps(todo_dict, indent=4, sort_keys=True))
@@ -66,7 +67,7 @@ def remove(index):
             str(i-1): progress
         })
 
-    with open('log.txt', 'a') as f:
+    with open(todo_log_file, 'a') as f:
         f.write(one_part_of_the_log)
 
     save()
