@@ -1,7 +1,16 @@
 # yppm
 Yingshaoxo Python Package Manager
 
-## Install
+## Install (need python3.10)
+### How to install python3.10 in amd64 linux machine?
+```bash
+# https://gitlab.com/yingshaoxo/use_docker_to_build_static_python3_binary_executable
+
+sudo su
+curl -sSL https://gitlab.com/yingshaoxo/use_docker_to_build_static_python3_binary_executable/-/raw/master/install.sh?ref_type=heads | bash
+```
+
+### How to install yppm?
 ```bash
 sudo su
 curl -sSL https://raw.githubusercontent.com/yingshaoxo/yppm/main/Install.sh | bash
