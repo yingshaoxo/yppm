@@ -1,3 +1,9 @@
+architecture=$(uname -m)
+if [[ $architecture != *'x86_64'* ]]; then
+    echo 'We only support x86_64 for now, if you want other archtecture, you can build python3.10 yourself.'
+    exit
+fi
+
 #if which curl >/dev/null; then
 #    echo "curl is installed."
 #else
@@ -54,6 +60,10 @@ chmod 777 /bin/yppm
 
 echo -e "\nYPPM Installation Finished."
 echo -e "You can try it by using: yppm"
+echo -e ""
+echo -e "If it is not working, you have to install python3.10 by using: "
+echo -e "sudo su"
+echo -e "curl -sSL https://gitlab.com/yingshaoxo/use_docker_to_build_static_python3_binary_executable/-/raw/master/install.sh?ref_type=heads | bash"
 
 
 # Method 1
