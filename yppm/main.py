@@ -523,6 +523,41 @@ except Exception as e:
             {self._hack_into_virtual_env_bash_command()}
             {pip_path} uninstall {package_name} -y
                             """)
+    def install_as_global_package(self, source_python_package_path: str = ""):
+        if source_python_package_path == "":
+            source_python_package_path = self.project_root_folder
+        source_python_package_path = os.path.abspath(source_python_package_path)
+
+        def install_global_package(package_path):
+            if os.path.exists(package_path):
+                if not os.path.isdir(package_path):
+                    return False
+                init_file = os.path.join(package_path, "__init__.py")
+                if not os.path.exists(init_file):
+                    with open(init_file, "w") as f:
+                        f.write("")
+
+                folder_name = os.path.basename(package_path)
+
+                library_folder = os.path.dirname(os.path.abspath(os.__file__))
+                the_link_path = os.path.join(library_folder, folder_name)
+
+                if os.path.exists(the_link_path):
+                    os.unlink(the_link_path)
+
+                print()
+                print("sudo ln -s " + package_path + " " + the_link_path)
+                print("")
+                print("")
+                os.symlink(package_path, the_link_path, target_is_directory=True)
+                return True
+            else:
+                return False
+
+        if install_global_package(source_python_package_path) == False:
+            print("Install failed. \nYou should give me a folder path as python package, where it only has .py file as child. So you can call it by 'import folder_name.file_name'.")
+
+        return
 
     def install(self, package_name: str = ""):
         if not disk.exists(self.package_json_file_path):

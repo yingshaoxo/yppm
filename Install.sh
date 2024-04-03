@@ -54,7 +54,8 @@ rm -fr /bin/yppm_folder
 git clone https://gitlab.com/yingshaoxo/yppm.git /bin/yppm_folder
 
 rm /bin/yppm
-echo "python3 /bin/yppm_folder/yppm/main.py \$@" >> /bin/yppm
+echo "python3 /bin/yppm_folder/yppm/main.py \$@" >> /bin/yppmm
+#vim "python3 /bin/yppm_folder/yppm/main.py $@" >> /bin/yppmm
 chmod 777 /bin/yppm
 
 
