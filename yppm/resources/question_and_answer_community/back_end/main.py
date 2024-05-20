@@ -71,12 +71,14 @@ the_text_list = [one.strip() for one in new_text.split("\n\n__**__**__yingshaoxo
 
 new_text_list = []
 for one in the_text_list:
-    if "\n#" in one:
-        new_text_list += one.split("\n#")
-    elif "第" in one and "章" in one:
-        new_text_list += one.split("\n\n\n")
-    else:
-        new_text_list += [one]
+    temp_list1 = one.split("\n#")
+    temp_list2 = []
+    for sub_one in temp_list1:
+        if "第" in sub_one and "章" in sub_one:
+            temp_list2 += sub_one.split("\n\n\n")
+        else:
+            temp_list2 += [sub_one]
+    new_text_list += temp_list2
 the_text_list = new_text_list
 
 def decode_response(text: str, chat_context: str):
