@@ -51,10 +51,12 @@ import { start_the_translation } from './auto_translation';
         onBeforeMount(async ()=>{
             await global_functions.set_reachable_client()
 
-            if (global_functions.get_value('username') == null) {
-                dict.need_to_input_username = true;
-            } else {
-                global_functions.go_to_page_based_on_current_url()
+            global_functions.go_to_page_based_on_current_url()
+
+            if (global_dict.current_page_name == global_dict.page_name_dict.search_page) {
+                if (global_functions.get_value('username') == null) {
+                    dict.need_to_input_username = true;
+                }
             }
         })
 

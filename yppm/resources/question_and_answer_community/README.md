@@ -1,5 +1,12 @@
 # Question and Answer Community (a template for yppm)
 
+## Warning 
+Do not use npm or related online tools. Otherwise you can't built your software 20 years later.
+
+Use pure text as much as possible, like pure python text or old php text. But here the text is just a bytes list, who knows what it could be 50 years later. The text encoding changes.
+
+So this is a bad example.
+
 ## Todo
 For this website, it should be as simple as possible
 
