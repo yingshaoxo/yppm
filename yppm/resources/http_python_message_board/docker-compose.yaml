@@ -1,0 +1,17 @@
+version: "3.9"
+
+services:
+  http_python_message_board:
+    network_mode: "host"        
+    #build: 
+    #  context: ./
+    #  dockerfile: ./Dockerfile
+    image: yingshaoxo/yppm_python3_point_2_in_alpine
+    #environment:
+    #  - ADMIN_EMAIL=yingshaoxo@gmail.com
+    volumes:
+    #  - "./database_data:/code/back_end/database_data"
+      - ".:/code/back_end"
+    working_dir: /code/back_end
+    command: sh -c "python3.2_static_amd64.run -u main.py"
+    restart: unless-stopped

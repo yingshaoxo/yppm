@@ -307,6 +307,7 @@ except Exception as e:
         default_template_name = terminal_user_interface.selection_box(
             "Which project template you want to use? ", [
                 ("basic_python_project", None),
+                ("http_python_message_board", None),
                 ("simple_backend_and_frontend_project", None),
                 ("question_and_answer_community", None),
             ]
@@ -346,6 +347,14 @@ except Exception as e:
             self.init(name=default_project_name)
 
             print(f"\n\nNow you could go to the new project by using: \ncd {default_project_name}")
+        elif default_template_name == "http_python_message_board":
+            source_folder_path = disk.join_paths(self.resource_basic_folder_path, default_template_name)
+            disk.copy_a_folder(source_folder_path=source_folder_path, target_folder_path=project_path)
+
+            os.chdir(project_path)
+            self.__init__()
+
+            self.init(name=default_project_name)
         elif default_template_name == "simple_backend_and_frontend_project":
             source_folder_path = disk.join_paths(self.resource_basic_folder_path, default_template_name)
             disk.copy_a_folder(source_folder_path=source_folder_path, target_folder_path=project_path)
