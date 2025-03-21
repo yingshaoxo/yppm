@@ -7,9 +7,9 @@ a_list = ["hi", "you"]
 def handle_request(url, url_key_and_value_dict):
     if url == "/" or url == "":
         message_list_html = ""
-        for a_message in a_list:
-            message_list_html += """<div style="margin-bottom: 20px; background-color: #E8E8E8; padding: 5px;">{message}</div>\n""".format(message=a_message)
-        message_list_html = '\n<div style="display: flex; flex-direction: column; margin-top: 20px;">\n' + message_list_html + '</div>'
+        for a_message in reversed(a_list):
+            message_list_html += """<div style="margin-bottom: 20px; background-color: #E8E8E8; padding: 5px;"><pre>{message}</pre></div>\n""".format(message=a_message)
+        message_list_html = '\n<div style="display: flex; flex-direction: column; margin-top: 30px;">\n' + message_list_html + '</div>'
         return "html", """
 <script>
 /*
@@ -23,7 +23,7 @@ list.push({ key: "key2", value: "value2" });
 */
 
 function get_input_value() {
-    return document.getElementById("a_input").value;
+    return document.getElementById("a_textarea").value;
     //.innerHTML = new Date();
 }
 
@@ -48,7 +48,7 @@ function send_get_request(url) {
         } else if (xmlhttp.readyState === 4) {
             console.error("Error: " + xmlhttp.statusText);
         }
-        refresh_page();
+        setTimeout(refresh_page, 200);
     };
 
     xmlhttp.send();
@@ -70,16 +70,16 @@ function refresh_page_without_paramater() {
 
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=yes">
 
-<div>Hello, welcome to yingshaoxo message board.</div>
+<div style="margin-top: 30px;">Hello, welcome to yingshaoxo message board.</div>
 
-<div style="margin-top: 20px;"></div>
+<div style="margin-top: 30px;"></div>
 
-<div style="display: flex; flex-direction: row;">
+<div style="display: flex; flex-direction: column; width: 100%;">
     <div>
-        <input id="a_input"></input>
+        <textarea id="a_textarea" style="height: 300px; width: 100%;"></textarea>
     </div>
-    <div>
-        <button onclick="leave_a_new_message()">
+    <div style="margin-top: 5px;">
+        <button onclick="leave_a_new_message()" style="padding: 2px; padding-left: 10px; padding-right: 10px;">
             Leave A Message
         </button>
     </div>
