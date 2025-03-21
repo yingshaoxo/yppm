@@ -28,22 +28,30 @@ function get_input_value() {
 }
 
 function send_get_request(url) {
-    var xhr = new XMLHttpRequest();
+    var xmlhttp;
+    if (window.ActiveXObject) {
+        xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+    } else if (window.XMLHttpRequest) {
+        xmlhttp = new XMLHttpRequest();
+    } else {
+        alert("Your browser does not support XMLHTTP.");
+        return;
+    }
 
-    xhr.open("GET", url, true); // true means async
+    xmlhttp.open("GET", url, true); // true means async
 
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-            //var response = JSON.parse(xhr.responseText);
-            var response = xhr.responseText;
+    xmlhttp.onreadystatechange = function () {
+        if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
+            //var response = JSON.parse(xmlhttp.responseText);
+            var response = xmlhttp.responseText;
             console.log(response);
-        } else if (xhr.readyState === 4) {
-            console.error("Error: " + xhr.statusText);
+        } else if (xmlhttp.readyState === 4) {
+            console.error("Error: " + xmlhttp.statusText);
         }
         refresh_page();
     };
 
-    xhr.send();
+    xmlhttp.send();
 }
 
 function leave_a_new_message() {
@@ -105,7 +113,7 @@ def work_function(port_in_number=8899):
 
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    server_socket.bind(('localhost', port_in_number))
+    server_socket.bind(('0.0.0.0', port_in_number))
     server_socket.listen(100)
     print("http service ready.\n")
 
