@@ -9,8 +9,14 @@ def handle_request(request_type, url, url_key_and_value_dict):
     if request_type == "GET" and url == "/":
         message_list_html = ""
         for a_message in reversed(a_list):
-            message_list_html += """<div style="margin-bottom: 20px; background-color: #E8E8E8; padding: 5px;"><pre>{message}</pre></div>\n""".format(message=a_message)
-        message_list_html = '\n<div style="display: flex; flex-direction: column; margin-top: 30px;">\n' + message_list_html + '</div>'
+            message_list_html += """
+<div style="margin-bottom: 20px; background-color: #E8E8E8; padding: 5px; overflow: scroll;"><pre>{message}</pre></div>
+""".format(message=a_message)
+        message_list_html = """
+<div style="display: flex; flex-direction: column; margin-top: 30px;">
+""" + message_list_html + """
+</div>
+"""
         return "html", """
 <script>
 /*
@@ -102,7 +108,7 @@ function refresh_page_without_paramater() {
 <form action="/new_message?" method="post">
     <div style="display: flex; flex-direction: column; width: 100%;">
         <div>
-            <textarea id="a_textarea" type="text" name="text" style="height: 300px; width: 100%;"></textarea>
+            <textarea id="a_textarea" type="text" name="text" style="height: 200px; width: 100%;"></textarea>
             <!--input name="name"></input-->
         </div>
         <div style="margin-top: 5px; display: flex; flex-direction: row;">
