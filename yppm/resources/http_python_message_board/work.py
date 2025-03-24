@@ -1,9 +1,35 @@
 import time
 import socket
 import json
-from urllib.parse import unquote
+import os
 
+try:
+    from urllib.parse import unquote
+except Exception as e:
+    print("error:", e)
+    def unquote(text):
+        return text
+
+absolute_current_folder_path = os.path.dirname(os.path.abspath(__file__))
+data_file_path = os.path.join(absolute_current_folder_path, "./data.txt")
 a_list = ["hi", "you"]
+
+def load_disk_data():
+    global a_list
+
+    if not os.path.exists(data_file_path):
+        with open(data_file_path, "w") as f:
+            f.write(json.dumps(a_list))
+
+    with open(data_file_path, "r") as f:
+        all_data_as_text = f.read()
+    a_list = json.loads(all_data_as_text)
+
+def write_data_to_disk():
+    global a_list
+
+    with open(data_file_path, "w") as f:
+        f.write(json.dumps(a_list, indent=4))
 
 def handle_request(request_type, url, url_key_and_value_dict):
     if request_type == "GET" and url == "/":
@@ -122,7 +148,12 @@ function refresh_page_without_paramater() {
 """ + message_list_html
     elif url.startswith("/new_message?"):
         a_list.append(url_key_and_value_dict.get("text"))
-        return "text", "Add successfully."
+        write_data_to_disk()
+        return "html", """
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=yes">
+
+<p>Add successfully.</p>
+"""
     elif url.startswith("/message_list?"):
         return "text", json.dumps(a_list)
     else:
@@ -177,6 +208,8 @@ def parse_url(request):
 def work_function(port_in_number=8899):
     print("do it for fun.")
 
+    load_disk_data()
+
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     server_socket.bind(('0.0.0.0', port_in_number))
@@ -187,7 +220,7 @@ def work_function(port_in_number=8899):
         try:
             client_socket, addr = server_socket.accept()
             request = client_socket.recv(1024).decode('utf-8')
-            print("get request:", request)
+            #print("get request:", request)
             request_type, url, url_key_and_value_dict = parse_url(request)
             print()
             print(request_type)
