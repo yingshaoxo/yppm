@@ -2,6 +2,7 @@ import time
 import socket
 import json
 import os
+from datetime import datetime
 
 try:
     from urllib.parse import unquote
@@ -12,7 +13,12 @@ except Exception as e:
 
 absolute_current_folder_path = os.path.dirname(os.path.abspath(__file__))
 data_file_path = os.path.join(absolute_current_folder_path, "./data.txt")
-a_list = ["hi", "you"]
+a_list = ["Hi, you.\nYou can leave whatever message you want.", "For example, 'yingshaoxo: Long time no see.'\nHow to prove it is sent from yingshaoxo?\nAsk yingshaoxo yourself in other way."]
+
+def get_current_time():
+    now = datetime.now()
+    current_time = now.strftime("%Y-%m-%d %H:%M:%S")
+    return current_time
 
 def load_disk_data():
     global a_list
@@ -32,9 +38,24 @@ def write_data_to_disk():
         f.write(json.dumps(a_list, indent=4))
 
 def handle_request(request_type, url, url_key_and_value_dict):
-    if request_type == "GET" and url == "/":
+    if request_type == "GET" and (url == "/" or url.startswith("/?")):
         message_list_html = ""
-        for a_message in reversed(a_list):
+
+        page_number = url_key_and_value_dict.get("page")
+        if page_number == None:
+            page_number = 0
+        page_number = int(page_number)
+        start_index = page_number * 10
+        end_index = start_index + 10
+
+        if start_index > len(a_list):
+            return "html", """
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=yes">
+
+Error: No more message out there.
+"""
+
+        for a_message in a_list[start_index: end_index]:
             message_list_html += """
 <div style="margin-bottom: 20px; background-color: #E8E8E8; padding: 5px; overflow: scroll;"><pre>{message}</pre></div>
 """.format(message=a_message)
@@ -125,8 +146,6 @@ function refresh_page_without_paramater() {
 }
 </script>
 
-<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=yes">
-
 <div style="margin-top: 30px;">Hello, welcome to yingshaoxo message board.</div>
 
 <div style="margin-top: 30px;"></div>
@@ -145,15 +164,28 @@ function refresh_page_without_paramater() {
         </div>
     </div>
 </form>
-""" + message_list_html
-    elif url.startswith("/new_message?"):
-        a_list.append(url_key_and_value_dict.get("text"))
-        write_data_to_disk()
-        return "html", """
-<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=yes">
 
+""" + message_list_html + """
+<div style="width: 100%; margin-top: 10px; margin-bottom: 30px; display: flex; flex-direction: row; justify-content: left;">
+    <button type="button" onclick="window.location.href='{next_page_url}'" style="padding: 2px; padding-left: 10px; padding-right: 10px;">
+        Next Page
+    </button>
+</div>
+""".format(next_page_url="/?page="+str(page_number+1))
+    elif url.startswith("/new_message?"):
+        the_new_message = url_key_and_value_dict.get("text")
+        the_new_message = the_new_message.strip()
+        if the_new_message != "":
+            the_new_message = get_current_time() + "\n\n" + the_new_message
+            a_list.insert(0, the_new_message)
+            write_data_to_disk()
+            return "html", """
 <p>Add successfully.</p>
-"""
+            """
+        else:
+            return "html", """
+<p>You should input something.</p>
+            """
     elif url.startswith("/message_list?"):
         return "text", json.dumps(a_list)
     else:
@@ -232,6 +264,9 @@ def work_function(port_in_number=8899):
             response = 'HTTP/1.1 200 OK\n'
             if return_type == "html":
                 response += "Content-Type: text/html\n\n"
+                response += """
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=yes">
+"""
                 response += return_value
             elif return_type == "text":
                 response += "\n" + return_value
