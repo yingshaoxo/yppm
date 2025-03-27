@@ -17,7 +17,8 @@ a_list = ["Hi, you.\nYou can leave whatever message you want.", "For example, 'y
 
 def get_current_time():
     now = datetime.now()
-    current_time = now.strftime("%Y-%m-%d %H:%M:%S")
+    #current_time = now.strftime("%Y-%m-%d %H:%M:%S")
+    current_time = "{}-{}-{} {}:{}:{}".format(now.year, now.month, now.day, now.hour, now.minute, now.second)
     return current_time
 
 def load_disk_data():
@@ -174,6 +175,8 @@ function refresh_page_without_paramater() {
 """.format(next_page_url="/?page="+str(page_number+1))
     elif url.startswith("/new_message?"):
         the_new_message = url_key_and_value_dict.get("text")
+        if the_new_message == None:
+            the_new_message = ""
         the_new_message = the_new_message.strip()
         if the_new_message != "":
             the_new_message = get_current_time() + "\n\n" + the_new_message
@@ -251,8 +254,8 @@ def work_function(port_in_number=8899):
     while True:
         try:
             client_socket, addr = server_socket.accept()
-            request = client_socket.recv(1024).decode('utf-8')
-            #print("get request:", request)
+            request = client_socket.recv(2048).decode('utf-8')
+            print("get request:", request)
             request_type, url, url_key_and_value_dict = parse_url(request)
             print()
             print(request_type)

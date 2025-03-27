@@ -10,3 +10,6 @@ Then visit http://localhost:8899
 
 ## How to sync to server
 rsync -avz --progress --delete ./ root@87.50:/root/yppm/yppm/resources/http_python_message_board/
+
+## Problem
+* Found cloudflare will ignore all post data from html form, so the server gets nothing to save.
