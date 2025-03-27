@@ -110,7 +110,9 @@ function send_request(url, data_string) {
         url = url.concat(encodeURIComponent(data_string));
         xmlhttp.open("GET", url, true);
     } else {
-        xmlhttp.open("POST", url, true);
+        //xmlhttp.open("POST", url, true);
+        url = url.concat(encodeURIComponent(data_string));
+        xmlhttp.open("GET", url, true);
     }
     xmlhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
     //application/json
@@ -130,7 +132,8 @@ function send_request(url, data_string) {
     if (is_ie) {
         xmlhttp.send();
     } else {
-        xmlhttp.send(encodeURIComponent(data_string));
+        //xmlhttp.send(encodeURIComponent(data_string));
+        xmlhttp.send();
     }
 }
 
@@ -195,6 +198,7 @@ function refresh_page_without_paramater() {
         return "text", 'Hello, welcome to yingshaoxo message board.' + "\n\n" + str([request_type, url, url_key_and_value_dict])
 
 def url_decode(encoded_string):
+    # do not support chinese yet, english should be fine.
     result = ""
     i = 0
     while i < len(encoded_string):
