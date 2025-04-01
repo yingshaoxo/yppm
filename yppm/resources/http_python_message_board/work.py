@@ -295,3 +295,7 @@ def work_function(port_in_number=8899):
 
     #server_socket.shutdown(2)
     #server_socket.close()
+
+
+if __name__ == '__main__':
+    work_function(8899)
