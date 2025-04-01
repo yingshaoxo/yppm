@@ -11,6 +11,12 @@ except Exception as e:
     def unquote(text):
         return text
 
+old_print = print
+def fake_print(*object_list):
+    for object in object_list:
+        old_print(str(object).encode("utf-8"))
+print = fake_print
+
 absolute_current_folder_path = os.path.dirname(os.path.abspath(__file__))
 data_file_path = os.path.join(absolute_current_folder_path, "./data.txt")
 a_list = ["Hi, you.\nYou can leave whatever message you want.", "For example, 'yingshaoxo: Long time no see.'\nHow to prove it is sent from yingshaoxo?\nAsk yingshaoxo yourself in other way."]
@@ -83,6 +89,21 @@ window.console = window.console || (function() {
     return c;
 })();
 
+function formEncode(str) {
+    str = str.replace(/\\n/g, '\\r\\n');
+    var encoded = '';
+    for (var i = 0; i < str.length; i++) {
+        var char = str.charAt(i);
+        var code = char.charCodeAt(0);
+        if (code > 127 || (char === '&' || char === '#')) {
+            encoded += '&#' + code + ';';
+        } else {
+            encoded += char;
+        }
+    }
+    return encodeURIComponent(encoded).replace(/%20/g, '+');
+}
+
 function get_input_value() {
     return document.getElementById("a_textarea").value;
     //.innerHTML = new Date();
@@ -106,16 +127,11 @@ function send_request(url, data_string) {
         return;
     }
 
-    if (is_ie) {
-        url = url.concat(encodeURIComponent(data_string));
-        xmlhttp.open("GET", url, true);
-    } else {
-        //xmlhttp.open("POST", url, true);
-        url = url.concat(encodeURIComponent(data_string));
-        xmlhttp.open("GET", url, true);
-    }
+    //url = url.concat(encodeURIComponent(data_string));
+    url = url.concat(data_string);
+
+    xmlhttp.open("GET", url, true);
     xmlhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-    //application/json
 
     xmlhttp.onreadystatechange = function () {
         if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
@@ -129,16 +145,11 @@ function send_request(url, data_string) {
         setTimeout(refresh_page, 200);
     };
 
-    if (is_ie) {
-        xmlhttp.send();
-    } else {
-        //xmlhttp.send(encodeURIComponent(data_string));
-        xmlhttp.send();
-    }
+    xmlhttp.send();
 }
 
 function leave_a_new_message() {
-    send_request("/new_message?", (new String('text=')).concat(get_input_value()));
+    send_request("/new_message?", (new String('text=')).concat(formEncode(get_input_value())));
 }
 
 function refresh_page() {
@@ -231,16 +242,15 @@ def parse_url(request):
             url_dict = {}
             if "?" in url:
                 key_value_text_list = url.split("?")[1].split("&")
-                key_value_text_list = [url_decode(unquote(one)) for one in key_value_text_list]
         elif request_type == "POST":
             raw_string = request.split("\r\n\r\n")[1].strip()
-            key_value_text_list = url_decode(unquote(raw_string)).split("&")
+            key_value_text_list = raw_string.split("&")
 
         for key_and_value_text in key_value_text_list:
             splits = key_and_value_text.split("=")
             if len(splits) == 2:
                 key, value = splits
-                url_dict[key] = value
+                url_dict[key] = unquote(url_decode(value))
 
         return request_type, url, url_dict
 
