@@ -289,7 +289,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <div style="margin-top: 20px; display: flex; flex-direction: column; width: 100%;">
     <div style="display: flex; flex-direction: column; justify-content:space-between;align-items:center;">
-        <textarea id="a_textarea" type="text" name="text" style="min-height: 500px; width: 75%;"></textarea>
+        <textarea id="a_textarea" type="text" name="text" style="min-height: 500px; width: 75%; overflow: auto;"></textarea>
     </div>
     <div style="margin-top: 10px; display: flex; flex-direction: column; justify-content:space-between;align-items:center;">
         <button type="button" onclick="save_clipboard_message()" style="padding: 2px; padding-left: 10px; padding-right: 10px;">
@@ -371,7 +371,7 @@ def work_function(port_in_number=8899):
     while True:
         try:
             client_socket, addr = server_socket.accept()
-            request = client_socket.recv(2048).decode('utf-8')
+            request = client_socket.recv(20480).decode('utf-8')
             print("get request:", request)
             request_type, url, url_key_and_value_dict, raw_data = parse_url(request)
             print()
