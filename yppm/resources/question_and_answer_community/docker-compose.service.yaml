@@ -13,4 +13,5 @@ services:
     volumes:
       - "./database_data:/code/back_end/database_data"
       - "./auto_everything_data:/root/.auto_everything"
+      - "./yingshaoxo_chat_data:/code/back_end/yingshaoxo_chat_data"
     restart: unless-stopped

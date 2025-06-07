@@ -21,6 +21,8 @@ absolute_current_folder_path = os.path.dirname(os.path.abspath(__file__))
 data_file_path = os.path.join(absolute_current_folder_path, "./data.txt")
 a_list = ["Hi, you.\nYou can leave whatever message you want.", "For example, 'yingshaoxo: Long time no see.'\nHow to prove it is sent from yingshaoxo?\nAsk yingshaoxo yourself in other way."]
 
+clipboard = "You can write anything here. Others visit this page will see the same text."
+
 def get_current_time():
     now = datetime.now()
     #current_time = now.strftime("%Y-%m-%d %H:%M:%S")
@@ -44,7 +46,9 @@ def write_data_to_disk():
     with open(data_file_path, "w") as f:
         f.write(json.dumps(a_list, indent=4))
 
-def handle_request(request_type, url, url_key_and_value_dict):
+def handle_request(request_type, url, url_key_and_value_dict, raw_data):
+    global clipboard
+
     if request_type == "GET" and (url == "/" or url.startswith("/?")):
         message_list_html = ""
 
@@ -205,6 +209,99 @@ function refresh_page_without_paramater() {
             """
     elif url.startswith("/message_list?"):
         return "text", json.dumps(a_list)
+    elif url.startswith("/clipboard_get_message"):
+        return "text", clipboard
+    elif url.startswith("/clipboard_save_message"):
+        if len(raw_data) > 0:
+            clipboard = raw_data
+            return "text", "ok"
+        else:
+            return "text", "no message get saved"
+    elif url.startswith("/clipboard"):
+        return "html", """
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=yes">
+
+<script>
+function send_request(url, post_string) {
+    return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', url, true);
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+        xhr.onload = function() {
+            if (xhr.status >= 200 && xhr.status < 300) {
+                resolve(xhr.responseText);
+            } else {
+                reject(new Error(`Request failed with status ${xhr.status}`));
+            }
+        };
+
+        xhr.onerror = function() {
+            reject(new Error('Network error occurred'));
+        };
+
+        xhr.send(post_string);
+    });
+}
+
+function save_clipboard_message() {
+    var clipboard_data = document.getElementById("a_textarea").value;
+    send_request(
+        "/clipboard_save_message",
+        clipboard_data
+    ).then(response => {
+        console.log(response);
+        alert("saved");
+    }).catch(error => {console.error(error);});
+}
+
+function get_clipboard_message() {
+    send_request("/clipboard_get_message", "")
+    .then(response => {
+        document.getElementById("a_textarea").value = response;
+    })
+    .catch(error => {
+        console.error(error);
+    });
+}
+
+function autoResize(textarea) {
+  textarea.style.height = 'auto';
+  textarea.style.height = (textarea.scrollHeight) + 'px';
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    get_clipboard_message();
+
+    // Usage:
+    const textarea = document.querySelector('textarea');
+    textarea.addEventListener('input', () => autoResize(textarea));
+    // Initialize on load
+    window.addEventListener('load', () => autoResize(textarea));
+    });
+</script>
+
+<p style="text-align: center;">Welcome to network clipboard.</p>
+
+<div style="margin-top: 20px; display: flex; flex-direction: column; width: 100%;">
+    <div style="display: flex; flex-direction: column; justify-content:space-between;align-items:center;">
+        <textarea id="a_textarea" type="text" name="text" style="min-height: 500px; width: 75%;"></textarea>
+    </div>
+    <div style="margin-top: 10px; display: flex; flex-direction: column; justify-content:space-between;align-items:center;">
+        <button type="button" onclick="save_clipboard_message()" style="padding: 2px; padding-left: 10px; padding-right: 10px;">
+            Save Message
+        </button>
+    </div>
+</div>
+
+<style>
+textarea {
+  resize: none; /* Disable manual resize */
+  min-height: 50px;
+  overflow-y: hidden; /* Hide scrollbar */
+}
+</style>
+"""
     else:
         return "text", 'Hello, welcome to yingshaoxo message board.' + "\n\n" + str([request_type, url, url_key_and_value_dict])
 
@@ -233,11 +330,12 @@ def url_decode(encoded_string):
 def parse_url(request):
     request_type = request.strip().split(" ")[0]
     if not request_type == "GET" and not request_type == "POST":
-        return request_type, "", {}
+        return request_type, "", {}, ""
     else:
         url = request.split(" ")[1]
         url_dict = {}
         key_value_text_list = []
+        raw_data = ""
         if request_type == "GET" :
             url_dict = {}
             if "?" in url:
@@ -245,6 +343,7 @@ def parse_url(request):
         elif request_type == "POST":
             raw_string = request.split("\r\n\r\n")[1].strip()
             key_value_text_list = raw_string.split("&")
+            raw_data = raw_string
 
         for key_and_value_text in key_value_text_list:
             splits = key_and_value_text.split("=")
@@ -252,7 +351,7 @@ def parse_url(request):
                 key, value = splits
                 url_dict[key] = unquote(url_decode(value))
 
-        return request_type, url, url_dict
+        return request_type, url, url_dict, raw_data
 
 def work_function(port_in_number=8899):
     print("do it for fun.")
@@ -270,13 +369,14 @@ def work_function(port_in_number=8899):
             client_socket, addr = server_socket.accept()
             request = client_socket.recv(2048).decode('utf-8')
             print("get request:", request)
-            request_type, url, url_key_and_value_dict = parse_url(request)
+            request_type, url, url_key_and_value_dict, raw_data = parse_url(request)
             print()
             print(request_type)
             print(url)
             print(url_key_and_value_dict)
+            print(raw_data)
 
-            return_type, return_value = handle_request(request_type, url, url_key_and_value_dict)
+            return_type, return_value = handle_request(request_type, url, url_key_and_value_dict, raw_data)
 
             response = 'HTTP/1.1 200 OK\n'
             if return_type == "html":

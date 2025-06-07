@@ -14,4 +14,5 @@ services:
       - ".:/code/back_end"
     working_dir: /code/back_end
     command: sh -c "python3.2_static_amd64.run -u main.py"
+    #command: sh -c "/bin/python3.2_static_amd64.run -u main.py"
     restart: unless-stopped
