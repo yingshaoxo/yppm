@@ -251,7 +251,11 @@ function save_clipboard_message() {
         clipboard_data
     ).then(response => {
         console.log(response);
-        alert("saved");
+        if (response == "ok") {
+            alert("saved");
+        } else {
+            alert("failed to save");
+        }
     }).catch(error => {console.error(error);});
 }
 
