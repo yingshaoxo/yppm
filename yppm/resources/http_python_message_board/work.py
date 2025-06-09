@@ -214,7 +214,7 @@ function refresh_page_without_paramater() {
     elif url.startswith("/clipboard_save_message"):
         if len(raw_data) > 0:
             clipboard = raw_data
-            return "text", "ok"
+            return "text", str(len(raw_data))
         else:
             return "text", "no message get saved"
     elif url.startswith("/clipboard"):
@@ -222,51 +222,60 @@ function refresh_page_without_paramater() {
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=yes">
 
 <script>
-function send_request(url, post_string) {
-    return new Promise((resolve, reject) => {
-        const xhr = new XMLHttpRequest();
-        xhr.open('POST', url, true);
-        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+function send_request(url, post_string, callback) {
+    var xhr;
+    if (window.XMLHttpRequest) {
+        xhr = new XMLHttpRequest();
+    } else {
+        xhr = new ActiveXObject("Microsoft.XMLHTTP");
+    }
 
-        xhr.onload = function() {
+    xhr.open('POST', url, true);
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState == 4) {
             if (xhr.status >= 200 && xhr.status < 300) {
-                resolve(xhr.responseText);
+                callback(xhr.responseText);
             } else {
-                reject(new Error(`Request failed with status ${xhr.status}`));
+                callback(null);
             }
-        };
+        }
+    };
 
-        xhr.onerror = function() {
-            reject(new Error('Network error occurred'));
-        };
+    xhr.onerror = function() {
+        callback(new Error('Network error'));
+    };
 
-        xhr.send(post_string);
-    });
+    xhr.send(post_string);
 }
 
 function save_clipboard_message() {
     var clipboard_data = document.getElementById("a_textarea").value;
-    send_request(
-        "/clipboard_save_message",
-        clipboard_data
-    ).then(response => {
+    var message_length = clipboard_data.length;
+
+    function handle_response(response) {
         console.log(response);
-        if (response == "ok") {
+        if (response == String(message_length)) {
             alert("saved");
         } else {
             alert("failed to save");
         }
-    }).catch(error => {console.error(error);});
+    }
+
+    send_request(
+        "/clipboard_save_message",
+        clipboard_data,
+        handle_response
+    );
 }
 
 function get_clipboard_message() {
-    send_request("/clipboard_get_message", "")
-    .then(response => {
+    function handle_response(response) {
         document.getElementById("a_textarea").value = response;
-    })
-    .catch(error => {
-        console.error(error);
-    });
+    }
+
+    send_request("/clipboard_get_message", "", handle_response);
 }
 
 function autoResize(textarea) {
@@ -282,7 +291,8 @@ document.addEventListener('DOMContentLoaded', function() {
     textarea.addEventListener('input', () => autoResize(textarea));
     // Initialize on load
     window.addEventListener('load', () => autoResize(textarea));
-    });
+    }
+);
 </script>
 
 <p style="text-align: center;">Welcome to network clipboard.</p>
