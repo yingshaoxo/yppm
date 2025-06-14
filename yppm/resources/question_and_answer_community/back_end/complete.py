@@ -185,7 +185,7 @@ def load_data(txt_file_path):
     with open(txt_file_path, "r") as f:
         input_text = f.read()
 
-    print("Building dictionary from input text...")
+    print("Building dictionary from input text...", flush=True)
     global_word_dict = build_word_sequences(input_text, max_seq_len=Max_Sequenc_Length)
 
 def get_next_text_block(input_text):
