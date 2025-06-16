@@ -155,4 +155,3 @@ class MyIO():
 
     def bytes_to_hex(self, bytes_data: bytes):
         return bytes_data.hex()
-

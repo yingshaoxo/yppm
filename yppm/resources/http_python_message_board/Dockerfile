@@ -17,4 +17,4 @@ WORKDIR /code/example
 ENV PYTHONUNBUFFERED=1
 
 #EXPOSE 80
-CMD ["python3.2_static_amd64.run", "-u", "./hello.py"]
+CMD ["python3.2_static_amd64.run", "-c", "print('ying'+'shaoxo'+'666')"]
