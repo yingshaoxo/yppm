@@ -452,4 +452,4 @@ def work_function(port_in_number=8899):
             print(e)
 
 if __name__ == '__main__':
-    work_function(8991)
+    pass

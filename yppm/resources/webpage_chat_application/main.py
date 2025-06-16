@@ -22,7 +22,7 @@ def start_work_process():
     while work_process == None or work_process.is_alive() == False:
         try:
             import work  # Now import will reflect the latest changes
-            http_port = 8899
+            http_port = 8991
             work_process = Process(target=work.work_function, args=(http_port, ))
             work_process.start()
         except Exception as e:
