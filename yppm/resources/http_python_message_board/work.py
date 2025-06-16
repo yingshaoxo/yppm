@@ -177,9 +177,9 @@ function refresh_page_without_paramater() {
         </div>
         <div style="margin-top: 5px; display: flex; flex-direction: row;">
             <button type="button" onclick="leave_a_new_message()" style="padding: 2px; padding-left: 10px; padding-right: 10px;">
-                Leave A Message
+                Leave A Short Message
             </button>
-            <input type="submit" value="Submit it" style="margin-left: 15px; padding: 2px; padding-left: 10px; padding-right: 10px;" />
+            <input type="submit" value="Post Submit it" style="margin-left: 15px; padding: 2px; padding-left: 10px; padding-right: 10px;" />
         </div>
     </div>
 </form>
@@ -377,6 +377,7 @@ def work_function(port_in_number=8899):
     server_socket.bind(('0.0.0.0', port_in_number))
     server_socket.listen(100)
     print("http service ready.\n")
+    print("http://127.0.0.1:"+str(port_in_number))
 
     while True:
         try:

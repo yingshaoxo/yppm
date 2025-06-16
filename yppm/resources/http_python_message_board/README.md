@@ -1,7 +1,7 @@
 # A simple pure python http project
 It only uses python,html,css,es5 javascript code.
 
-It supports python2.7, python3.2, python3.10 and all 2014 year old browser.
+It supports python2.7, python3.2, python3.10 and all 2014 year old browser. Including IE6.
 
 ## How to use it?
 Just use 'python3.2 main.py'
