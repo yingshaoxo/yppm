@@ -24,7 +24,7 @@ def handle_request(request_type, url, url_key_and_value_dict, raw_data):
     <!--[if !IE]>-->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!--<![endif]-->
-    <title>AI Chat</title>
+    <title>Chat with yingshaoxo</title>
     <style type="text/css">
         /* Reset and base styles */
         html, body {
@@ -60,6 +60,7 @@ def handle_request(request_type, url, url_key_and_value_dict, raw_data):
             height: 60px;
             background-color: #ffffff;
             border-bottom: 1px solid #dddfe2;
+            box-sizing: border-box;
         }
         
         #chat-header h1 {
@@ -271,7 +272,7 @@ def handle_request(request_type, url, url_key_and_value_dict, raw_data):
 <body>
     <div id="chat-container">
         <div id="chat-header">
-            <h1>AI Chat</h1>
+            <h1>Chat with <a href="http://ask.ai-tools-online.xyz/chat_page" target="_blank" style="color: #4682B4; text-decoration: none;">yingshaoxo</a></h1>
         </div>
         <div id="chat-history"></div>
         <div id="input-container">

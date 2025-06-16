@@ -178,8 +178,11 @@ def generate_next_word(word_dict, history, max_seq_len):
     return random.choice(all_words) if all_words else '.'
 
 global_word_dict = {}
-def load_data(txt_file_path, text_data=None):
+def load_data(txt_file_path, text_data=None, max_sequence_length=None):
     global global_word_dict, Max_Sequenc_Length
+
+    if max_sequence_length != None:
+        Max_Sequenc_Length = max_sequence_length
 
     if text_data == None:
         input_text = ""
