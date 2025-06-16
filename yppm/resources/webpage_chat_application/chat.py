@@ -20,11 +20,11 @@ def read_text_files(folder_path):
                 file_path = os.path.join(root, file)
                 try:
                     with open(file_path, 'r', encoding='utf-8') as f:
-                        new_text += f.read() + "\n"
+                        new_text += f.read() + "\n\n\n\n"
                 except UnicodeDecodeError:
                     try:
                         with open(file_path, 'r', encoding='latin-1') as f:
-                            new_text += f.read() + "\n"
+                            new_text += f.read() + "\n\n\n\n"
                     except Exception as e:
                         print(e)
                 except Exception as e:
