@@ -1,0 +1,10 @@
+*.pyc
+python3.2_static_amd64.run
+
+.vscode/
+.github/
+*.swp
+
+.venv/
+.python_modules/
+__pycache__/
