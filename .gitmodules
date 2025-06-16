@@ -1,0 +1,3 @@
+[submodule "yppm/resources/webpage_chat_application/yingshaoxo_txt_data"]
+	path = yppm/resources/webpage_chat_application/yingshaoxo_txt_data
+	url = git@github.com:yingshaoxo/yingshaoxo_txt_data.git
