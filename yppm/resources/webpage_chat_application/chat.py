@@ -51,31 +51,44 @@ load_data("", text_data=new_text, max_sequence_length=11)
 def is_ascii(s):
     return all(ord(c) < 128 for c in s)
 
-def super_search_bot(input_text, text_list, use_character=False):
-    if use_character == True:
-        return random.choice(text_list) if (len(text_list) > 0) else 'Not found'
+def get_random_one(input_text, text_list):
+    return random.choice(text_list) if (len(text_list) > 0) else 'Not found'
 
-    words = input_text.split(" ")
-    new_words = []
-    for word in words:
-        if not is_ascii(word):
-            if use_character == True:
-                new_words += list(word)
-            else:
-                new_words += [word]
-        else:
-            new_words.append(word)
-
+def get_sub_sentence_list_from_end_to_begin_and_begin_to_end(input_text, no_single_char=True):
+    input_text = input_text.strip()
+    full_length = len(input_text)
     result_list = []
-    for index, target_text in enumerate(text_list):
-        ok = True
-        for word in new_words:
-            if word not in target_text:
-                ok = False
-                break
-        if ok == True:
-            result_list.append(target_text)
+    for i in range(full_length):
+        end_to_begin_sub_string = input_text[i:]
+        begin_to_end_sub_string = input_text[:-i]
+        if no_single_char == True:
+            if len(end_to_begin_sub_string) > 1:
+                result_list.append(end_to_begin_sub_string)
+            if len(begin_to_end_sub_string) > 1:
+                result_list.append(begin_to_end_sub_string)
+        else:
+            result_list.append(end_to_begin_sub_string)
+            result_list.append(begin_to_end_sub_string)
+    result_list_2 = []
+    for one in result_list:
+        if one not in result_list_2:
+            result_list_2.append(one)
+    return result_list_2
 
+def search_text_in_text_list(search_text, source_text_list):
+    longest_first_sub_sentence_list = get_sub_sentence_list_from_end_to_begin_and_begin_to_end(search_text)
+    useful_source_text_list = []
+    for sub_sentence in longest_first_sub_sentence_list:
+        for one in source_text_list:
+            if sub_sentence in one:
+                useful_source_text_list.append(one)
+        if len(useful_source_text_list) != 0:
+            return useful_source_text_list
+
+    return []
+
+def a_useful_search(search_text, source_text_list):
+    result_list = search_text_in_text_list(search_text, source_text_list)
     return random.choice(result_list) if (len(result_list) > 0) else 'Not found'
 
 #def my_unquote(encoded_str):
@@ -107,8 +120,8 @@ def get_response(input_text):
         input_text = my_unquote(input_text)
         natural_next_text = get_next_text_block(input_text)
         response1 = input_text + " " + natural_next_text
-        response2 = super_search_bot(input_text.strip(), the_text_list)
-        response3 = super_search_bot(input_text.strip(), the_text_list, use_character=True)
+        response2 = a_useful_search(input_text.strip(), the_text_list)
+        response3 = get_random_one(input_text.strip(), the_text_list)
         return response3 + "\n\n\n-----------------\n\n\n" + response2 + "\n\n\n-----------------\n\n\n" + response1
     else:
         return "You said: " + input_text
