@@ -393,15 +393,27 @@ def work_function(port_in_number=8899):
 
             return_type, return_value = handle_request(request_type, url, url_key_and_value_dict, raw_data)
 
-            response = 'HTTP/1.1 200 OK\n'
+            """
+            # standard http1.1
+
+            'HTTP/1.1 200 OK\r\n' +
+            'Content-Length: 100\r\n' +
+            'Content-Type: text/html\r\n\r\n' +
+
+            'the real information'
+            """
+
+            response = 'HTTP/1.1 200 OK\r\n'
+            the_type = "Content-Type: text/html\r\n\r\n"
             if return_type == "html":
-                response += "Content-Type: text/html\n\n"
-                response += """
+                value = """
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=yes">
 """
-                response += return_value
+                value += return_value
             elif return_type == "text":
-                response += "\n" + return_value
+                value = return_value
+            message_length = len(value)
+            response = response + "Content-Length: " + str(message_length) + "\r\n" + the_type + value
 
             client_socket.sendall(response.encode('utf-8'))
             client_socket.close()
