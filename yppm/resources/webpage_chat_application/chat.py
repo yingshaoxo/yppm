@@ -2,6 +2,7 @@ import re
 import os
 import random
 from complete import load_data, get_next_text_block
+import yingshaoxo_txt_data.yingshaoxo_ai as yingshaoxo_ai
 
 resource_basic_folder_path = os.path.dirname(os.path.abspath(__file__))
 offline_question_and_answer_bot_dataset_path = os.path.join(resource_basic_folder_path, "./yingshaoxo_txt_data")
@@ -17,6 +18,8 @@ def read_text_files(folder_path):
     for root, dirs, files in os.walk(folder_path):
         for file in files:
             if file.endswith(('.txt', '.md')):
+                if "yingshaoxo_thinking_dataset.txt" in file:
+                    continue
                 file_path = os.path.join(root, file)
                 try:
                     with open(file_path, 'r', encoding='utf-8') as f:
@@ -88,8 +91,14 @@ def search_text_in_text_list(search_text, source_text_list):
     return []
 
 def a_useful_search(search_text, source_text_list):
-    result_list = search_text_in_text_list(search_text, source_text_list)
-    return random.choice(result_list) if (len(result_list) > 0) else 'Not found'
+    try:
+        # load yingshaoxo_ai
+        result = yingshaoxo_ai.ask_yingshaoxo_ai(search_text)
+        return result
+    except Exception as e:
+        print(e)
+        result_list = search_text_in_text_list(search_text, source_text_list)
+        return random.choice(result_list) if (len(result_list) > 0) else 'Not found'
 
 #def my_unquote(encoded_str):
 #    if "%u" in encoded_str:
