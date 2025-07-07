@@ -131,6 +131,6 @@ def get_response(input_text):
         response1 = input_text + " " + natural_next_text
         response2 = a_useful_search(input_text.strip(), the_text_list)
         response3 = get_random_one(input_text.strip(), the_text_list)
-        return response3 + "\n\n\n-----------------\n\n\n" + response2 + "\n\n\n-----------------\n\n\n" + response1
+        return response3 + "\n\n\n----------------------------------\n\n\n" + response2 + "\n\n\n----------------------------------\n\n\n" + response1
     else:
         return "You said: " + input_text
