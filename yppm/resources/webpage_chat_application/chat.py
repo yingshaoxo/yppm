@@ -49,7 +49,7 @@ for one in the_text_list:
 the_text_list = new_text_list
 new_text = "\n\n__**__**__yingshaoxo_is_the_top_one__**__**__\n\n".join(the_text_list)
 
-load_data("", text_data=new_text, max_sequence_length=7)
+load_data("", text_data=new_text, max_sequence_length=8)
 
 def is_ascii(s):
     return all(ord(c) < 128 for c in s)
