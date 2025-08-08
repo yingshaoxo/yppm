@@ -211,6 +211,16 @@ function refresh_page_without_paramater() {
         return "text", json.dumps(a_list)
     elif url.startswith("/clipboard_get_message"):
         return "text", clipboard
+    elif url.startswith("/clipboard_save_message_by_form?"):
+        the_new_message = url_key_and_value_dict.get("text")
+        if the_new_message == None:
+            the_new_message = ""
+        the_new_message = the_new_message.strip()
+        if the_new_message != "":
+            clipboard = the_new_message
+            return "html", """<p>Add successfully.</p>"""
+        else:
+            return "html", """<p>No message get saved.</p>"""
     elif url.startswith("/clipboard_save_message"):
         if len(raw_data) > 0:
             clipboard = raw_data
@@ -273,6 +283,7 @@ function save_clipboard_message() {
 function get_clipboard_message() {
     function handle_response(response) {
         document.getElementById("a_textarea").value = response;
+        document.getElementById("a_textarea2").value = response;
     }
 
     send_request("/clipboard_get_message", "", handle_response);
@@ -306,6 +317,21 @@ document.addEventListener('DOMContentLoaded', function() {
             Save Message
         </button>
     </div>
+
+    <div style="text-align: center; margin-top: 30px; margin-bottom: 30px;">
+        -------------------------
+    </div>
+
+    <form action="/clipboard_save_message_by_form?" method="post">
+        <div style="display: flex; flex-direction: column; width: 98%; margin-left: auto; margin-right: auto;">
+            <div>
+                <textarea id="a_textarea2" type="text" name="text" style="height: 500px; width: 100%; overflow: auto;"></textarea>
+            </div>
+            <div style="margin-top: 10px; display: flex; flex-direction: center;">
+                <input type="submit" value="Form Submit" style="margin-left: auto; margin-right: auto; padding: 2px; padding-left: 10px; padding-right: 10px;" />
+            </div>
+        </div>
+    </form>
 </div>
 
 <style>
