@@ -21,7 +21,7 @@ absolute_current_folder_path = os.path.dirname(os.path.abspath(__file__))
 data_file_path = os.path.join(absolute_current_folder_path, "./data.txt")
 a_list = ["Hi, you.\nYou can leave whatever message you want.", "For example, 'yingshaoxo: Long time no see.'\nHow to prove it is sent from yingshaoxo?\nAsk yingshaoxo yourself in other way."]
 
-clipboard = "You can write anything here. Others visit this page will see the same text."
+the_clipboard = "You can write anything here. Others visit this page will see the same text."
 
 def get_current_time():
     now = datetime.now()
@@ -47,7 +47,7 @@ def write_data_to_disk():
         f.write(json.dumps(a_list, indent=4))
 
 def handle_request(request_type, url, url_key_and_value_dict, raw_data):
-    global clipboard
+    global the_clipboard
 
     if request_type == "GET" and (url == "/" or url.startswith("/?")):
         message_list_html = ""
@@ -209,21 +209,19 @@ function refresh_page_without_paramater() {
             """
     elif url.startswith("/message_list?"):
         return "text", json.dumps(a_list)
-    elif url.startswith("/clipboard_get_message"):
-        return "text", clipboard
     elif url.startswith("/clipboard_save_message_by_form?"):
         the_new_message = url_key_and_value_dict.get("text")
         if the_new_message == None:
             the_new_message = ""
         the_new_message = the_new_message.strip()
         if the_new_message != "":
-            clipboard = the_new_message
-            return "html", """<p>Add successfully.</p>"""
+            the_clipboard = the_new_message
+            return "html", """<p>Add successfully, now go back and refresh.</p>""".format(text=the_clipboard)
         else:
             return "html", """<p>No message get saved.</p>"""
     elif url.startswith("/clipboard_save_message"):
         if len(raw_data) > 0:
-            clipboard = raw_data
+            the_clipboard = raw_data
             return "text", str(len(raw_data))
         else:
             return "text", "no message get saved"
@@ -280,28 +278,48 @@ function save_clipboard_message() {
     );
 }
 
-function get_clipboard_message() {
-    function handle_response(response) {
-        document.getElementById("a_textarea").value = response;
-        document.getElementById("a_textarea2").value = response;
-    }
-
-    send_request("/clipboard_get_message", "", handle_response);
-}
-
 function autoResize(textarea) {
   textarea.style.height = 'auto';
   textarea.style.height = (textarea.scrollHeight) + 'px';
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-    get_clipboard_message();
+if (!document.querySelectorAll) {
+  document.querySelectorAll = function(selectors) {
+    var style = document.createElement('style'), elements = [];
+    document.documentElement.firstChild.appendChild(style);
+    document._qsa = [];
+    style.styleSheet.cssText = selectors + '{x-qsa:expression(document._qsa && document._qsa.push(this))}';
+    window.scrollBy(0, 0);
+    style.parentNode.removeChild(style);
+    return document._qsa;
+  };
+}
 
-    // Usage:
-    const textarea = document.querySelector('textarea');
-    textarea.addEventListener('input', () => autoResize(textarea));
-    // Initialize on load
-    window.addEventListener('load', () => autoResize(textarea));
+if (!document.querySelector) {
+  document.querySelector = function(selectors) {
+    var elements = document.querySelectorAll(selectors);
+    return elements.length ? elements[0] : null;
+  };
+}
+
+function setTextareaValue(selector, text) {
+  var textarea = document.querySelector(selector);
+  if (!textarea) {
+    textarea = document.getElementById(selector.replace('#','')) || document.getElementsByTagName('textarea')[0];
+  }
+  if (textarea) {
+    textarea.value = text.replace(/\\n/g, '\\r\\n');
+  }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+        var the_text = `|2sb_html_url_encoded_form_and_utf_8_encoding|`;
+        setTextareaValue('a_textarea', the_text);
+        setTextareaValue('a_textarea2', the_text);
+
+        const textarea = document.querySelector('textarea');
+        textarea.addEventListener('input', () => autoResize(textarea));
+        window.addEventListener('load', () => autoResize(textarea));
     }
 );
 </script>
@@ -310,7 +328,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <div style="margin-top: 20px; display: flex; flex-direction: column; width: 100%;">
     <div style="display: flex; flex-direction: column; justify-content:space-between;align-items:center;">
-        <textarea id="a_textarea" type="text" name="text" style="min-height: 500px; width: 75%; overflow: auto;"></textarea>
+        <textarea id="a_textarea" type="text" name="text" style="min-height: 500px; width: 75%; overflow: auto;">|sb_html_url_encoded_form_and_utf_8_encoding|</textarea>
     </div>
     <div style="margin-top: 10px; display: flex; flex-direction: column; justify-content:space-between;align-items:center;">
         <button type="button" onclick="save_clipboard_message()" style="padding: 2px; padding-left: 10px; padding-right: 10px;">
@@ -325,7 +343,7 @@ document.addEventListener('DOMContentLoaded', function() {
     <form action="/clipboard_save_message_by_form?" method="post">
         <div style="display: flex; flex-direction: column; width: 98%; margin-left: auto; margin-right: auto;">
             <div>
-                <textarea id="a_textarea2" type="text" name="text" style="height: 500px; width: 100%; overflow: auto;"></textarea>
+                <textarea id="a_textarea2" type="text" name="text" style="height: 500px; width: 100%; overflow: auto;">|sb_html_url_encoded_form_and_utf_8_encoding|</textarea>
             </div>
             <div style="margin-top: 10px; display: flex; flex-direction: center;">
                 <input type="submit" value="Form Submit" style="margin-left: auto; margin-right: auto; padding: 2px; padding-left: 10px; padding-right: 10px;" />
@@ -341,31 +359,46 @@ textarea {
   overflow-y: hidden; /* Hide scrollbar */
 }
 </style>
-"""
+""".replace("|sb_html_url_encoded_form_and_utf_8_encoding|", the_clipboard).replace("|2sb_html_url_encoded_form_and_utf_8_encoding|", the_clipboard.replace("`", "\\`"))
     else:
         return "text", 'Hello, welcome to yingshaoxo message board.' + "\n\n" + str([request_type, url, url_key_and_value_dict])
 
 def url_decode(encoded_string):
-    # do not support chinese yet, english should be fine.
-    result = ""
+    # made by baidu deepseek v3
+    result = []
     i = 0
     while i < len(encoded_string):
         if encoded_string[i] == '+':
-            result += ' '
+            result.append(' ')
             i += 1
         elif encoded_string[i] == '%':
             try:
-                hex_code = encoded_string[i + 1:i + 3]
-                char = chr(int(hex_code, 16))
-                result += char
+                hex_code = encoded_string[i+1:i+3]
+                if hex_code.upper() == '0D' and i+4 < len(encoded_string) and encoded_string[i+3] == '%':
+                    next_hex = encoded_string[i+4:i+6]
+                    if next_hex.upper() == '0A':
+                        result.append('\r\n')
+                        i += 6
+                        continue
+                char_code = int(hex_code, 16)
+                if char_code <= 0x7F:
+                    result.append(chr(char_code))
+                    i += 3
+                else:
+                    hex_seq = [hex_code]
+                    i += 3
+                    while i < len(encoded_string) and encoded_string[i] == '%':
+                        hex_seq.append(encoded_string[i+1:i+3])
+                        i += 3
+                    bytes_data = bytes(int(h, 16) for h in hex_seq)
+                    result.append(bytes_data.decode('utf-8'))
+            except (ValueError, IndexError, UnicodeDecodeError):
+                result.append('%' + hex_code)
                 i += 3
-            except (ValueError, IndexError):
-                result += encoded_string[i]
-                i += 1
         else:
-            result += encoded_string[i]
+            result.append(encoded_string[i])
             i += 1
-    return result
+    return ''.join(result)
 
 def parse_url(request):
     request_type = request.strip().split(" ")[0]
@@ -424,7 +457,7 @@ def work_function(port_in_number=8899):
 
             'HTTP/1.1 200 OK\r\n' +
             'Content-Length: 100\r\n' +
-            'Content-Type: text/html\r\n\r\n' +
+            'Content-Type: text/html; charset=UTF-8\r\n\r\n' +
 
             'the real information'
             """
@@ -434,6 +467,7 @@ def work_function(port_in_number=8899):
             if return_type == "html":
                 value = """
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=yes">
+<meta charset="UTF-8">
 """
                 value += return_value
             elif return_type == "text":
