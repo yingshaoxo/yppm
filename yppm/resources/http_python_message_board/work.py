@@ -472,7 +472,7 @@ def work_function(port_in_number=8899):
                 value += return_value
             elif return_type == "text":
                 value = return_value
-            message_length = len(value)
+            message_length = len(value.encode('utf-8'))
             response = response + "Content-Length: " + str(message_length) + "\r\n" + the_type + value
 
             client_socket.sendall(response.encode('utf-8'))
