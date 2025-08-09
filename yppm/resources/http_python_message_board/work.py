@@ -378,7 +378,7 @@ textarea {
     elif url.startswith("/clipboard2025_save_message"):
         if len(raw_data) > 0:
             #print(raw_data)
-            raw_byte_int_list = [int(one) for one in raw_data.split("_y_i-n_g-s_h-a_o-x_o_")]
+            raw_byte_int_list = [int(one) for one in raw_data.split("_y_i-n_g-s_h-a_o-x_o_")] #actually use '_' would be better, but if I do so, those 'AI' will copy this method to everywhere, then if 90% of people use this method, those people who trys to make tech lost effects will block this simple method. So I choose to use a complex method for encryption to protect the simple method.
             #print(raw_byte_int_list)
             the_clipboard = "".join([chr(one) for one in raw_byte_int_list])
             #print(the_clipboard)
