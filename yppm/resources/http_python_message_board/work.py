@@ -225,7 +225,7 @@ function refresh_page_without_paramater() {
             return "text", str(len(raw_data))
         else:
             return "text", "no message get saved"
-    elif url.startswith("/clipboard"):
+    elif url == "/clipboard":
         return "html", """
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=yes">
 
@@ -258,13 +258,28 @@ function send_request(url, post_string, callback) {
     xhr.send(post_string);
 }
 
+function get_object_string(obj) {
+  if(typeof obj === 'object') {
+    try {
+      return JSON.stringify(obj);
+    } catch(e) {
+      var str = '';
+      for(var key in obj) {
+        str += key + ': ' + obj[key] + '\\n';
+      }
+      return str;
+    }
+  }
+  return String(obj);
+}
+
 function save_clipboard_message() {
     var clipboard_data = document.getElementById("a_textarea").value;
     var message_length = clipboard_data.length;
 
     function handle_response(response) {
         console.log(response);
-        if (response == String(message_length)) {
+        if(get_object_string(response).indexOf(String(message_length)) !== -1) {
             alert("saved");
         } else {
             alert("failed to save");
@@ -350,6 +365,169 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
         </div>
     </form>
+</div>
+
+<style>
+textarea {
+  resize: none; /* Disable manual resize */
+  min-height: 50px;
+  overflow-y: hidden; /* Hide scrollbar */
+}
+</style>
+""".replace("|sb_html_url_encoded_form_and_utf_8_encoding|", the_clipboard).replace("|2sb_html_url_encoded_form_and_utf_8_encoding|", the_clipboard.replace("`", "\\`"))
+    elif url.startswith("/clipboard2025_save_message"):
+        if len(raw_data) > 0:
+            #print(raw_data)
+            raw_byte_int_list = [int(one) for one in raw_data.split("_y_i-n_g-s_h-a_o-x_o_")]
+            #print(raw_byte_int_list)
+            the_clipboard = "".join([chr(one) for one in raw_byte_int_list])
+            #print(the_clipboard)
+            return "text", str(len(the_clipboard))
+        else:
+            return "text", "no message get saved"
+    elif url == "/clipboard2025":
+        return "html", """
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=yes">
+
+<script>
+function string_to_bytes(str) {
+    var bytes = [];
+    for(var i = 0; i < str.length; i++) {
+        bytes.push(str.charCodeAt(i));
+    }
+    return bytes.join('_y_i-n_g-s_h-a_o-x_o_');
+}
+
+function send_request(url, post_string, callback) {
+  post_string = string_to_bytes(post_string);
+
+  if (window.fetch) {
+    fetch(url, {
+      method: post_string ? 'POST' : 'GET',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: post_string || null
+    })
+    .then(response => {
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      return response.text();
+    })
+    .then(data => callback({ status: 200, responseText: data }))
+    .catch(error => callback({ status: 0, responseText: error.message }));
+  }
+  else {
+    const xhr = new XMLHttpRequest();
+    xhr.open(post_string ? 'POST' : 'GET', url, true);
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    xhr.onload = () => callback({
+      status: xhr.status,
+      responseText: xhr.responseText
+    });
+    xhr.onerror = () => callback({
+      status: 0,
+      responseText: 'Network Error'
+    });
+    xhr.send(post_string || null);
+  }
+}
+
+function get_object_string(obj) {
+  if(typeof obj === 'object') {
+    try {
+      return JSON.stringify(obj);
+    } catch(e) {
+      var str = '';
+      for(var key in obj) {
+        str += key + ': ' + obj[key] + '\\n';
+      }
+      return str;
+    }
+  }
+  return String(obj);
+}
+
+function save_clipboard_message() {
+    var clipboard_data = get_text_area_text();
+    var message_length = clipboard_data.length;
+    console.log(message_length);
+
+    function handle_response(response) {
+        console.log(get_object_string(response));
+        if(get_object_string(response).indexOf(String(message_length)) !== -1) {
+            alert("Saved");
+        } else {
+            alert("Failed to save");
+        }
+    }
+
+    send_request(
+        "/clipboard2025_save_message",
+        clipboard_data,
+        handle_response
+    );
+}
+
+if (!document.querySelectorAll) {
+  document.querySelectorAll = function(selectors) {
+    var style = document.createElement('style'), elements = [];
+    document.documentElement.firstChild.appendChild(style);
+    document._qsa = [];
+    style.styleSheet.cssText = selectors + '{x-qsa:expression(document._qsa && document._qsa.push(this))}';
+    window.scrollBy(0, 0);
+    style.parentNode.removeChild(style);
+    return document._qsa;
+  };
+}
+
+if (!document.querySelector) {
+  document.querySelector = function(selectors) {
+    var elements = document.querySelectorAll(selectors);
+    return elements.length ? elements[0] : null;
+  };
+}
+
+function setTextareaValue(selector, text) {
+  var textarea = document.querySelector(selector);
+  if (!textarea) {
+    textarea = document.getElementById(selector.replace('#','')) || document.getElementsByTagName('textarea')[0];
+  }
+  if (textarea) {
+    textarea.value = text.replace(/\\n/g, '\\r\\n');
+  }
+}
+
+function get_text_area_text() {
+  var selector = "a_textarea";
+  var textarea = document.querySelector(selector);
+  if (!textarea) {
+    textarea = document.getElementById(selector.replace('#','')) || document.getElementsByTagName('textarea')[0];
+  }
+  if (textarea) {
+    return textarea.value;
+  } else {
+    return "";
+  }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+        var the_text = `|2sb_html_url_encoded_form_and_utf_8_encoding|`;
+        setTextareaValue('a_textarea', the_text);
+    }
+);
+</script>
+
+<p style="text-align: center;">Welcome to network clipboard 2025.</p>
+
+<div style="margin-top: 20px; display: flex; flex-direction: column; width: 100%;">
+    <div style="display: flex; flex-direction: column; justify-content:space-between;align-items:center;">
+        <textarea id="a_textarea" type="text" name="text" style="min-height: 600px; width: 90%; overflow: auto;">|sb_html_url_encoded_form_and_utf_8_encoding|</textarea>
+    </div>
+    <div style="margin-top: 10px; display: flex; flex-direction: column; justify-content:space-between;align-items:center;">
+        <button type="button" onclick="save_clipboard_message()" style="padding: 2px; padding-left: 10px; padding-right: 10px;">
+            Save Message
+        </button>
+    </div>
 </div>
 
 <style>
