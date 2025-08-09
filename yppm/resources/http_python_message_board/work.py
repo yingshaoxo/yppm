@@ -378,7 +378,7 @@ textarea {
     elif url.startswith("/clipboard2025_save_message"):
         if len(raw_data) > 0:
             #print(raw_data)
-            raw_byte_int_list = [int(one) for one in raw_data.split("_y_i-n_g-s_h-a_o-x_o_")] #actually use '_' would be better, but if I do so, those 'AI' will copy this method to everywhere, then if 90% of people use this method, those people who trys to make tech lost effects will block this simple method. So I choose to use a complex method for encryption to protect the simple method.
+            raw_byte_int_list = [int(one) for one in raw_data.split("_")] #actually use '_' would be better, but if I do so, those 'AI' will copy this method to everywhere, then if 90% of people use this method, those people who trys to make tech lost effects will block this simple method.
             #print(raw_byte_int_list)
             the_clipboard = "".join([chr(one) for one in raw_byte_int_list])
             #print(the_clipboard)
@@ -395,7 +395,7 @@ function string_to_bytes(str) {
     for(var i = 0; i < str.length; i++) {
         bytes.push(str.charCodeAt(i));
     }
-    return bytes.join('_y_i-n_g-s_h-a_o-x_o_');
+    return bytes.join('_');
 }
 
 function send_request(url, post_string, callback) {
@@ -619,7 +619,8 @@ def work_function(port_in_number=8899):
     while True:
         try:
             client_socket, addr = server_socket.accept()
-            request = client_socket.recv(20480).decode('utf-8')
+            raw_request = client_socket.recv(20480)
+            request = raw_request.decode('utf-8')
             print("get request:", request)
             request_type, url, url_key_and_value_dict, raw_data = parse_url(request)
             print()
@@ -627,6 +628,19 @@ def work_function(port_in_number=8899):
             print(url)
             print(url_key_and_value_dict)
             print(raw_data)
+
+            # bug: currently, as I tested out, the android browser will drop big payload or long text when you post it. So it basically cause a problem when you want to upload an article.
+
+            ## following will not work
+            #if "Content-Length" in request:
+            #    content_length = int(request.split('Content-Length:')[1].split("\r\n")[0].strip())
+
+            #    for i in range(int(content_length/20480)+1):
+            #        chunk = client_socket.recv(20480) #this should be a number less than 65389
+            #        raw_request += chunk
+
+            #    request = raw_request.decode('utf-8')
+            #    request_type, url, url_key_and_value_dict, raw_data = parse_url(request)
 
             return_type, return_value = handle_request(request_type, url, url_key_and_value_dict, raw_data)
 
