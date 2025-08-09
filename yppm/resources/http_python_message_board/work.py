@@ -384,6 +384,8 @@ textarea {
             index = temp_string.split(":")[0]
             value = temp_string[len(index)+1:]
             clipboard2025_dict[int(index)] = value
+            if value == "__dd_clear__":
+                clipboard2025_dict = {}
             return "text", str(index)
         else:
             return "text", "Error: no message get saved"
@@ -469,8 +471,16 @@ function isLocalHost() {
     }
 }
 
-function save_clipboard_message() {
-    var clipboard_data = get_text_area_text();
+function save_clipboard_message(clipboard_data) {
+    var command = false;
+
+    if (clipboard_data) {
+        command = true;
+    } else {
+        command = false;
+        clipboard_data = get_text_area_text();
+    }
+
     var lines = clipboard_data.split(/\\r\\n|\\n|\\r/);
 
     function send_the_fucking_data_piece(key, value, call_back_function) {
@@ -481,6 +491,11 @@ function save_clipboard_message() {
         );
     }
 
+    if (command == false) {
+        //clean the dict first
+        save_clipboard_message("__dd_clear__");
+    }
+
     var timeout_delay = 500;
     // stupid cloudflare and outcountry network, even for a simple http post will have chance lose package
     if (isLocalHost()) {
@@ -489,7 +504,9 @@ function save_clipboard_message() {
 
     function handle_next(index) {
         if (index > lines.length-1) {
-            alert("Saved");
+            if (command == false) {
+                alert("Saved");
+            }
             return;
         }
 
