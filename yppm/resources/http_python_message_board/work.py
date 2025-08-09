@@ -22,6 +22,7 @@ data_file_path = os.path.join(absolute_current_folder_path, "./data.txt")
 a_list = ["Hi, you.\nYou can leave whatever message you want.", "For example, 'yingshaoxo: Long time no see.'\nHow to prove it is sent from yingshaoxo?\nAsk yingshaoxo yourself in other way."]
 
 the_clipboard = "You can write anything here. Others visit this page will see the same text."
+clipboard2025_dict = {0: "Hi! You can leave any message here. Others will see."}
 
 def get_current_time():
     now = datetime.now()
@@ -47,7 +48,7 @@ def write_data_to_disk():
         f.write(json.dumps(a_list, indent=4))
 
 def handle_request(request_type, url, url_key_and_value_dict, raw_data):
-    global the_clipboard
+    global the_clipboard, clipboard2025_dict
 
     if request_type == "GET" and (url == "/" or url.startswith("/?")):
         message_list_html = ""
@@ -377,15 +378,22 @@ textarea {
 """.replace("|sb_html_url_encoded_form_and_utf_8_encoding|", the_clipboard).replace("|2sb_html_url_encoded_form_and_utf_8_encoding|", the_clipboard.replace("`", "\\`"))
     elif url.startswith("/clipboard2025_save_message"):
         if len(raw_data) > 0:
-            #print(raw_data)
-            raw_byte_int_list = [int(one) for one in raw_data.split("_")] #actually use '_' would be better, but if I do so, those 'AI' will copy this method to everywhere, then if 90% of people use this method, those people who trys to make tech lost effects will block this simple method.
-            #print(raw_byte_int_list)
-            the_clipboard = "".join([chr(one) for one in raw_byte_int_list])
-            #print(the_clipboard)
-            return "text", str(len(the_clipboard))
+            raw_byte_int_list = [int(one) for one in raw_data.split("_")]
+            #actually use '_' would be better, but if I do so, those 'AI' will copy this method to everywhere, then if 90% of people use this method, those people who trys to make tech lost effects will block this simple method.
+            temp_string = "".join([chr(one) for one in raw_byte_int_list])
+            index = temp_string.split(":")[0]
+            value = temp_string[len(index)+1:]
+            clipboard2025_dict[int(index)] = value
+            return "text", str(index)
         else:
             return "text", "no message get saved"
     elif url == "/clipboard2025":
+        dict_items = list(clipboard2025_dict.items())
+        dict_items.sort(key=lambda item: item[0])
+        lines = []
+        for index, value in dict_items:
+            lines.append(value)
+        the_temp_cliboard_value = "\n".join(lines)
         return "html", """
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=yes">
 
@@ -447,25 +455,43 @@ function get_object_string(obj) {
   return String(obj);
 }
 
+function count_characters(text) {
+    var number_element = document.getElementById("character_counting");
+    number_element.innerHTML = String(text.length);
+}
+
 function save_clipboard_message() {
     var clipboard_data = get_text_area_text();
-    var message_length = clipboard_data.length;
-    console.log(message_length);
 
     function handle_response(response) {
-        console.log(get_object_string(response));
-        if(get_object_string(response).indexOf(String(message_length)) !== -1) {
-            alert("Saved");
+        console.log(response)
+    }
+
+    var lines = clipboard_data.split(/\\r\\n|\\n|\\r/);
+    var result = [];
+    for (var i = 0; i < lines.length; i++) {
+        var index = i;
+        var line_value = lines[i];
+
+        if (i < (lines.length - 1)) {
+            send_request(
+                "/clipboard2025_save_message",
+                String(index)+":"+line_value,
+                handle_response
+            );
         } else {
-            alert("Failed to save");
+            send_request(
+                "/clipboard2025_save_message",
+                String(index)+":"+line_value,
+                function handle_final_response(response) {
+                    console.log(response)
+                    alert("Saved");
+                }
+            );
         }
     }
 
-    send_request(
-        "/clipboard2025_save_message",
-        clipboard_data,
-        handle_response
-    );
+    count_characters(clipboard_data);
 }
 
 if (!document.querySelectorAll) {
@@ -513,6 +539,8 @@ function get_text_area_text() {
 document.addEventListener('DOMContentLoaded', function() {
         var the_text = `|2sb_html_url_encoded_form_and_utf_8_encoding|`;
         setTextareaValue('a_textarea', the_text);
+
+        count_characters(the_text);
     }
 );
 </script>
@@ -528,6 +556,8 @@ document.addEventListener('DOMContentLoaded', function() {
             Save Message
         </button>
     </div>
+
+    <p id="character_counting" style="margin-top: 20px; text-align: center;"></p>
 </div>
 
 <style>
@@ -537,7 +567,7 @@ textarea {
   overflow-y: hidden; /* Hide scrollbar */
 }
 </style>
-""".replace("|sb_html_url_encoded_form_and_utf_8_encoding|", the_clipboard).replace("|2sb_html_url_encoded_form_and_utf_8_encoding|", the_clipboard.replace("`", "\\`"))
+""".replace("|sb_html_url_encoded_form_and_utf_8_encoding|", the_temp_cliboard_value).replace("|2sb_html_url_encoded_form_and_utf_8_encoding|", the_temp_cliboard_value.replace("`", "\\`"))
     else:
         return "text", 'Hello, welcome to yingshaoxo message board.' + "\n\n" + str([request_type, url, url_key_and_value_dict])
 
