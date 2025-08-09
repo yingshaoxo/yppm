@@ -386,7 +386,7 @@ textarea {
             clipboard2025_dict[int(index)] = value
             return "text", str(index)
         else:
-            return "text", "no message get saved"
+            return "text", "Error: no message get saved"
     elif url == "/clipboard2025":
         dict_items = list(clipboard2025_dict.items())
         dict_items.sort(key=lambda item: item[0])
@@ -460,35 +460,57 @@ function count_characters(text) {
     number_element.innerHTML = String(text.length);
 }
 
+function isLocalHost() {
+    try {
+        var hostname = window.location.hostname.toLowerCase();
+        return (hostname === "localhost" || hostname === "127.0.0.1");
+    } catch(e) {
+        return false;
+    }
+}
+
 function save_clipboard_message() {
     var clipboard_data = get_text_area_text();
+    var lines = clipboard_data.split(/\\r\\n|\\n|\\r/);
 
-    function handle_response(response) {
-        console.log(response)
+    function send_the_fucking_data_piece(key, value, call_back_function) {
+        send_request(
+            "/clipboard2025_save_message",
+            String(key)+":"+value,
+            call_back_function
+        );
     }
 
-    var lines = clipboard_data.split(/\\r\\n|\\n|\\r/);
-    var result = [];
-    for (var i = 0; i < lines.length; i++) {
-        var index = i;
-        var line_value = lines[i];
+    var timeout_delay = 500;
+    // stupid cloudflare and outcountry network, even for a simple http post will have chance lose package
+    if (isLocalHost()) {
+        timeout_delay = 0;
+    }
 
-        if (i < (lines.length - 1)) {
-            send_request(
-                "/clipboard2025_save_message",
-                String(index)+":"+line_value,
-                handle_response
-            );
-        } else {
-            send_request(
-                "/clipboard2025_save_message",
-                String(index)+":"+line_value,
-                function handle_final_response(response) {
-                    console.log(response)
-                    alert("Saved");
-                }
-            );
+    function handle_next(index) {
+        if (index > lines.length-1) {
+            alert("Saved");
+            return;
         }
+
+        var line_value = lines[index];
+
+        send_the_fucking_data_piece(index, line_value, function handle_response(response) {
+            console.log(response)
+            if (get_object_string(response).indexOf("no message") !== -1) {
+                setTimeout(function test() {
+                    handle_next(index);
+                }, timeout_delay);
+            } else {
+                setTimeout(function test() {
+                    handle_next(index + 1);
+                }, timeout_delay);
+            }
+        });
+    }
+
+    if (lines.length > 0) {
+        handle_next(0);
     }
 
     count_characters(clipboard_data);
