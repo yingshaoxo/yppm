@@ -1,3 +1,5 @@
+# Why this algorithm works better in pure chinese? Maybe somewhere is wrong, but it is fine, the theroy is right, but the code may have bug.
+
 input_text = '''
 # created by yingshaoxo
 Algorithem:
@@ -35,7 +37,7 @@ data:
 > But if you just want to create digital person, this method will only copy yourself. You have to be a teacher, and teach your students. So that they could have sex gender. Just simplifying yourself to child level, then teach them from basics.
 '''
 
-# created by twitter grok3
+# created by twitter grok3, guide by yingshaoxo
 import random
 import json
 import os
@@ -146,6 +148,7 @@ def build_word_sequences(text, max_seq_len=11):
     for seq_len in range(1, min(max_seq_len + 1, len(tokens))):
         for i in range(len(tokens) - seq_len):
             seq = tuple(tokens[i:i + seq_len])
+            seq = " ".join(list(seq))
             next_token = tokens[i + seq_len]
             if seq not in word_dict:
                 word_dict[seq] = set()
@@ -157,7 +160,7 @@ def save_dict_to_json(word_dict, filename="dict_data.json"):
     json_dict = {str(k): list(v) for k, v in word_dict.items()}
     with open(filename, 'w') as f:
         json.dump(json_dict, f)
-    print("Saved dictionary to",  filename)
+    print(f"Saved dictionary to {filename}")
 
 def load_dict_from_json(filename="dict_data.json"):
     """Load dictionary from JSON file, converting string keys to tuples and lists to sets."""
@@ -172,6 +175,7 @@ def generate_next_word(word_dict, history, max_seq_len):
     """Predict next word based on history, trying longest sequence first."""
     for seq_len in range(min(len(history), max_seq_len), 0, -1):
         seq = tuple(history[-seq_len:])
+        seq = " ".join(list(seq))
         if seq in word_dict:
             return random.choice(list(word_dict[seq]))
     all_words = [word for seq in word_dict.keys() for word in seq]
@@ -179,30 +183,30 @@ def generate_next_word(word_dict, history, max_seq_len):
 
 global_word_dict = {}
 def load_data(txt_file_path, text_data=None, max_sequence_length=None):
-    global global_word_dict, Max_Sequenc_Length
+    global global_word_dict, Max_Sequence_Length
 
-    if max_sequence_length != None:
-        Max_Sequenc_Length = max_sequence_length
-
+    input_text = ""
     if text_data == None:
-        input_text = ""
         with open(txt_file_path, "r") as f:
             input_text = f.read()
     else:
         input_text = text_data
 
+    if max_sequence_length != None:
+        Max_Sequence_Length = max_sequence_length
+
     print("Building dictionary from input text...")
-    global_word_dict = build_word_sequences(input_text, max_seq_len=Max_Sequenc_Length)
+    global_word_dict = build_word_sequences(input_text, max_seq_len=Max_Sequence_Length)
 
 def get_next_text_block(input_text):
-    global global_word_dict, Max_Sequenc_Length
+    global global_word_dict, Max_Sequence_Length
 
     input_text = input_text.strip()
     tokens = my_split_function(input_text + ' ')
 
     response = ""
     for i in range(1024):
-        next_token = generate_next_word(global_word_dict, tokens, max_seq_len=Max_Sequenc_Length)
+        next_token = generate_next_word(global_word_dict, tokens, max_seq_len=Max_Sequence_Length)
         tokens.append(next_token)
         if next_token == '\n':
             response += '\n'
@@ -212,25 +216,51 @@ def get_next_text_block(input_text):
 
     return response
 
+def read_text_files_recursively(root_dir, recursively=True, type_limiter=[".txt", ".md"]):
+    if recursively == False:
+        result = []
+        for file in os.listdir("./"):
+            ok = False
+            for type in type_limiter:
+                if type in file:
+                    ok = True
+                    break
+            if ok == True:
+                with open(file, "r", encoding="utf-8", errors="ignore") as f:
+                    result.append(f.read())
+    else:
+        result = []
+        for dirpath, _, filenames in os.walk(root_dir):
+            for filename in filenames:
+                if filename.endswith(tuple(type_limiter)):
+                    filepath = os.path.join(dirpath, filename)
+                    try:
+                        with open(filepath, 'r', encoding='utf-8') as f:
+                            result.append(f.read())
+                    except UnicodeDecodeError:
+                        # Fallback to system default encoding if UTF-8 fails
+                        with open(filepath, 'r') as f:
+                            result.append(f.read())
+    return '\n\n'.join(result)
+
 # The bigger, the accurate, but takes more disk space
-Max_Sequenc_Length = 7
+Max_Sequence_Length = 7
 
 def main():
-    try:
-        with open("all_yingshaoxo_data_2023_11_13.txt", "r") as f:
-            input_text = f.read()
-    except Exception as e:
-        pass
+    input_text = read_text_files_recursively("./", type_limiter=[".txt"], recursively=False)
 
-    # Load or build dictionary
-    dict_file = "dict_data.json"
-    word_dict = load_dict_from_json(dict_file)
-    if word_dict is None:
-        print("Building dictionary from input text...")
-        word_dict = build_word_sequences(input_text, max_seq_len=Max_Sequenc_Length)
-        save_dict_to_json(word_dict, dict_file)
-    else:
-        print("Loaded dictionary from", dict_file)
+    ## Load or build dictionary
+    #dict_file = "dict_data.json"
+    #word_dict = load_dict_from_json(dict_file)
+    #if word_dict is None:
+    #    print("Building dictionary from input text...")
+    #    word_dict = build_word_sequences(input_text, max_seq_len=Max_Sequence_Length)
+    #    save_dict_to_json(word_dict, dict_file)
+    #else:
+    #    print(f"Loaded dictionary from {dict_file}")
+
+    print("Building dictionary from input text...")
+    word_dict = build_word_sequences(input_text, max_seq_len=Max_Sequence_Length)
 
     # Chatbot interface
     print("\nWelcome to the AI Chatbot! Type 'quit' to exit.")
@@ -247,23 +277,18 @@ def main():
             # Generate 128 next tokens
             print("AI: ", end="")
             response = ""
-            for i in range(1024):
-                next_token = generate_next_word(word_dict, history, max_seq_len=Max_Sequenc_Length)
+            for i in range(256):
+                next_token = generate_next_word(word_dict, history, max_seq_len=Max_Sequence_Length)
                 if next_token == '\n':
                     response += '\n'
                 else:
                     response += next_token + (' ' if all(ord(c) < 128 for c in next_token) else '')
                 history.append(next_token)
-                if len(history) > Max_Sequenc_Length:
-                    history = history[-Max_Sequenc_Length:]
+                if len(history) > Max_Sequence_Length:
+                    history = history[-Max_Sequence_Length:]
             response = response.split("__**__**__yingshaoxo_is_the_top_one__**__**__")[0].strip()
-            print(response)
+            print(user_input+" "+response)
+            print("\n\n\n")
 
 if __name__ == "__main__":
     main()
-
-    #load_data("all_yingshaoxo_data_2023_11_13.txt")
-    #while True:
-    #    input_text = input("What you want to say?")
-    #    print(get_next_text_block(input_text))
-    #    print("\n\n-----------\n\n")
