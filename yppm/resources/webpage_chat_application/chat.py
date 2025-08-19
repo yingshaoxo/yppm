@@ -1,8 +1,11 @@
 import re
 import os
 import random
-from complete import load_data, get_next_text_block
+#from complete import load_data, get_next_text_block
+from super_completor import Yingshaoxo_Text_Completor
 import yingshaoxo_txt_data.yingshaoxo_ai as yingshaoxo_ai
+
+yingshaoxo_text_completor = Yingshaoxo_Text_Completor()
 
 resource_basic_folder_path = os.path.dirname(os.path.abspath(__file__))
 offline_question_and_answer_bot_dataset_path = os.path.join(resource_basic_folder_path, "./yingshaoxo_txt_data")
@@ -49,7 +52,7 @@ for one in the_text_list:
 the_text_list = new_text_list
 new_text = "\n\n__**__**__yingshaoxo_is_the_top_one__**__**__\n\n".join(the_text_list)
 
-load_data("", text_data=new_text, max_sequence_length=8)
+#load_data("", text_data=new_text, max_sequence_length=8)
 
 def is_ascii(s):
     return all(ord(c) < 128 for c in s)
@@ -127,7 +130,8 @@ def get_response(input_text):
 
     if Has_Data == True:
         input_text = my_unquote(input_text)
-        natural_next_text = get_next_text_block(input_text)
+        natural_next_text = yingshaoxo_text_completor.get_next_text_by_pure_text(new_text, input_text, how_many_character_you_want=2000, level=64)
+        natural_next_text = natural_next_text.split("__**__**__yingshaoxo_is_the_top_one__**__**__")[0]
         response1 = input_text + " " + natural_next_text
         response2 = a_useful_search(input_text.strip(), the_text_list)
         response3 = get_random_one(input_text.strip(), the_text_list)
