@@ -33,7 +33,8 @@ import generated_yrpc.question_and_answer_objects as question_and_answer_objects
 import generated_yrpc.question_and_answer_pure_python_rpc as question_and_answer_pure_python_rpc
 from generated_yrpc.question_and_answer_yingshaoxo_database_rpc import Yingshaoxo_Database_Excutor_question_and_answer
 
-from complete import load_data, get_next_text_block
+from complete import Yingshaoxo_Text_Completor
+yingshaoxo_text_completor = Yingshaoxo_Text_Completor()
 
 
 if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
@@ -69,9 +70,6 @@ new_text = text_generator.text_source_data
 #new_text = new_text.replace("\n\n__**__**__yingshaoxo_is_the_top_one__**__**__\n\n", "\n\n\n") # You have to replace this seperator with your own dataset seperator
 #generator_dict = text_generator.get_global_string_dict_by_using_yingshaoxo_method(new_text, levels=20)
 
-load_data(disk.join_paths(offline_question_and_answer_bot_dataset_path, "./all_yingshaoxo_data_2023_11_13.txt"))
-
-
 the_text_list = [one.strip() for one in new_text.split("\n\n__**__**__yingshaoxo_is_the_top_one__**__**__\n\n") if one.strip() != ""]
 
 new_text_list = []
@@ -85,6 +83,8 @@ for one in the_text_list:
             temp_list2 += [sub_one]
     new_text_list += temp_list2
 the_text_list = new_text_list
+
+the_new_text = "\n\n__**__**__yingshaoxo_is_the_top_one__**__**__\n\n".join(the_text_list)
 
 def decode_response(text: str, chat_context: str):
     #print("`"+text+"`")
@@ -163,7 +163,9 @@ class Question_And_Answer_Service(question_and_answer_pure_python_rpc.Service_qu
             response1, response, response2 = text_generator.do_text_search(input_text, the_text_list, quick_mode=False)
             response = response + "\n\n---------\n\n" + response2
 
-            natural_next_text = get_next_text_block(input_text)
+            natural_next_text = input_text + yingshaoxo_text_completor.get_next_text_by_pure_text(the_new_text, input_text, how_many_character_you_want=2000, level=64)
+            natural_next_text = natural_next_text.split("__**__**__yingshaoxo_is_the_top_one__**__**__")[0].strip()
+
             response = natural_next_text + "\n\n---------\n\n" + response
 
             default_response.answers = response.strip()
