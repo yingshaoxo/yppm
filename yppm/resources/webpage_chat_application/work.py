@@ -36,7 +36,7 @@ def handle_request(request_type, url, url_key_and_value_dict, raw_data):
             background-color: #f0f2f5;
             font-family: Arial, sans-serif;
         }
-        
+
         /* Container styles */
         #chat-container {
             position: absolute;
@@ -49,7 +49,7 @@ def handle_request(request_type, url, url_key_and_value_dict, raw_data):
             border-left: 1px solid #dddfe2;
             border-right: 1px solid #dddfe2;
         }
-        
+
         /* Header styles */
         #chat-header {
             position: absolute;
@@ -62,14 +62,14 @@ def handle_request(request_type, url, url_key_and_value_dict, raw_data):
             border-bottom: 1px solid #dddfe2;
             box-sizing: border-box;
         }
-        
+
         #chat-header h1 {
             margin: 0px;
             padding: 15px 20px;
             font-size: 24px;
             color: #1c1e21;
         }
-        
+
         /* Chat history styles */
         #chat-history {
             position: absolute;
@@ -82,7 +82,7 @@ def handle_request(request_type, url, url_key_and_value_dict, raw_data):
             background-color: #ffffff;
             padding: 20px;
         }
-        
+
         /* Message styles */
         .message {
             margin: 10px 0px;
@@ -92,21 +92,21 @@ def handle_request(request_type, url, url_key_and_value_dict, raw_data):
             line-height: 1.4;
             word-wrap: break-word;
         }
-        
+
         .user-message {
             float: right;
             background-color: #0084ff;
             color: #ffffff;
             margin-left: 20%;
         }
-        
+
         .ai-message {
             float: left;
             background-color: #e9ecef;
             color: #1c1e21;
             margin-right: 20%;
         }
-        
+
         /* Input container styles */
         #input-container {
             position: absolute;
@@ -120,7 +120,7 @@ def handle_request(request_type, url, url_key_and_value_dict, raw_data):
             padding: 20px;
             box-sizing: border-box;
         }
-        
+
         #message-input {
             position: absolute;
             left: 20px;
@@ -135,7 +135,7 @@ def handle_request(request_type, url, url_key_and_value_dict, raw_data):
             resize: none;
             box-sizing: border-box;
         }
-        
+
         #send-button {
             position: absolute;
             right: 20px;
@@ -149,13 +149,20 @@ def handle_request(request_type, url, url_key_and_value_dict, raw_data):
             font-weight: bold;
             cursor: pointer;
         }
-        
+
         /* Mobile styles */
         @media screen and (max-width: 800px) {
-            body {
-                padding: 0px 10px;
+            html {
+                display:flex;
+                flex-direction:row;
+                justify-content:space-between;
+                align-items:center;
             }
-            
+
+            body {
+                padding: 0px 0px;
+            }
+
             #chat-container {
                 position: absolute;
                 left: 0px;
@@ -164,91 +171,98 @@ def handle_request(request_type, url, url_key_and_value_dict, raw_data):
                 margin-left: 0px;
                 border: none;
             }
-            
+
             #chat-header h1 {
                 font-size: 20px;
                 padding: 18px 15px;
             }
-            
+
             #chat-history {
                 padding: 10px;
                 width: auto;
                 right: 0px;
             }
-            
+
             #input-container {
                 padding: 20px 10px;
                 width: auto;
                 right: 0px;
             }
-            
+
             #message-input {
                 width: 65%;
                 left: 10px;
                 padding: 8px;
             }
-            
+
             #send-button {
                 width: 28%;
                 right: 10px;
             }
-            
+
             .message {
                 max-width: 85%;
                 margin: 8px 0px;
                 padding: 8px 12px;
             }
         }
-        
+
         /* Extra small screens */
         @media screen and (max-width: 480px) {
-            body {
-                padding: 0px 15px;
+            html {
+                display:flex;
+                flex-direction:row;
+                justify-content:space-between;
+                align-items:center;
             }
-            
+
+            body {
+                padding: 0px 0px;
+            }
+
             #input-container {
                 padding: 20px 5px;
             }
-            
+
             #message-input {
                 width: 62%;
                 left: 5px;
             }
-            
+
             #send-button {
                 width: 32%;
-                right: 5px;
+                right: 6px;
             }
-            
+
             .message {
                 max-width: 90%;
                 font-size: 14px;
             }
         }
-        
+
         /* IE6 specific styles */
         * html body {
             padding: expression(document.body.clientWidth > 800 ? "0px" : document.body.clientWidth > 480 ? "0px 10px" : "0px 15px");
         }
-        
+
         * html #chat-container {
             width: expression(document.body.clientWidth > 800 ? "800px" : "auto");
             margin-left: expression(document.body.clientWidth > 800 ? "-400px" : "0");
             left: expression(document.body.clientWidth > 800 ? "50%" : "0");
             right: expression(document.body.clientWidth <= 800 ? "10px" : "auto");
         }
-        
+
         * html #message-input {
             width: expression(document.body.clientWidth > 800 ? "650px" : document.body.clientWidth > 480 ? "65%" : "62%");
             left: expression(document.body.clientWidth > 800 ? "20px" : document.body.clientWidth > 480 ? "10px" : "5px");
             padding: expression(document.body.clientWidth > 800 ? "10px" : "8px");
         }
-        
+
         * html #send-button {
             width: expression(document.body.clientWidth > 800 ? "90px" : document.body.clientWidth > 480 ? "28%" : "32%");
             right: expression(document.body.clientWidth > 800 ? "20px" : document.body.clientWidth > 480 ? "10px" : "5px");
         }
-        
+
         * html #chat-history {
             height: expression((document.documentElement.clientHeight || document.body.clientHeight) - 180 + "px");
             width: expression(document.body.clientWidth > 800 ? "760px" : (document.body.clientWidth - 40) + "px");
@@ -259,7 +273,7 @@ def handle_request(request_type, url, url_key_and_value_dict, raw_data):
             margin-bottom: 120px;
             padding-bottom: 0px;
         }
-        
+
         * html #input-container {
             position: absolute;
             bottom: 0px;
@@ -327,10 +341,10 @@ def handle_request(request_type, url, url_key_and_value_dict, raw_data):
         try {
             var chatHistory = document.getElementById('chat-history');
             var messageDiv = document.createElement('div');
-            
+
             messageDiv.className = 'message';
             messageDiv.className += isUser ? ' user-message' : ' ai-message';
-            
+
             var lines = text.split('\\n');
             for (var i = 0; i < lines.length; i++) {
                 if (i > 0) {
@@ -340,14 +354,14 @@ def handle_request(request_type, url, url_key_and_value_dict, raw_data):
                 var textNode = document.createTextNode(lines[i] || ' ');
                 messageDiv.appendChild(textNode);
             }
-            
+
             chatHistory.appendChild(messageDiv);
-            
+
             // Add clearfix div after each message
             var clearfix = document.createElement('div');
             clearfix.className = 'clearfix';
             chatHistory.appendChild(clearfix);
-            
+
             // Scroll to bottom
             var scrollHeight = chatHistory.scrollHeight;
             if (scrollHeight) {
