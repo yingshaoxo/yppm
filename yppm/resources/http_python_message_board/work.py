@@ -403,6 +403,12 @@ function string_to_bytes(str) {
     return bytes.join('_');
 }
 
+function sleep(ms) {
+    var start = new Date().getTime();
+    while (new Date().getTime() - start < ms) {
+    }
+}
+
 function send_request(url, post_string, callback) {
   if (window.fetch) {
     fetch(url, {
@@ -492,6 +498,7 @@ function save_clipboard_message(clipboard_data) {
     if (command == false) {
         //clean the dict first
         save_clipboard_message("__dd_clear__");
+        sleep(3000);
     }
 
     var timeout_delay = 500;
