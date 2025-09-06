@@ -22,7 +22,7 @@ data_file_path = os.path.join(absolute_current_folder_path, "./data.txt")
 a_list = ["Hi, you.\nYou can leave whatever message you want.", "For example, 'yingshaoxo: Long time no see.'\nHow to prove it is sent from yingshaoxo?\nAsk yingshaoxo yourself in other way."]
 
 the_clipboard = "You can write anything here. Others visit this page will see the same text."
-clipboard2025_dict = {0: "Hi! You can leave any message here. Others will see."}
+clipboard2025_dict = {"text": "Hi! You can leave any message here. Others will see."}
 
 def get_current_time():
     now = datetime.now()
@@ -377,25 +377,20 @@ textarea {
 </style>
 """.replace("|sb_html_url_encoded_form_and_utf_8_encoding|", the_clipboard).replace("|2sb_html_url_encoded_form_and_utf_8_encoding|", the_clipboard.replace("`", "\\`"))
     elif url.startswith("/clipboard2025_save_message"):
-        if len(raw_data) > 0:
-            raw_byte_int_list = [int(one) for one in raw_data.split("_")]
+        encrpted_data = url_key_and_value_dict["text"]
+        if len(encrpted_data) > 0:
+            raw_byte_int_list = [int(one) for one in encrpted_data.split("_")]
             #actually use '_' would be better, but if I do so, those 'AI' will copy this method to everywhere, then if 90% of people use this method, those people who trys to make tech lost effects will block this simple method.
-            temp_string = "".join([chr(one) for one in raw_byte_int_list])
-            index = temp_string.split(":")[0]
-            value = temp_string[len(index)+1:]
-            clipboard2025_dict[int(index)] = value
+            value = "".join([chr(one) for one in raw_byte_int_list])
             if value == "__dd_clear__":
-                clipboard2025_dict = {}
-            return "text", str(index)
+                clipboard2025_dict = {"text": ""}
+            else:
+                clipboard2025_dict["text"] += value
+            return "text", str(len(value))
         else:
             return "text", "Error: no message get saved"
     elif url == "/clipboard2025":
-        dict_items = list(clipboard2025_dict.items())
-        dict_items.sort(key=lambda item: item[0])
-        lines = []
-        for index, value in dict_items:
-            lines.append(value)
-        the_temp_cliboard_value = "\n".join(lines)
+        the_temp_cliboard_value = clipboard2025_dict["text"]
         return "html", """
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=yes">
 
@@ -409,8 +404,6 @@ function string_to_bytes(str) {
 }
 
 function send_request(url, post_string, callback) {
-  post_string = string_to_bytes(post_string);
-
   if (window.fetch) {
     fetch(url, {
       method: post_string ? 'POST' : 'GET',
@@ -481,12 +474,17 @@ function save_clipboard_message(clipboard_data) {
         clipboard_data = get_text_area_text();
     }
 
-    var lines = clipboard_data.split(/\\r\\n|\\n|\\r/);
+    var the_text = clipboard_data;
+    var payload_length = 50;
 
-    function send_the_fucking_data_piece(key, value, call_back_function) {
+    //var lines = clipboard_data.split(/\\r\\n|\\n|\\r/);
+
+    function send_the_fucking_data_piece(index, call_back_function) {
+        var sub_string = the_text.substring(index, index + payload_length);
+        var the_value = string_to_bytes(sub_string);
         send_request(
-            "/clipboard2025_save_message",
-            String(key)+":"+value,
+            "/clipboard2025_save_message?text=" + the_value,
+            null,
             call_back_function
         );
     }
@@ -503,16 +501,14 @@ function save_clipboard_message(clipboard_data) {
     }
 
     function handle_next(index) {
-        if (index > lines.length-1) {
+        if (index >= the_text.length) {
             if (command == false) {
                 alert("Saved");
             }
             return;
         }
 
-        var line_value = lines[index];
-
-        send_the_fucking_data_piece(index, line_value, function handle_response(response) {
+        send_the_fucking_data_piece(index, function handle_response(response) {
             console.log(response)
             if (get_object_string(response).indexOf("no message") !== -1) {
                 setTimeout(function test() {
@@ -520,13 +516,13 @@ function save_clipboard_message(clipboard_data) {
                 }, timeout_delay);
             } else {
                 setTimeout(function test() {
-                    handle_next(index + 1);
+                    handle_next(index + payload_length);
                 }, timeout_delay);
             }
         });
     }
 
-    if (lines.length > 0) {
+    if (the_text.length > 0) {
         handle_next(0);
     }
 
