@@ -3,9 +3,27 @@ import threading
 import re
 from pprint import pprint
 import copy
-from inspect import signature
 import os, tty, termios, sys, shlex
-from typing import Any, Callable
+#from typing import Any, Callable
+
+
+if sys.version_info[0] == 3 and sys.version_info[1] <= 2:
+    import inspect
+    def get_arguments(obj):
+        if not (inspect.isfunction(obj) or inspect.ismethod(obj)):
+            raise TypeError("Input must be a function or method")
+        # Get basic argument info
+        argspec = inspect.getargspec(obj)
+        args = argspec.args
+        # Format the signature string
+        #result_with_function_name = "{} ({})".format(obj.__name__, ', '.join(args))
+        result = "({})".format(', '.join(args))
+        return result
+else:
+    from inspect import signature
+    def get_arguments(obj):
+        result = str(signature(obj))
+        return result
 
 
 class Python():
@@ -23,7 +41,8 @@ class Python():
         self._t = Terminal()
         self._disk = Disk()
 
-    def check_if_a_variable_is_a_function(self, function: Any) -> bool:
+    def check_if_a_variable_is_a_function(self, function):
+        #(self, function: Any) -> bool:
         return isinstance(function, Callable)
 
     def list_python_packages(self):
@@ -32,7 +51,8 @@ class Python():
         """
         return self._os.list_python_packages()
 
-    def install_package(self, package_name: str):
+    def install_package(self, package_name):
+        #(self, package_name: str):
         """
         Parameters
         ----------
@@ -41,7 +61,8 @@ class Python():
         """
         self._os.install_python_package(package_name)
 
-    def uninstall_package(self, package_name: str):
+    def uninstall_package(self, package_name):
+        #(self, package_name: str):
         """
         Parameters
         ----------
@@ -50,7 +71,84 @@ class Python():
         """
         self._os.uninstall_python_package(package_name)
 
-    def reactive(self, old_dict: dict):
+    def create_mini_python(self, variable_dict=None):
+        import sys
+        import json
+        from io import StringIO
+        from multiprocessing import Process, Queue
+
+        if variable_dict == None:
+            variable_dict = {'__builtins__': __builtins__}
+        else:
+            if "__builtins__" not in variable_dict:
+                variable_dict.update({'__builtins__': __builtins__})
+
+        class Mini_Python():
+            def __init__(self, the_variable_dict):
+                self.the_variable_dict = the_variable_dict
+
+            def _handle_python_call(self, operation, json_args, eval_only=True):
+                try:
+                    args = json.loads(json_args)
+
+                    for i, arg in enumerate(args):
+                        self.the_variable_dict['data_{0}'.format(i)] = arg
+
+                    if eval_only == True:
+                        result = eval(operation, self.the_variable_dict)
+                    else:
+                        exec(operation, self.the_variable_dict)
+                        result = None
+
+                    return json.dumps(result)
+                except Exception as e:
+                    return json.dumps({'error': str(e)})
+
+            def inject_python(self, code, *args):
+                # you can define some global functions and variables here
+                try:
+                    jsonArgs = json.dumps(args)
+                    result = self._handle_python_call(code, jsonArgs, eval_only=False)
+                    return json.loads(result)
+                except Exception as e:
+                    return {"error": str(e)}
+
+            def eval_python(self, code, *args):
+                # you can evaluate an expression here
+                try:
+                    jsonArgs = json.dumps(args)
+                    result = self._handle_python_call(code, jsonArgs, eval_only=True)
+                    return json.loads(result)
+                except Exception as e:
+                    return {"error": str(e)}
+
+            def _real_run_code(self, code_str, output_q):
+                old_stdout = sys.stdout
+                sys.stdout = StringIO()
+                try:
+                    exec(code_str, self.the_variable_dict)
+                    output_q.put(sys.stdout.getvalue())
+                except Exception as e:
+                    output_q.put("error: " + str(e))
+                finally:
+                    sys.stdout = old_stdout
+
+            def run_code(self, code, timeout=20):
+                output_q = Queue()
+                p = Process(target=self._real_run_code, args=(code, output_q))
+                p.start()
+                p.join(timeout)
+
+                if p.is_alive():
+                    p.terminate()
+                    return "error: Process timeout"
+
+                return output_q.get()
+
+        return Mini_Python(variable_dict)
+
+    def reactive(self, old_dict):
+        #(self, old_dict: dict):
         """
         This function will return a multiprocessing or threads safe dict. You can use it to share pure data structure, like string, int, float, bool, list, dict
         It will not share newly added data unless it is inside the old exists list or dict
@@ -108,7 +206,8 @@ class Python():
         return _manager, reactive_dict(old_dict)
 
     class loop():
-        def __init__(self, interval: int | float=1, thread:bool=False):
+        def __init__(self, interval=1, thread=False):
+            #(self, interval: int | float=1, thread:bool=False):
             """
             interval: inverval in seconds
             new_thread: do you want to open a new thread? True/False
@@ -116,12 +215,12 @@ class Python():
             self.thread = thread
             self.interval = interval
 
-        def __call__(self, func: Any):
+        def __call__(self, func):
             """
             func: a function which you want to run forever
             """
 
-            def new_function(*args: Any, **kwargs: Any):
+            def new_function(*args, **kwargs):
                 def while_function():
                     while 1:
                         try:
@@ -137,12 +236,12 @@ class Python():
 
             return new_function
 
-    def help(self, object_: Any):
+    def help(self, object_):
         """
         get help information about class or function
         """
         if callable(object_):
-            arguments = str(signature(object_))
+            arguments = get_arguments(object_)
             print(object_.__name__ + arguments)
 
             doc = object_.__doc__
@@ -150,8 +249,8 @@ class Python():
                 print(doc, '\n')
         else:
             methods = dir(object_)
-            private_methods: list[str] = []
-            public_methods: list[str] = []
+            private_methods = []
+            public_methods = []
             for method in methods:
                 if method[:1] == "_":
                     private_methods.append(method)
@@ -180,7 +279,7 @@ class Python():
             [print(one[0], one[1]) for one in public_methods]
             """
 
-    def fire(self, class_name: Any):
+    def fire(self, class_name):
         """
         fire is a function that will turn any Python class into a command line interface
         """
@@ -188,7 +287,8 @@ class Python():
         # from fire import Fire #type: ignore
         # Fire(class_name)
 
-    def fire2(self, class_instance: Any, new_arguments: list[Any] = []):
+    def fire2(self, class_instance, new_arguments=[]):
+        #(self, class_instance: Any, new_arguments: list[Any] = []):
         """
         fire2 is a function that come from ying_shao_xo's wild thinking which turn any Python class into a user friendly command line interface
         @yingshaoxo, baby
@@ -199,12 +299,14 @@ class Python():
             'bool': bool,
             'float': float
         }
-        def get_argument_name(text: str):
+        def get_argument_name(text):
+            #(text: str):
             if ":" not in text:
                 return text.split('=')[0].strip()
             else:
                 return text.split(':')[0].strip()
-        def get_type_string(text: str):
+        def get_type_string(text):
+            #(text: str):
             if ":" not in text:
                 return None
             text = text.split(':')[1].strip().split('=')[0].strip()
@@ -213,7 +315,8 @@ class Python():
                 if one in type_dict.keys():
                     return one
             return "str"
-        def get_type_function(text: str):
+        def get_type_function(text):
+            #(text: str):
             if ":" not in text:
                 return None
             text = text.split(':')[1].strip().split('=')[0].strip()
@@ -233,7 +336,7 @@ class Python():
         else:
             original_command_line_arguments = new_arguments
         command_line_arguments = original_command_line_arguments[1:]
-        my_method_and_propertys: dict[str, Any] = {}
+        my_method_and_propertys = {}
         function_string_list = []
 
         for each_string in vars(class_instance).keys():
@@ -241,7 +344,7 @@ class Python():
                 one = class_instance.__dict__[each_string]
                 if callable(one):
                     # it is a sub_function
-                    arguments = str(signature(one))
+                    arguments = get_arguments(one)
                     #print(one.__name__, arguments)
 
                     function_string_list.append(each_string)
@@ -251,13 +354,13 @@ class Python():
                         'arguments': {
                             get_argument_name(one2):
                                 {
-                                    'type_string': get_type_string(one2), 
+                                    'type_string': get_type_string(one2),
                                     'type_function': get_type_function(one2),
                                 }
-                            for one2 in 
+                            for one2 in
                             re.sub(
-                                r"'(.*?)'", "''", 
-                                re.sub(r'"(.*?)"', '""', 
+                                r"'(.*?)'", "''",
+                                re.sub(r'"(.*?)"', '""',
                                        arguments[1:-1])
                             )
                             .split(', ')[1:]
@@ -265,13 +368,13 @@ class Python():
                         'arguments_list': [
                             {
                                 'argument_name': get_argument_name(one2),
-                                'type_string': get_type_string(one2), 
+                                'type_string': get_type_string(one2),
                                 'type_function': get_type_function(one2),
                             }
-                            for one2 in 
+                            for one2 in
                             re.sub(
-                                r"'(.*?)'", "''", 
-                                re.sub(r'"(.*?)"', '""', 
+                                r"'(.*?)'", "''",
+                                re.sub(r'"(.*?)"', '""',
                                        arguments[1:-1])
                             )
                             .split(', ')[1:]
@@ -294,7 +397,8 @@ class Python():
                 # the user do not know how to use this program, so make a shell for them
                 def print_seperate_line():
                     print("\n" + '-'*9 + "\n")
-                def print_functions_info(start_with: str = ""):
+                def print_functions_info(start_with=""):
+                    #(start_with: str = ""):
                     start_with = start_with.strip()
                     for function_name in function_string_list:
                         if start_with != "":
@@ -302,17 +406,20 @@ class Python():
                                 print(function_name)
                         else:
                             print(function_name)
-                def print_argument_info(function_name: str):
+                def print_argument_info(function_name):
+                    #(function_name: str):
                     if (function_name in my_method_and_propertys.keys()):
                         argument_part = ', '.join(my_method_and_propertys[function_name]['arguments_string'].split(', ')[1:])[:-1]
                         print(argument_part)
                     else:
-                        print(f"No such function: {function_name}")
-                def print_chars(text: str):
+                        print("No such function: {function_name}".format(function_name=function_name))
+                def print_chars(text):
+                    #(text: str):
                     print(text, end="", flush=True)
                 def clear_screen():
                     os.system("clear")
-                def get_char_input() -> tuple[str, int]:
+                def get_char_input():
+                    #() -> tuple[str, int]:
                     #https://www.physics.udel.edu/~watson/scen103/ascii.html
                     fd = sys.stdin.fileno()
                     old_settings = termios.tcgetattr(fd)
@@ -322,7 +429,8 @@ class Python():
                     finally:
                         termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
                     return char, ord(char)
-                def get_last_word_of_string(text:str) -> tuple[str, int]:
+                def get_last_word_of_string(text):
+                    #(text:str) -> tuple[str, int]:
                     splits = text.split(" ")
                     splits = [one for one in splits if one.strip() != ""]
                     if (text[-1].strip() == ""):
@@ -330,7 +438,7 @@ class Python():
                     if " " not in text:
                         return "", len(splits)
                     return splits[-1], len(splits)
-                final_command_line = f"{original_command_line_arguments[0]} "
+                final_command_line = original_command_line_arguments[0]+" "
                 while True:
                     clear_screen()
                     last_word, how_many_words = get_last_word_of_string(final_command_line)
@@ -365,10 +473,10 @@ class Python():
                             continue
                         new_word = ""
                         if (how_many_words == 0):
-                            final_command_line = f"{original_command_line_arguments[0]} "
+                            final_command_line = original_command_line_arguments[0]+" "
                             continue
                         elif (how_many_words == 1):
-                            final_command_line = f"{original_command_line_arguments[0]} "
+                            final_command_line = original_command_line_arguments[0]+" "
                             continue
                         elif (how_many_words == 2):
                             # complete function name
@@ -409,7 +517,7 @@ class Python():
                                     break
                             if new_word != "":
                                 final_command_line = final_command_line[:-len(last_word)]
-                                final_command_line += f"--{new_word}="
+                                final_command_line += "--{new_word}=".format(new_word=new_word)
                     elif char_id == 10 or char_id == 13:
                         # enter key
                         clear_screen()
@@ -446,10 +554,11 @@ class Python():
                         custom_arguments[argument_name] = argument_type(argument_value)
                     else:
                         # no type info
-                        if str(argument_value).replace('.','',1).isdigit():
-                            custom_arguments[argument_name] = float(str(argument_value))
-                        else:
-                            custom_arguments[argument_name] = str(argument_value)
+                        custom_arguments[argument_name] = str(argument_value)
+                        #if str(argument_value).replace('.','',1).isdigit():
+                        #    custom_arguments[argument_name] = float(str(argument_value))
+                        #else:
+                        #    custom_arguments[argument_name] = str(argument_value)
 
             # for argument that does have '--name=value'
             for one in named_arguments:
@@ -460,16 +569,18 @@ class Python():
                     custom_arguments[argument_name] = argument_type(argument_value)
                 else:
                     # no type info
-                    if str(argument_value).replace('.','',1).isdigit():
-                        custom_arguments[argument_name] = float(str(argument_value))
-                    else:
-                        custom_arguments[argument_name] = str(argument_value)
+                    custom_arguments[argument_name] = str(argument_value)
+                    #if str(argument_value).replace('.','',1).isdigit():
+                    #    custom_arguments[argument_name] = float(str(argument_value))
+                    #else:
+                    #    custom_arguments[argument_name] = str(argument_value)
 
             #print(f"{method_name} {' '.join(custom_arguments)}")
             method_instance(**custom_arguments)
             return
 
-    def make_it_runnable(self, py_file_path: str|None=None):
+    def make_it_runnable(self, py_file_path=None):
+        #(self, py_file_path: str|None=None):
         """
         make python file runnable
 
@@ -495,7 +606,8 @@ class Python():
             if not self._disk.executable(py_file_path):
                 self._t.run_command('chmod +x {}'.format(py_file_path))
 
-    def make_it_global_runnable(self, py_file_path: str| None=None, executable_name: str | None=None):
+    def make_it_global_runnable(self, py_file_path=None, executable_name=None):
+        #(self, py_file_path: str| None=None, executable_name: str | None=None):
         """
         make python file global runnable
 
@@ -506,13 +618,13 @@ class Python():
         auto_everything_config_folder = "~/.auto_everything"
         bin_folder = os.path.expanduser(os.path.join(auto_everything_config_folder, "bin"))
         if not self._t.exists(bin_folder):
-            self._t.run_command(f"mkdir -p {bin_folder}")
+            self._t.run_command("mkdir -p {bin_folder}".format(bin_folder=bin_folder))
 
         if py_file_path is None or not self._t.exists(py_file_path):
             py_file_path = os.path.join(
                 self._t.current_dir, sys.argv[0].strip('./'))
 
-        is_the_first_running = False 
+        is_the_first_running = False
         runnable_path = None
 
         if os.path.exists(py_file_path):
@@ -524,27 +636,28 @@ class Python():
 
             # remove links that the real file has been moved, or, remove links that match this py_file_path but with a different executable name
             files = os.listdir(bin_folder)
-            [self._t.run(f"cd {bin_folder}; rm {file}") for file in files if
+            [self._t.run("cd {bin_folder}; rm {file}".format(bin_folder=bin_folder, file=file)) for file in files if
              not os.path.exists(os.path.join(bin_folder, file))]
             files = self._disk.get_files(bin_folder, recursive=False)
-            [self._t.run(f"rm {file}") for file in files if
+            [self._t.run("rm {file}".format(file=file)) for file in files if
              os.path.realpath(file) == py_file_path and file != runnable_path]
 
-            self._t.run_command(f"ln -s {py_file_path} {runnable_path}")
+            self._t.run_command("ln -s {py_file_path} {runnable_path}".format(py_file_path=py_file_path, runnable_path=runnable_path))
 
-            bashrc_path = self._t.fix_path(f"~/.bashrc")
-            bashrc_target_line = f'export PATH="$PATH:{bin_folder}"'
+            bashrc_path = self._t.fix_path("~/.bashrc")
+            bashrc_target_line = 'export PATH="$PATH:{bin_folder}"'.format(bin_folder=bin_folder)
             bashrc = self._io.read(bashrc_path)
             if bashrc_target_line not in bashrc.split("\n"):
                 bashrc = bashrc + "\n" + bashrc_target_line
-                self._t.run_command(f"touch {bashrc_path}")
+                self._t.run_command("touch {bashrc_path}".format(bashrc_path=bashrc_path))
                 self._io.write(bashrc_path, bashrc)
-        
-        if is_the_first_running and runnable_path:
-            print(f"\n\n------------------\n\nYou could run \n\nsource ~/.bashrc\n\nto get started!")
-            print(f"\n\n------------------\n\nYou could run \n\n{runnable_path.split('/')[-1]} -- --completion\n\nto get bash completion scripts")
 
-    def print(self, data: Any, limit: int=20):
+        if is_the_first_running and runnable_path:
+            print("\n\n------------------\n\nYou could run \n\nsource ~/.bashrc\n\nto get started!")
+            print("\n\n------------------\n\nYou could run \n\n{command} -- --completion\n\nto get bash completion scripts".format(command=runnable_path.split('/')[-1]))
+
+    def print(self, data, limit=20):
+        #(self, data: Any, limit: int=20):
         """
         print `function help info` or print `dict` with length limit (So you could see the structure easily)
         """
@@ -553,7 +666,7 @@ class Python():
         else:
             data = copy.deepcopy(data)
 
-            def infinite_loop(the_data: Any) -> Any:
+            def infinite_loop(the_data):
                 the_type = type(the_data)
                 if the_type == str:
                     return the_data[:limit] + "..."
@@ -568,7 +681,7 @@ class Python():
 
             data = infinite_loop(data)
             pprint(data)
-    
+
     # def _python_code_preprocess(self, python_code: str):
     #     """
     #     { \n } => {}
@@ -578,11 +691,13 @@ class Python():
     #     > a remind not to touch the comments followed by a function top defination
     #     """
     #     pass
-    
-    def generate_documentation_for_a_python_project(self, python_project_folder_path: str, markdown_file_output_folder_path: str, only_generate_those_functions_that_has_docstring: bool=True):
+
+    def generate_documentation_for_a_python_project(self, python_project_folder_path, markdown_file_output_folder_path, only_generate_those_functions_that_has_docstring=False, just_return_string=False):
+        #(self, python_project_folder_path: str, markdown_file_output_folder_path: str, only_generate_those_functions_that_has_docstring: bool=False, just_return_string: bool=False):
+        all_data_string = ""
         # code_block_match_rule = r"""(?P<code_block>(?:[ \t]*)(?P<code_head>(?:(?:(?:@(?:.*)\s+)*)*(?:(?:class)|(?:(?:async\s+)*def)))[ \t]*(?:\w+)\s*\((?:.*?)\)(?:[ \t]*->[ \t]*(?:(.*)*))?:)(?P<code_body>(?:\n(?:)(?:[ \t]+[^\n]*)|\n)+))"""
         head_information_regex_rule = r"""(?P<class_or_function_top_defination>(?: *@(?:.*?)\n+)* *(?:\s+(?P<is_class>class)|(?P<is_function>def|async +def)) +(?:(?:\n|.)*?):\n+)(?P<documentation>(?:(?:\s+[\"\']{3}(?:(?:\s|.)*?)[\"|\']{3}\n+)?(?:[ \t]*?\#(?:.*?)\n+)*)*)?(?P<class_or_function_propertys>(?(is_class)((?![ \t]+(?:def|class) )(?:(?:.*?): *(?:.*?) *= *(?:.*?)\n)*)|(?:)))?"""
-        for file in self._disk.get_files(folder=python_project_folder_path, recursive=True, type_limiter=[".py"]):
+        for file in self._disk.get_files(folder=python_project_folder_path, recursive=True, type_limiter=[".py"], use_gitignore_file=True):
             file_name = self._disk.get_file_name(file)
             if file_name.startswith("_"):
                 continue
@@ -596,7 +711,7 @@ class Python():
                     'is_function': one[2] == 'def',
                     'documentation': one[3][0] if len(one[3]) == 1 else one[3],
                     'class_or_function_propertys': one[4]
-                } 
+                }
                 for one in result_list
             ]
 
@@ -627,40 +742,64 @@ class Python():
                 class_or_function_propertys = class_or_function_propertys.rstrip() if is_class else ''
 
                 if len(documentation.strip()) != 0 and len(class_or_function_propertys) != 0:
-                    text += f"""
-{class_or_function_top_defination.rstrip()}
-{documentation.rstrip()}
-{class_or_function_propertys}
-{' ' * heading_space_counting + ' ' * 4}pass
-                    """
+                    text += """
+{}
+{}
+{}
+{}pass
+                    """.format(
+                        class_or_function_top_defination.rstrip(),
+                        documentation.rstrip(),
+                        class_or_function_propertys,
+                        ' ' * heading_space_counting + ' ' * 4
+                    )
                 elif len(documentation.strip()) != 0 and len(class_or_function_propertys) == 0:
-                    text += f"""
-{class_or_function_top_defination.rstrip()}
-{documentation.rstrip()}
-{' ' * heading_space_counting + ' ' * 4}pass
-                    """
+                    text += """
+{}
+{}
+{}pass
+                    """.format(
+                        class_or_function_top_defination.rstrip(),
+                        documentation.rstrip(),
+                        ' ' * heading_space_counting + ' ' * 4
+                    )
                 elif len(documentation.strip()) == 0 and len(class_or_function_propertys) != 0:
-                    text += f"""
-{class_or_function_top_defination.rstrip()}
-{class_or_function_propertys}
-{' ' * heading_space_counting + ' ' * 4}pass
-                    """
+                    text += """
+{}
+{}
+{}pass
+                    """.format(
+                        class_or_function_top_defination.rstrip(),
+                        class_or_function_propertys,
+                        ' ' * heading_space_counting + ' ' * 4
+                    )
                 elif len(documentation.strip()) == 0 and len(class_or_function_propertys) == 0:
-                    text += f"""
-{class_or_function_top_defination.rstrip()}
-{' ' * heading_space_counting + ' ' * 4}pass
-                    """
-            
-            markdown_template = f"""
+                    text += """
+{}
+{}pass
+                    """.format(
+                        class_or_function_top_defination.rstrip(),
+                        ' ' * heading_space_counting + ' ' * 4
+                    )
+
+            markdown_template = """
 # {file_name}
 
 ```python
-{text.strip()}
+{text}
 ```
-            """
-            
-            output_file_path = self._disk.join_paths(markdown_file_output_folder_path, file_name[:-len(".py")] + ".md") 
-            self._io.write(file_path=output_file_path, content=markdown_template)
+            """.format(
+                file_name=file_name,
+                text=text.strip()
+            )
+
+            if just_return_string == False:
+                output_file_path = self._disk.join_paths(markdown_file_output_folder_path, file_name[:-len(".py")] + ".md")
+                self._io.write(file_path=output_file_path, content=markdown_template)
+
+            all_data_string += markdown_template.strip() + "\n\n_______\n\n"
+
+        return all_data_string
 
 if __name__ == "__main__":
     py = Python()
