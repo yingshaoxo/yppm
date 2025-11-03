@@ -323,9 +323,9 @@ function setTextareaValue(selector, text) {
   if (!textarea) {
     textarea = document.getElementById(selector.replace('#','')) || document.getElementsByTagName('textarea')[0];
   }
-  if (textarea) {
-    textarea.value = text.replace(/\\n/g, '\\r\\n');
-  }
+  //if (textarea) {
+  //  textarea.value = text.replace(/\\n/g, '\\r\\n');
+  //}
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -560,9 +560,9 @@ function setTextareaValue(selector, text) {
   if (!textarea) {
     textarea = document.getElementById(selector.replace('#','')) || document.getElementsByTagName('textarea')[0];
   }
-  if (textarea) {
-    textarea.value = text.replace(/\\n/g, '\\r\\n');
-  }
+  //if (textarea) {
+  //  textarea.value = text.replace(/\\n/g, '\\r\\n');
+  //}
 }
 
 function get_text_area_text() {
