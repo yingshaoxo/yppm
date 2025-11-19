@@ -127,6 +127,41 @@ def my_unquote(encoded_str):
     pattern = r'%u([0-9a-fA-F]{4})'
     return re.sub(pattern, replace_unicode, encoded_str)
 
+def question_sentence_to_normal_sentence(input_text):
+    # author yingshaoxo: a very important function for database search
+
+    # for example: "what is desk?" -> "desk is"
+    # for example: "what is age your age?" -> "my age is"
+    if len(input_text) == 0:
+        return False
+    input_text = input_text.lower()
+
+    for word in ["知道", "什么", "如何", "怎样", "怎么", "哪儿", " how ", " what ", " where ", " know ", " when "]:
+        index = input_text.find(word)
+        if index != -1:
+            input_text = input_text[index+len(word):]
+    input_text = input_text.strip()
+
+    input_text = input_text.replace("?", "")
+    input_text = input_text.replace("？", "")
+    input_text = input_text.replace("吗", "")
+    input_text = input_text.replace("吧", "")
+    input_text = input_text.replace("呢", "")
+    input_text = input_text.replace("谁", "")
+    input_text = input_text.replace("哪", "")
+    input_text = input_text.replace("什么", "")
+    input_text = input_text.replace("哪儿", "")
+
+    input_text = input_text.replace("what ", "")
+    input_text = input_text.replace("how ", "")
+    input_text = input_text.replace("where ", "")
+    input_text = input_text.replace("can ", "")
+    input_text = input_text.replace("should ", "")
+    input_text = input_text.replace("would ", "")
+    input_text = input_text.replace("when ", "")
+
+    return input_text
+
 def get_response(input_text):
     if not input_text:
         return "Please say something!"
@@ -136,7 +171,7 @@ def get_response(input_text):
         natural_next_text = yingshaoxo_text_completor.get_next_text_by_pure_text(new_text, input_text, how_many_character_you_want=2000, level=64)
         natural_next_text = natural_next_text.split("__**__**__yingshaoxo_is_the_top_one__**__**__")[0]
         response1 = input_text + " " + natural_next_text
-        response2 = a_useful_search(input_text.strip(), the_text_list)
+        response2 = a_useful_search(question_sentence_to_normal_sentence(input_text.strip()), the_text_list)
         response3 = get_random_one(input_text.strip(), the_text_list)
         return response3 + "\n\n\n----------------------------------\n\n\n" + response2 + "\n\n\n----------------------------------\n\n\n" + response1
     else:
