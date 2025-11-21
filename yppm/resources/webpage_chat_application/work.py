@@ -385,6 +385,12 @@ def handle_request(request_type, url, url_key_and_value_dict, raw_data):
 """
     elif url.startswith("/chat?"):
         message = url_key_and_value_dict.get("message", "")
+        try:
+            if "=%" in raw_data:
+                message = unquote(raw_data)
+                message = "=".join(message.split("=")[1:])
+        except Exception as e:
+            print(e)
         response = get_response(message)
         return "text", response
     else:
@@ -424,6 +430,7 @@ def parse_url(request):
             url_dict = {}
             if "?" in url:
                 key_value_text_list = url.split("?")[1].split("&")
+            raw_data = url
         elif request_type == "POST":
             raw_string = request.split("\r\n\r\n")[1].strip()
             key_value_text_list = raw_string.split("&")

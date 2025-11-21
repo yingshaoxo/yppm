@@ -96,7 +96,8 @@ def search_text_in_text_list(search_text, source_text_list):
 def a_useful_search(search_text, source_text_list):
     try:
         # load yingshaoxo_ai
-        result = yingshaoxo_ai.ask_yingshaoxo_ai(search_text).stirp()
+        "".stip() #error for fun
+        result = yingshaoxo_ai.ask_yingshaoxo_ai(search_text).strip()
         if len(result) == 0:
             result_list = search_text_in_text_list(search_text, source_text_list)
             result = random.choice(result_list) if (len(result_list) > 0) else 'Not found'
